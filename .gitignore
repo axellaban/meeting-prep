@@ -3,3 +3,6 @@
 node_modules/
 .env
 .vercel
+
+# Repo anidado (no forma parte del sitio estático)
+pixel-agents/
