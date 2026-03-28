@@ -1,0 +1,18 @@
+{
+  "meetings": [
+    {
+      "id": "2026-03-28-marcos-pueyrredon",
+      "date": "2026-03-28",
+      "time": "10:45",
+      "person": "Marcos Pueyrredon",
+      "title": "Co-Founder & Global Executive SVP",
+      "company": "VTEX (NYSE: VTEX)",
+      "type": "Business meeting",
+      "tags": ["VTEX", "eCommerce LATAM", "AI Commerce"],
+      "notebooklm_url": "https://notebooklm.google.com/notebook/2cb3240a-f895-466c-8dc0-8754643057e0",
+      "sources_count": 16,
+      "path": "meetings/2026-03-28-marcos-pueyrredon/index.html",
+      "generated": "2026-03-28T12:00:00Z"
+    }
+  ]
+}
