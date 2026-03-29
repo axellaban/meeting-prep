@@ -1,6 +1,20 @@
 {
   "meetings": [
     {
+      "id": "2026-03-29-facundo-gregorini",
+      "date": "2026-03-29",
+      "time": "07:15",
+      "person": "Facundo Gregorini",
+      "title": "Global Head of Marketing, Strategy",
+      "company": "Fever (feverup.com)",
+      "type": "Reunión de negocio",
+      "tags": ["Fever", "Live Entertainment Tech", "Marketing Strategy", "Tucán", "LATAM"],
+      "notebooklm_url": "https://notebooklm.google.com/notebook/4490032c-31b1-4c21-b581-e6a4b5aa34fb",
+      "sources_count": 14,
+      "path": "meetings/2026-03-29-facundo-gregorini/index.html",
+      "generated": "2026-03-29T10:30:00Z"
+    },
+    {
       "id": "2026-03-28-marcos-pueyrredon",
       "date": "2026-03-28",
       "time": "10:45",

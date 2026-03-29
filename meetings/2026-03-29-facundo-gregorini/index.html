@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meeting Prep — Facundo Gregorini</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+  <style>
+    :root {
+      --bg: #08080c;
+      --surface: #0f0f18;
+      --surface2: #16162a;
+      --surface3: #1e1e35;
+      --border: rgba(255,255,255,0.07);
+      --text: #e8e8f0;
+      --text-muted: #8888aa;
+      --blue: #3b82f6;
+      --blue-glow: rgba(59,130,246,0.25);
+      --purple: #8b5cf6;
+      --gold: #f0b429;
+      --green: #10b981;
+      --red: #ef4444;
+      --gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* NAVBAR */
+    .navbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 32px;
+      background: rgba(15,15,24,0.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .navbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; }
+    .navbar-brand .logo-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--gradient); display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .navbar-right { display: flex; align-items: center; gap: 16px; }
+    .badge-date {
+      background: var(--surface2); border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: 20px; font-size: 12px; color: var(--text-muted);
+    }
+    .badge-live {
+      background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);
+      padding: 5px 12px; border-radius: 20px; font-size: 11px; color: var(--green);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .badge-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+    /* HEADER */
+    .header {
+      padding: 40px 32px 32px;
+      background: linear-gradient(180deg, rgba(59,130,246,0.05) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: flex-start; gap: 24px; }
+    .avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--gradient);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 700; flex-shrink: 0;
+      box-shadow: 0 0 30px var(--blue-glow);
+    }
+    .header-info h1 { font-size: 28px; font-weight: 800; line-height: 1.2; }
+    .header-info .subtitle { color: var(--text-muted); font-size: 15px; margin-top: 4px; }
+    .header-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .tag {
+      padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
+      background: var(--surface2); border: 1px solid var(--border);
+    }
+    .tag-blue { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.3); color: #93c5fd; }
+    .tag-purple { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.3); color: #c4b5fd; }
+    .tag-gold { background: rgba(240,180,41,0.15); border-color: rgba(240,180,41,0.3); color: #fcd34d; }
+    .tag-green { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); color: #6ee7b7; }
+    .meeting-meta { margin-left: auto; text-align: right; flex-shrink: 0; }
+    .meeting-time { font-size: 32px; font-weight: 800; color: var(--blue); }
+    .meeting-date-str { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
+    .notebooklm-btn {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 10px;
+      padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      background: var(--gradient); color: #fff; text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .notebooklm-btn:hover { opacity: 0.85; }
+
+    /* STATS ROW */
+    .stats-row { max-width: 1200px; margin: 24px auto; padding: 0 32px; display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px 24px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--gradient);
+    }
+    .stat-card:hover { border-color: rgba(59,130,246,0.3); }
+    .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .stat-value { font-size: 28px; font-weight: 800; color: var(--text); }
+    .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .stat-icon { position: absolute; top: 20px; right: 20px; font-size: 20px; color: var(--blue); opacity: 0.6; }
+
+    /* MAIN LAYOUT */
+    .main { max-width: 1200px; margin: 0 auto; padding: 0 32px 80px; display: grid; grid-template-columns: 220px 1fr; gap: 24px; }
+
+    /* SIDEBAR */
+    .sidebar { position: sticky; top: 72px; height: fit-content; }
+    .sidebar-nav { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .sidebar-section { padding: 12px 16px 8px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; cursor: pointer; transition: all 0.15s;
+      font-size: 13px; font-weight: 500; color: var(--text-muted);
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: var(--surface2); color: var(--blue); border-left-color: var(--blue); }
+    .nav-item i { width: 16px; text-align: center; }
+
+    /* CONTENT PANEL */
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px;
+    }
+    .panel-title {
+      font-size: 20px; font-weight: 700; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .panel-title i { color: var(--blue); }
+
+    /* MARKDOWN STYLES */
+    .md-content h1,h2,h3,h4 { color: var(--text); margin-top: 24px; margin-bottom: 12px; }
+    .md-content h1 { font-size: 22px; font-weight: 700; }
+    .md-content h2 { font-size: 18px; font-weight: 600; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .md-content h3 { font-size: 16px; font-weight: 600; color: var(--blue); }
+    .md-content h4 { font-size: 14px; font-weight: 600; color: var(--gold); }
+    .md-content p { line-height: 1.7; color: var(--text); margin-bottom: 12px; font-size: 14px; }
+    .md-content ul, .md-content ol { padding-left: 20px; margin-bottom: 12px; }
+    .md-content li { line-height: 1.7; color: var(--text); font-size: 14px; margin-bottom: 4px; }
+    .md-content strong { color: #fff; font-weight: 600; }
+    .md-content em { color: var(--text-muted); }
+    .md-content table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+    .md-content th { background: var(--surface2); padding: 10px 14px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+    .md-content td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .md-content tr:hover td { background: var(--surface2); }
+    .md-content code { background: var(--surface2); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12px; color: #93c5fd; }
+    .md-content blockquote { border-left: 3px solid var(--blue); padding: 8px 16px; margin: 12px 0; background: var(--surface2); border-radius: 0 8px 8px 0; }
+
+    /* QUIZ */
+    .quiz-progress-bar { background: var(--surface2); border-radius: 100px; height: 4px; margin-bottom: 24px; }
+    .quiz-progress-fill { height: 4px; border-radius: 100px; background: var(--gradient); transition: width 0.4s; }
+    .quiz-score-display {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .quiz-score-badge {
+      background: var(--surface2); border: 1px solid var(--border);
+      padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+    }
+    .quiz-q-counter { color: var(--text-muted); font-size: 13px; }
+    .quiz-question { font-size: 17px; font-weight: 600; line-height: 1.5; margin-bottom: 24px; }
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; border-radius: 10px; cursor: pointer;
+      border: 1px solid var(--border); background: var(--surface2);
+      transition: all 0.15s; font-size: 14px; line-height: 1.5;
+    }
+    .quiz-option:hover:not(.selected):not(.disabled) { border-color: var(--blue); background: rgba(59,130,246,0.08); }
+    .quiz-option.correct { border-color: var(--green); background: rgba(16,185,129,0.1); }
+    .quiz-option.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); }
+    .quiz-option.disabled { cursor: default; }
+    .option-letter {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      background: var(--surface3); color: var(--text-muted);
+    }
+    .quiz-option.correct .option-letter { background: var(--green); color: #fff; }
+    .quiz-option.wrong .option-letter { background: var(--red); color: #fff; }
+    .quiz-feedback { margin-top: 16px; padding: 12px 16px; border-radius: 10px; font-size: 14px; display: none; }
+    .quiz-feedback.correct { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+    .quiz-feedback.wrong { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+    .quiz-nav { display: flex; justify-content: flex-end; margin-top: 20px; }
+    .btn-next {
+      padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600;
+      background: var(--gradient); color: #fff; border: none; cursor: pointer;
+      transition: opacity 0.2s; display: none;
+    }
+    .btn-next:hover { opacity: 0.85; }
+    .quiz-result {
+      text-align: center; padding: 40px 20px; display: none;
+    }
+    .quiz-result .score-big { font-size: 64px; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .quiz-result p { color: var(--text-muted); margin-top: 8px; font-size: 15px; }
+    .btn-restart {
+      margin-top: 20px; padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600;
+      background: var(--gradient); color: #fff; border: none; cursor: pointer;
+    }
+
+    /* FLASHCARDS */
+    .flashcard-scene {
+      perspective: 1000px; margin: 0 auto 24px; width: 100%; max-width: 560px; height: 260px; cursor: pointer;
+    }
+    .flashcard-card {
+      width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+    }
+    .flashcard-card.flipped { transform: rotateY(180deg); }
+    .flashcard-face {
+      position: absolute; inset: 0; backface-visibility: hidden;
+      border-radius: 16px; padding: 32px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+    }
+    .flashcard-front {
+      background: var(--surface2); border: 1px solid var(--border);
+    }
+    .flashcard-back {
+      background: linear-gradient(135deg, rgba(59,130,246,0.12), rgba(139,92,246,0.12));
+      border: 1px solid rgba(59,130,246,0.3);
+      transform: rotateY(180deg);
+    }
+    .flashcard-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+    .flashcard-text { font-size: 16px; font-weight: 600; line-height: 1.5; }
+    .flashcard-back .flashcard-text { font-size: 14px; font-weight: 400; color: var(--text); }
+    .flashcard-hint { margin-top: 12px; font-size: 11px; color: var(--text-muted); }
+    .flashcard-nav { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; }
+    .fc-btn {
+      width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; transition: all 0.15s;
+    }
+    .fc-btn:hover { background: var(--blue); border-color: var(--blue); }
+    .fc-btn:disabled { opacity: 0.3; cursor: default; }
+    .fc-counter { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .flashcard-dots { display: flex; gap: 6px; justify-content: center; }
+    .fc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--surface3); transition: all 0.2s; }
+    .fc-dot.active { background: var(--blue); width: 20px; border-radius: 4px; }
+    .fc-flip-hint { text-align: center; color: var(--text-muted); font-size: 12px; margin-bottom: 16px; }
+
+    /* NOTEBOOKLM TAB */
+    .nlm-embed {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+      padding: 40px; text-align: center;
+    }
+    .nlm-icon { font-size: 48px; margin-bottom: 16px; }
+    .nlm-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .nlm-desc { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+    .nlm-open-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600;
+      background: var(--gradient); color: #fff; text-decoration: none; transition: opacity 0.2s;
+    }
+    .nlm-open-btn:hover { opacity: 0.85; }
+    .sources-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; text-align: left; }
+    .source-chip {
+      background: var(--surface3); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 14px; font-size: 12px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .source-chip i { color: var(--blue); }
+
+    @media (max-width: 900px) {
+      .main { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .stats-row { grid-template-columns: 1fr; }
+      .header-inner { flex-wrap: wrap; }
+      .meeting-meta { margin-left: 0; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="logo-icon"><i class="fa-solid fa-brain" style="color:#fff"></i></div>
+    Cowork OS
+  </div>
+  <div class="navbar-right">
+    <span class="badge-date"><i class="fa-regular fa-calendar"></i> 29 Mar 2026</span>
+    <span class="badge-live">Meeting Prep activo</span>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="avatar">FG</div>
+    <div class="header-info">
+      <h1>Facundo Gregorini</h1>
+      <div class="subtitle">Global Head of Marketing, Strategy · Fever</div>
+      <div class="header-tags">
+        <span class="tag tag-blue"><i class="fa-brands fa-fever"></i> Fever · feverup.com</span>
+        <span class="tag tag-purple">Global Head of Marketing</span>
+        <span class="tag tag-gold">Co-founder · Tucán</span>
+        <span class="tag tag-green">Greater Buenos Aires</span>
+      </div>
+    </div>
+    <div class="meeting-meta">
+      <div class="meeting-time">07:15</div>
+      <div class="meeting-date-str">Hoy · Domingo 29 Mar 2026</div>
+      <a href="https://notebooklm.google.com/notebook/4490032c-31b1-4c21-b581-e6a4b5aa34fb" target="_blank" class="notebooklm-btn">
+        <i class="fa-solid fa-book-open"></i> Abrir en NotebookLM
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS ROW -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Revenue de Fever (2025)</div>
+    <div class="stat-value">$724M</div>
+    <div class="stat-sub">Crecimiento 20x post-pandemia · EBITDA+ ✓</div>
+    <i class="fa-solid fa-chart-line stat-icon"></i>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Mercado Live Entertainment</div>
+    <div class="stat-value">$197.9B</div>
+    <div class="stat-sub">CAGR 5.7% · proyectado $344.5B para 2035</div>
+    <i class="fa-solid fa-music stat-icon"></i>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Usuarios Globales Fever</div>
+    <div class="stat-value">125M+</div>
+    <div class="stat-sub">40+ países · Valuación ~$1.96B · $527M funding</div>
+    <i class="fa-solid fa-users stat-icon"></i>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">Contenido</div>
+      <div class="nav-item active" onclick="showPanel('briefing')">
+        <i class="fa-solid fa-file-lines"></i> Executive Briefing
+      </div>
+      <div class="nav-item" onclick="showPanel('intel')">
+        <i class="fa-solid fa-magnifying-glass-chart"></i> Competitive Intel
+      </div>
+      <div class="nav-item" onclick="showPanel('research')">
+        <i class="fa-solid fa-microscope"></i> Deep Research
+      </div>
+      <div class="sidebar-section">Práctica</div>
+      <div class="nav-item" onclick="showPanel('quiz')">
+        <i class="fa-solid fa-circle-question"></i> Knowledge Test
+      </div>
+      <div class="nav-item" onclick="showPanel('flashcards')">
+        <i class="fa-solid fa-layer-group"></i> Flashcards
+      </div>
+      <div class="sidebar-section">Recursos</div>
+      <div class="nav-item" onclick="showPanel('notebooklm')">
+        <i class="fa-solid fa-book-open"></i> NotebookLM
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main>
+
+    <!-- EXECUTIVE BRIEFING -->
+    <div id="panel-briefing" class="panel active">
+      <div class="panel-card">
+        <div class="panel-title"><i class="fa-solid fa-file-lines"></i> Executive Briefing</div>
+        <div class="md-content" id="briefing-content"></div>
+      </div>
+    </div>
+
+    <!-- COMPETITIVE INTEL -->
+    <div id="panel-intel" class="panel">
+      <div class="panel-card">
+        <div class="panel-title"><i class="fa-solid fa-magnifying-glass-chart"></i> Competitive Intel</div>
+        <div class="md-content" id="intel-content"></div>
+      </div>
+    </div>
+
+    <!-- DEEP RESEARCH -->
+    <div id="panel-research" class="panel">
+      <div class="panel-card">
+        <div class="panel-title"><i class="fa-solid fa-microscope"></i> Deep Research Report</div>
+        <div class="md-content" id="research-content"></div>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="panel-quiz" class="panel">
+      <div class="panel-card">
+        <div class="panel-title"><i class="fa-solid fa-circle-question"></i> Knowledge Test</div>
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" id="quiz-progress" style="width:0%"></div>
+        </div>
+        <div class="quiz-score-display">
+          <div class="quiz-score-badge">Puntaje: <span id="quiz-score">0</span> / 8</div>
+          <div class="quiz-q-counter">Pregunta <span id="quiz-current">1</span> de 8</div>
+        </div>
+        <div id="quiz-container">
+          <div class="quiz-question" id="quiz-question"></div>
+          <div class="quiz-options" id="quiz-options"></div>
+          <div class="quiz-feedback" id="quiz-feedback"></div>
+          <div class="quiz-nav">
+            <button class="btn-next" id="btn-next" onclick="nextQuestion()">Siguiente <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
+        <div class="quiz-result" id="quiz-result">
+          <div class="score-big" id="result-score">0/8</div>
+          <p id="result-msg">¡Bien hecho!</p>
+          <button class="btn-restart" onclick="restartQuiz()"><i class="fa-solid fa-rotate-left"></i> Repetir quiz</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLASHCARDS -->
+    <div id="panel-flashcards" class="panel">
+      <div class="panel-card">
+        <div class="panel-title"><i class="fa-solid fa-layer-group"></i> Flashcards</div>
+        <div class="fc-flip-hint"><i class="fa-solid fa-hand-pointer"></i> Hacé clic en la tarjeta para ver la respuesta</div>
+        <div class="flashcard-scene" onclick="flipCard()">
+          <div class="flashcard-card" id="fc-card">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label">Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Clic para ver respuesta →</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label">Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" id="fc-prev" onclick="prevCard()"><i class="fa-solid fa-chevron-left"></i></button>
+          <span class="fc-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></span>
+          <button class="fc-btn" id="fc-next" onclick="nextCard()"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="flashcard-dots" id="fc-dots"></div>
+      </div>
+    </div>
+
+    <!-- NOTEBOOKLM -->
+    <div id="panel-notebooklm" class="panel">
+      <div class="panel-card">
+        <div class="panel-title"><i class="fa-solid fa-book-open"></i> NotebookLM</div>
+        <div class="nlm-embed">
+          <div class="nlm-icon">📓</div>
+          <div class="nlm-title">Notebook: Meeting Prep — Facundo Gregorini</div>
+          <div class="nlm-desc">
+            Este notebook contiene 14 fuentes procesadas sobre Facundo Gregorini, Fever y el mercado de entretenimiento en vivo.
+            Podés hacerle preguntas, generar audios de resumen, y explorar el research en profundidad.
+          </div>
+          <a href="https://notebooklm.google.com/notebook/4490032c-31b1-4c21-b581-e6a4b5aa34fb" target="_blank" class="nlm-open-btn">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir NotebookLM
+          </a>
+          <div class="sources-grid">
+            <div class="source-chip"><i class="fa-solid fa-globe"></i> Wikipedia — Fever (app)</div>
+            <div class="source-chip"><i class="fa-solid fa-newspaper"></i> Music Business Worldwide</div>
+            <div class="source-chip"><i class="fa-solid fa-newspaper"></i> The SaaS News — Tucán $1M</div>
+            <div class="source-chip"><i class="fa-solid fa-globe"></i> Fever Newsroom — $100M Round</div>
+            <div class="source-chip"><i class="fa-solid fa-globe"></i> Blooloop — Fever Technology</div>
+            <div class="source-chip"><i class="fa-solid fa-chart-bar"></i> Live Entertainment Market</div>
+            <div class="source-chip"><i class="fa-solid fa-globe"></i> Fever Immersive Ticketing</div>
+            <div class="source-chip"><i class="fa-solid fa-globe"></i> LatAm Social Media 2025</div>
+            <div class="source-chip"><i class="fa-brands fa-wikipedia-w"></i> Fever Wikipedia ES</div>
+            <div class="source-chip"><i class="fa-solid fa-globe"></i> Startups LATAM VC 2025</div>
+            <div class="source-chip"><i class="fa-solid fa-file-lines"></i> Perfil Facundo Gregorini</div>
+            <div class="source-chip"><i class="fa-solid fa-globe"></i> StartupBlink Unicorns</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ============================================================
+// PANEL NAVIGATION
+// ============================================================
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ============================================================
+// MARKDOWN CONTENT
+// ============================================================
+const BRIEFING_MD = `
+### 1) Perfil de la Persona
+
+- **Background:** Basado en el Gran Buenos Aires, Argentina, con alcance global. Experiencia corporativa e internacional en Avantrip, Mercado Libre, Personal, Edenor y Vail Resorts.
+- **Educación:** Ingeniero Industrial con un Máster en E-Commerce y Marketing Digital.
+- **Rol Actual:** **Global Head of Marketing, Strategy en Fever** — responsable de la dirección estratégica en más de 40 países.
+- **Co-fundador de Tucán** — startup SaaS para gastronomía y delivery (2020).
+- **Logros Clave:** Lideró a Tucán hacia una **ronda Seed de USD 1.000.000** (Shefa/IRSA), +2.5M órdenes procesadas, +1.500 negocios. En Fever: crecimiento de ingresos **20x**, alcanzando USD 724M en 2025, con EBITDA positivo y +125M usuarios.
+- **Contexto de la Reunión:** 29/03/2026 a las 07:15 hs con Axel Laban (experto en IA, automatizaciones n8n, crypto y productos digitales). Probable foco: **IA y automatización para Fever en LATAM**, marketing digital con AI, o proyectos de innovación conjunta.
+
+### 2) Perfil de la Empresa (Fever)
+
+- **Qué hace:** Plataforma tecnológica independiente líder a nivel mundial para el **descubrimiento de entretenimiento en vivo**, conectando creadores y organizadores con su audiencia.
+- **Posición:** Presente en **200+ ciudades y 40+ países**. Valuación: ~USD 1.956M. Unicornio consolidado.
+- **Modelo de Negocio:** Ecosistema data-driven completo: **"marketing fees"** (comisiones por demanda generada), **Fever Originals** (co-producción de eventos inmersivos como *Candlelight*), **Secret Media Network** (300M+ interacciones/mes), **Fever Club** (membresía premium), **Fever Cashless** (RFID in-situ).
+- **Clientes:** Primavera Sound, Pitchfork, Real Madrid, FC Barcelona, LIV Golf, Netflix, Warner Bros., Universal Pictures.
+- **Ventajas:** First-party data masivo, modelo asset-light, curaduría editorial, IA para predicción de demanda.
+
+### 3) Oportunidad de Mercado
+
+- **Mercado global:** USD **197.9B** en 2025 → USD **344.5B** para 2035 (CAGR 5.7%)
+- **Post-pandemia:** Crecimiento del **25-30% interanual** sostenido
+- **LATAM:** 70.3% de los usuarios asiste a eventos musicales en vivo al menos varias veces al año
+- **IA en Marketing:** Fever es partner de **OpenAI** para anuncios nativos en ChatGPT (2025-2026)
+- **Tendencias:** Experiencias > Productos, formatos inmersivos premium, cashless en eventos, personalización hipersegmentada
+
+### 4) Puntos Clave de Conversación
+
+**1. Integración de IA en la Adquisición Global de Fever**
+> *"Considerando tu rol en 40+ países, ¿cómo están automatizando la optimización del presupuesto publicitario con IA?"*
+
+**2. Automatizaciones con n8n — Quick Wins**
+> *"Secret Media Network opera con volúmenes masivos de leads. ¿Dónde ves el mayor cuello de botella que podríamos resolver rápido con flujos n8n?"*
+
+**3. Personalización y Fever Club / Cashless Data**
+> *"El modelo cashless genera first-party data en tiempo real. ¿Qué uso predictivo le están dando hoy para retargeting y retención?"*
+
+**4. Aprendizajes Tucán → Fever (B2B SaaS)**
+> *"¿Cómo ves el rol de proveer herramientas 'marca blanca' o analytics como servicio a organizadores independientes en Fever?"*
+
+**5. Expansión en Nuevas Verticales (Deportes/Música Masiva)**
+> *"Ante la incursión en estadios y festivales masivos, ¿qué áreas de la operación sienten que necesitan mayor innovación tecnológica?"*
+
+### 5) Manejo de Objeciones
+
+| Objeción | Respuesta Recomendada |
+|:---|:---|
+| "Tenemos equipo interno robusto y herramientas propietarias" | Proponer **automatizaciones 'last-mile' (n8n + agentes IA)** que liberan a los estrategas de tareas repetitivas sin reemplazar el stack existente. |
+| "Los ciclos de integración en 4.300 personas son lentos" | Proponer **PoC acotado** (un canal, Argentina): resultados en semanas; si funciona, n8n permite escalar de forma nativa a otros mercados. |
+| "La prioridad está en adquisiciones (DICE) no en consultoría" | En fusiones corporativas, **consolidar datos de audiencias distintas** es el mayor dolor técnico. Las automatizaciones aceleran esa integración para maximizar cross-sells sin incrementar headcount. |
+
+### 6) Próximos Pasos Recomendados
+
+1. **Proof of Concept técnico:** Esquema inicial de cómo IA/n8n automatizaría atribución de campañas para una vertical específica de *Fever Originals*.
+2. **Deep-Dive técnico:** Reunión post-encuentro con referente de Performance Marketing / Data Ops del equipo de Facundo para mapear procesos manuales actuales.
+3. **Caso de Estudio:** Enviar material ejecutivo vinculando comportamiento hiper-segmentado LATAM con tácticas de fidelización cripto/web3 o IA — demostrando valor diferencial del conocimiento híbrido.
+`;
+
+const INTEL_MD = `
+# Cheat Sheet de Inteligencia Competitiva: Fever
+
+## 💡 TOP 3 COSAS A SABER
+
+### 1. Ecosistema end-to-end basado en datos y generación de demanda
+
+- Fever no cobra un fee por transacción de tickets — cobra un **"marketing fee"** justificado en su capacidad de generar demanda incremental
+- Son dueños de su propio canal de distribución: **Secret Media Network** (hiperlocal, 300M+ interacciones/mes, 100M+ views de video/semana)
+- **Fever Cashless** (pulseras RFID) mapea el comportamiento de consumo en tiempo real dentro del evento y refina la publicidad futura
+- El take rate de Fever es estimado **3x a 5x** superior al de una ticketera tradicional
+
+> **Tu ángulo:** Posicionarse como *growth partner*, no como software de ticketing. Alinear propuesta con generación de demanda comprobable justifica márgenes mucho más altos.
+
+---
+
+### 2. Producción de IPs escalables con modelo "Asset-Light"
+
+- *Candlelight* opera en **150+ ciudades y 2.000 ubicaciones** porque es cultura-agnóstico (instrumental), sin venues propios (alquilan iglesias y museos)
+- Antes de lanzar nuevos formatos, **miden demanda via waitlists** — cero riesgo financiero, CAC mínimo
+- Fever Originals tiene márgenes muy superiores al ticketing puro: controlan toda la cadena de valor
+
+> **Tu ángulo:** Adoptar mentalidad "Lean + Asset-Light" para experiencias en vivo. Probar viabilidad comercial con *leads* e intención de compra antes de invertir en producción física.
+
+---
+
+### 3. Expansión agresiva en deportes, festivales masivos y superfans
+
+- 2025: adquirió **DICE** (ticketera para música y vida nocturna) para dominar ese segmento
+- Alianzas con **Real Madrid, FC Barcelona, LIV Golf, X Games** para fan engagement y ticketing premium
+- Lanzó **Secret Club** — suscripción mensual para monetizar usuarios recurrentes con beneficios exclusivos en la ciudad
+- Partner de **OpenAI** para anuncios y recomendaciones nativas en ChatGPT (programa piloto 2025-2026)
+
+> **Tu ángulo:** El ecosistema de estadios y giras sufre para conectar con sus fans reales. Ofrecer infraestructura de fidelización (suscripciones/recompensas) para transformar compradores de una vez en comunidades con alto LTV.
+
+---
+
+## 📈 NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
+
+1. **USD $724M** — Ingresos de Fever en 2025 (crecimiento **20x** vs pre-pandemia)
+2. **~$1.956B** — Valuación post-money de Fever (ene 2023)
+3. **$527M+** — Funding total levantado por Fever, incluyendo **$100M** Serie F-II (jun 2025)
+4. **125M usuarios** — Comunidad global Fever / **200M** usuarios activos mensuales
+5. **$197.9B → $344.5B** — Tamaño del mercado global de live entertainment (2025 → 2035, CAGR 5.7%)
+6. **+20%** en volumen de transacciones & **+24%** en gasto promedio — impacto de Fever Cashless (RFID) en eventos
+7. **30%** — Aumento de valor para organizadores asociados a Fever; +15% alcance de audiencia, +10% conversión
+8. **USD 1M** — Ronda Seed de Tucán liderada por Shefa/IRSA (ago 2024)
+9. **2.5M órdenes** procesadas por Tucán en Argentina, Chile, Uruguay y Perú
+10. **70.3%** — Porcentaje de usuarios LATAM que asiste a eventos musicales en vivo al menos varias veces al año
+
+---
+
+## 🤝 QUIÉN MÁS ESTÁ EN SU ÓRBITA
+
+**Entidades Deportivas:**
+FC Barcelona, Real Madrid, LIV Golf, X Games, New York Mets, Bristol City, ASM Clermont Auvergne
+
+**Música, Festivales y Vida Nocturna:**
+DICE (adquirida 2025), TCE Presents, Broadwick Group, Cercle Music, Primavera Sound, Pitchfork, Last Tour
+
+**IPs de Entretenimiento:**
+Netflix (*Stranger Things*), Warner Bros. (*Harry Potter*), Universal (*Jurassic World*), Paramount+ (*Dexter*)
+
+**Partners Inmersivos:**
+Moment Factory, Exhibition Hub, Musealia, Culturespaces
+
+**Inversores Clave:**
+L Catterton, Point72, Goldman Sachs AM, Atresmedia, Rakuten Capital, Eurazeo
+
+**Tech Partners:**
+OpenAI (ChatGPT native ads pilot)
+`;
+
+const RESEARCH_MD = `
+# Deep Research Report: Fever & el Mercado de Entretenimiento en Vivo
+
+## Resumen Ejecutivo
+
+El mercado global de entretenimiento en vivo atraviesa una transformación estructural acelerada. Valuado en **USD 197.9 mil millones en 2025**, el sector se proyecta alcanzar los **USD 344.5 mil millones para 2035** con una CAGR del 5.7%. Este crecimiento es impulsado por el cambio profundo en las preferencias del consumidor moderno: la llamada *"economía de la experiencia"*, donde los individuos priorizan la vivencia de momentos memorables por sobre la adquisición de bienes materiales. Para compañías como Fever, este shift representa un viento de cola extraordinario.
+
+Fever se posiciona como la empresa más sofisticada tecnológicamente en este ecosistema. Con **USD 724M en ingresos en 2025** (crecimiento 20x desde la pandemia), EBITDA positivo, **+125M usuarios globales**, y una valuación de ~USD 1.96B, la compañía ha demostrado que puede crecer rentablemente a escala. La reciente adquisición de DICE (la ticketera favorita de la escena musical independiente) y la alianza con OpenAI para publicidad nativa en ChatGPT confirman la visión expansiva de su liderazgo.
+
+En el mercado latinoamericano, Fever opera activamente en Buenos Aires, Río de Janeiro y otras ciudades clave, aprovechando la altísima afinidad cultural de la región por el entretenimiento en vivo (70.3% de usuarios asiste a eventos musicales varias veces al año). Para Facundo Gregorini, liderar esta estrategia desde Argentina implica navegar mercados con particularidades únicas en comportamiento digital: Instagram domina en Argentina, Brasil y Chile; Facebook en Colombia, México y Perú; TikTok es esencial para captar Gen Z en toda la región.
+
+## Fuentes Clave Analizadas
+
+| Fuente | Insight Clave | Por Qué Importa |
+|:---|:---|:---|
+| Fever Newsroom ($100M Series F-II) | Fever captó $100M en jun 2025 de L Catterton + Point72 para expandir en música y deportes | Confirma respaldo financiero para aceleración post-DICE |
+| Music Business Worldwide | Revenue 20x vs pre-pandemia, EBITDA positivo por primera vez | Valida la rentabilidad del modelo — no es crecimiento a pérdida |
+| Wikipedia — Fever App | Historia completa, modelo de negocio, Fever Originals, Secret Media Network | Marco de referencia integral del ecosistema Fever |
+| Market.us — Live Entertainment | Mercado $197.9B (2025) → $344.5B (2035), CAGR 5.7% | Números macro para anclar la conversación comercial |
+| Blooloop — Fever Technology | Data science detrás de Fever Originals y predicción de demanda | Entender la ventaja técnica core de la empresa |
+| Fever Cashless (Business Site) | +20% transacciones, +24% gasto promedio, +16% revenue por asistente | Cuantifica el ROI tangible de la tecnología in-event |
+| LatAm Intersect PR — Social Media 2025 | Instagram lidera en ARG/BRA/CHL; Facebook en COL/MX/PER; TikTok para Gen Z | Estrategia de distribución en LATAM para Secret Media Network |
+| StartupBlink — Unicorns 2026 | Fever listado como unicornio activo con tracción en expansión global | Posicionamiento competitivo frente a VCs y ecosistema startup |
+
+## Análisis de Tendencias Clave
+
+### 1. Entretenimiento en Vivo Post-Pandemia
+
+El sector ha experimentado un rebote masivo con crecimiento del 25-30% interanual. Los conciertos representan el **31.5% del mercado** por tipo. Norteamérica lidera con el **41.8% de cuota global**. La demanda de paquetes VIP y experiencias inmersivas premium crece exponencialmente, creando oportunidades de upsell. El consumidor post-pandemia tiene una relación emocional más fuerte con los eventos en vivo — los considera esenciales para su bienestar.
+
+### 2. Modelo Data-First e IA de Fever
+
+La ventaja competitiva core de Fever es su capacidad de **generar demanda antes de que exista oferta** usando datos propios. Para lanzar *Fever Originals*, el equipo analiza qué experiencias tendrían demanda en cada ciudad usando el comportamiento histórico de sus 125M usuarios. Si hay señal positiva, montan el evento con riesgo mínimo. La integración con OpenAI para publicidad nativa en ChatGPT representa la vanguardia de este modelo: alcanzar usuarios en el momento exacto de intención de compra con recomendaciones personalizadas.
+
+### 3. Expansión en LATAM (Oportunidad y Desafíos)
+
+**Oportunidades:** Alta afinidad cultural, ciudades con vida nocturna vibrante (Buenos Aires, Ciudad de México, São Paulo, Lima), clase media creciente con disposición al gasto en experiencias, bajo nivel de sofisticación de la competencia local.
+
+**Desafíos:** Volatilidad macroeconómica (especialmente Argentina), múltiples plataformas de pago locales, fragmentación lingüística y cultural, fuertes competidores locales de ticketing en cada país.
+
+**Palanca clave:** Secret Media Network debe adaptarse mercado a mercado — no hay una estrategia única para la región.
+
+### 4. IA y Automatización como Diferencial Estratégico
+
+El ecosistema de marketing de entretenimiento en vivo está en un punto de inflexión. Las empresas que integren IA para: (a) segmentación predictiva de audiencias, (b) optimización automática de presupuesto publicitario, (c) personalización de comunicaciones a escala, y (d) atribución multicanal en tiempo real — tendrán una ventaja insostenible sobre las que no lo hagan. Fever ya está en este camino con su alianza con OpenAI. La pregunta es si están capturando el 100% del potencial o si hay brechas que automatizaciones ágiles (como n8n) podrían cerrar más rápido.
+
+### 5. SaaS para Gastronomía — Background de Tucán
+
+El mercado global de SaaS para gastronomía supera los USD 9B. En Argentina, PedidosYa y Rappi cobran comisiones del 25-35%. Tucán resolvió el problema de independencia tecnológica a ~5-8% de comisión. Este background le da a Facundo una visión única sobre **operaciones B2B, unit economics de SaaS, y escala a través de canales digitales** — exactamente las competencias que le permiten liderar marketing estratégico en Fever a escala global desde Buenos Aires.
+`;
+
+// ============================================================
+// RENDER MARKDOWN
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof marked !== 'undefined') {
+    document.getElementById('briefing-content').innerHTML = marked.parse(BRIEFING_MD);
+    document.getElementById('intel-content').innerHTML = marked.parse(INTEL_MD);
+    document.getElementById('research-content').innerHTML = marked.parse(RESEARCH_MD);
+  }
+  initQuiz();
+  initFlashcards();
+});
+
+// ============================================================
+// QUIZ DATA
+// ============================================================
+const quizData = [
+  {
+    question: "¿Cuál es el rol actual de Facundo Gregorini en Fever?",
+    options: ["CEO Global", "Global Head of Marketing, Strategy", "Vicepresidente de Comunicaciones Globales", "Co-Fundador de la plataforma"],
+    answer: 1
+  },
+  {
+    question: "Tucán, la startup cofundada por Facundo en 2020, ¿qué servicio principal ofrece?",
+    options: ["Sistema de pagos cashless para grandes estadios", "Plataforma SaaS de e-commerce, logística y marketing para negocios gastronómicos", "Descubrimiento de eventos culturales en 200+ ciudades", "Red de canales digitales de noticias hiperlocales"],
+    answer: 1
+  },
+  {
+    question: "¿Cuáles son las fuentes de ingresos de Fever?",
+    options: ["Exclusivamente comisiones por tickets de deportes", "Exclusivamente suscripciones al Secret Club", "Comisiones por venta de tickets, Fever Originals, publicidad in-app, análisis de datos y Fever Club", "Ingresos de franquicias de restaurantes"],
+    answer: 2
+  },
+  {
+    question: "¿Cuál fue el valor aproximado del mercado global de live entertainment en 2025?",
+    options: ["USD 344.5 mil millones liderado por Asia Pacífico", "USD 197.9 mil millones dominado por Norteamérica con 41.8%", "USD 724 millones dominado por Europa", "USD 200 mil millones liderado por Latinoamérica"],
+    answer: 1
+  },
+  {
+    question: "¿Qué impacto tiene Fever Cashless (RFID) en el gasto promedio por transacción?",
+    options: ["Lo reduce en un 10%", "Lo mantiene igual", "Lo aumenta en un 24%", "Lo duplica (100%)"],
+    answer: 2
+  },
+  {
+    question: "¿Qué es Secret Media Network de Fever?",
+    options: ["Una app de realidad virtual para conciertos remotos", "Una red de 200+ canales digitales hiperlocales con 300M+ interacciones mensuales", "Un monopolio de espacios físicos propios", "El CRM interno de Fever para organizar eventos"],
+    answer: 1
+  },
+  {
+    question: "¿Cuáles son las características principales de Fever Originals (como Candlelight)?",
+    options: ["Dependencia de superestrellas en grandes estadios propios", "Experiencias modulares, sin barreras lingüísticas, modelo asset-light alquilando espacios", "Franquicias deportivas financiadas con subsidios públicos", "Producciones teatrales de larga duración en Broadway"],
+    answer: 1
+  },
+  {
+    question: "¿Qué firmas lideraron la ronda Serie F-II de USD 100M de Fever en junio de 2025?",
+    options: ["Goldman Sachs y Atresmedia", "Shefa y el Grupo IRSA", "L Catterton y Point72 Private Investments", "Rakuten Capital y Eurazeo"],
+    answer: 2
+  }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+function initQuiz() {
+  currentQuestion = 0; score = 0; answered = false;
+  document.getElementById('quiz-score').textContent = '0';
+  document.getElementById('quiz-current').textContent = '1';
+  document.getElementById('quiz-progress').style.width = '0%';
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-container').style.display = 'block';
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const q = quizData[currentQuestion];
+  document.getElementById('quiz-question').textContent = q.question;
+  document.getElementById('quiz-current').textContent = currentQuestion + 1;
+  document.getElementById('quiz-progress').style.width = ((currentQuestion / 8) * 100) + '%';
+  const fb = document.getElementById('quiz-feedback');
+  fb.style.display = 'none'; fb.className = 'quiz-feedback';
+  document.getElementById('btn-next').style.display = 'none';
+  answered = false;
+
+  const opts = document.getElementById('quiz-options');
+  opts.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-option';
+    div.innerHTML = `<div class="option-letter">${letters[i]}</div><span>${opt}</span>`;
+    div.onclick = () => selectAnswer(i, div);
+    opts.appendChild(div);
+  });
+}
+
+function selectAnswer(idx, el) {
+  if (answered) return;
+  answered = true;
+  const q = quizData[currentQuestion];
+  const opts = document.querySelectorAll('.quiz-option');
+  opts.forEach(o => o.classList.add('disabled'));
+
+  const fb = document.getElementById('quiz-feedback');
+  if (idx === q.answer) {
+    el.classList.add('correct');
+    score++;
+    document.getElementById('quiz-score').textContent = score;
+    fb.className = 'quiz-feedback correct';
+    fb.innerHTML = '<i class="fa-solid fa-check-circle"></i> ¡Correcto!';
+  } else {
+    el.classList.add('wrong');
+    opts[q.answer].classList.add('correct');
+    fb.className = 'quiz-feedback wrong';
+    fb.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Incorrecto. La respuesta correcta es la opción ' + ['A','B','C','D'][q.answer] + '.';
+  }
+  fb.style.display = 'block';
+  document.getElementById('btn-next').style.display = 'block';
+}
+
+function nextQuestion() {
+  currentQuestion++;
+  if (currentQuestion >= quizData.length) {
+    document.getElementById('quiz-container').style.display = 'none';
+    const res = document.getElementById('quiz-result');
+    res.style.display = 'block';
+    document.getElementById('result-score').textContent = score + '/8';
+    const msgs = ['Seguí practicando 💪', 'Buen intento, podés mejorar!', 'Muy bien! 🎯', 'Excelente preparación! 🏆'];
+    document.getElementById('result-msg').textContent = score <= 2 ? msgs[0] : score <= 4 ? msgs[1] : score <= 6 ? msgs[2] : msgs[3];
+    document.getElementById('quiz-progress').style.width = '100%';
+  } else {
+    loadQuestion();
+  }
+}
+
+function restartQuiz() { initQuiz(); }
+
+// ============================================================
+// FLASHCARDS DATA
+// ============================================================
+const flashcardsData = [
+  { q: "¿Cuál es el rol actual de Facundo Gregorini y desde dónde opera?", a: "Global Head of Marketing, Strategy en Fever. Responsable de la dirección estratégica de marketing en más de 40 países, operando desde el Gran Buenos Aires, Argentina." },
+  { q: "¿Qué exitosa startup cofundó Facundo en 2020 y qué problema resuelve?", a: "Cofundó Tucán: plataforma SaaS de e-commerce, logística y marketing para cadenas gastronómicas, permitiéndoles independizarse de apps como PedidosYa/Rappi (25-35% comisión) a ~5-8%." },
+  { q: "¿Cuáles son las métricas más destacadas de Tucán y su último hito de inversión?", a: "Tucán procesó +2.5M órdenes para +1.500 negocios en LATAM. En agosto 2024 cerró ronda Seed de USD 1M liderada por Shefa (brazo de VC de IRSA Group)." },
+  { q: "¿Qué es Fever y cuáles son sus principales ventajas competitivas?", a: "Plataforma tecnológica global líder en descubrimiento de entretenimiento en vivo. Ventajas: personalización basada en IA, first-party data masivo, Secret Media Network, curaduría editorial de eventos." },
+  { q: "¿Cuáles fueron los ingresos de Fever en 2025 y qué representan?", a: "USD 724 millones en 2025 — crecimiento de 20x vs niveles pre-pandemia. Primer año con EBITDA positivo." },
+  { q: "¿Qué inyección de capital recibió Fever en junio 2025 y hacia dónde va?", a: "Más de USD 100M de L Catterton y Point72. Funding histórico total: $527M. Destinado a impulsar crecimiento en música y deportes, post-adquisición de DICE." },
+  { q: "¿Qué son los 'Fever Originals' y por qué son estratégicos?", a: "Experiencias inmersivas creadas o coproducidas por Fever (ej: Candlelight). Mayor margen de ganancia, alta escalabilidad global, asset-light. Candlelight opera en 150+ ciudades y 2.000 ubicaciones." },
+  { q: "¿Qué movimiento realizó Fever en 2025 para consolidar su vertical de música?", a: "Adquirió DICE — la ticketera independiente favorita de la escena musical y vida nocturna. Objetivo: construir una superpotencia tecnológica en live entertainment." },
+  { q: "¿Cómo impacta Fever Cashless en los ingresos de los organizadores?", a: "+20% volumen de transacciones, +24% gasto promedio por transacción, +16% en ingresos totales por asistente al evento." },
+  { q: "¿Cuál es la formación y experiencia previa corporativa de Facundo Gregorini?", a: "Ingeniero Industrial + Máster en E-Commerce y Marketing Digital. Experiencia en: Avantrip (Manager Acquisition & Retention), Mercado Libre, Personal (telecom), Edenor, Vail Resorts." }
+];
+
+let fcIndex = 0;
+let fcFlipped = false;
+
+function initFlashcards() {
+  document.getElementById('fc-total').textContent = flashcardsData.length;
+  renderDots();
+  loadCard();
+}
+
+function renderDots() {
+  const dots = document.getElementById('fc-dots');
+  dots.innerHTML = '';
+  flashcardsData.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'fc-dot' + (i === fcIndex ? ' active' : '');
+    dots.appendChild(d);
+  });
+}
+
+function loadCard() {
+  const card = document.getElementById('fc-card');
+  card.classList.remove('flipped');
+  fcFlipped = false;
+  setTimeout(() => {
+    document.getElementById('fc-question').textContent = flashcardsData[fcIndex].q;
+    document.getElementById('fc-answer').textContent = flashcardsData[fcIndex].a;
+    document.getElementById('fc-current').textContent = fcIndex + 1;
+    document.getElementById('fc-prev').disabled = fcIndex === 0;
+    document.getElementById('fc-next').disabled = fcIndex === flashcardsData.length - 1;
+    renderDots();
+  }, 150);
+}
+
+function flipCard() {
+  const card = document.getElementById('fc-card');
+  if (fcFlipped) { card.classList.remove('flipped'); } else { card.classList.add('flipped'); }
+  fcFlipped = !fcFlipped;
+}
+
+function prevCard() { if (fcIndex > 0) { fcIndex--; loadCard(); } }
+function nextCard() { if (fcIndex < flashcardsData.length - 1) { fcIndex++; loadCard(); } }
+</script>
+
+</body>
+</html>
