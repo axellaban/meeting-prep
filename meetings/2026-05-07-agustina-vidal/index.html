@@ -87,6 +87,7 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="nav-tab active" onclick="show('briefing',this)"><i class="fa-solid fa-clipboard-list"></i> Executive Briefing</div>
+      <div class="nav-tab" onclick="show('postbrief',this)"><i class="fa-solid fa-file-circle-check"></i> Brief Post-Reunión</div>
       <div class="nav-tab" onclick="show('intel',this)"><i class="fa-solid fa-bullseye"></i> Discovery Plan</div>
       <div class="nav-tab" onclick="show('research',this)"><i class="fa-solid fa-magnifying-glass-chart"></i> Hipótesis de perfil</div>
       <div class="nav-tab" onclick="show('quiz',this)"><i class="fa-solid fa-circle-question"></i> Knowledge Test</div>
@@ -95,6 +96,7 @@
     </aside>
     <main class="content">
 <div class="panel active" id="briefing"><div id="briefing-md"></div></div>
+<div class="panel" id="postbrief"><div id="postbrief-md"></div></div>
 <div class="panel" id="intel"><div id="intel-md"></div></div>
 <div class="panel" id="research"><div id="research-md"></div></div>
 <div class="panel" id="quiz">
@@ -131,6 +133,41 @@
   </div>
 </div>
 <script>
+const postBriefMD = `
+# Brief Post-Reunión — Agustina Vidal
+*Reunión del 7 de mayo 2026, 10:32 ART · transcript automático tldv*
+
+## ¿Qué pasó?
+
+Agustina trabaja en inversiones / reportes / planillas junto a Edna. Procesa manualmente reportes de movimientos y exposición de cuenta de cada cliente (JP Morgan, etc). El call abrió la conversación de **automatización** del proceso.
+
+## Puntos clave
+
+- Hoy todo es manual: descarga movimientos por cuenta, filtra y vuelca a una plantilla Excel propia.
+- El proceso es ~95% automatizable porque el input siempre tiene el mismo formato por banco.
+- Recomendación clara: usar **Claude (Opus 4.7)** — el modelo que menos alucina hoy y el mejor para Excel.
+- **Descartar N8N** para este caso: 50 reglas manuales por archivo no se justifican en N8N.
+- Existe un complemento de Excel para Claude que actúa como una macro pero más prolija y mantenible.
+- Estrategia de prueba: "modo desafío" → solo input + output sin instrucciones, ver si lo resuelve. En paralelo, otra prueba con instructivo paso a paso documentado.
+- Caso de éxito mencionado: amigo automatizó reporte diario del VIMA con Cowork y se ahorra horas.
+
+## Decisiones tomadas
+
+- Avanzar con Claude + Opus 4.7. N8N descartado para este proyecto.
+- Empezar con UNA sola hoja simple (no la más compleja) antes de escalar.
+
+## Próximos pasos
+
+1. Tomar una hoja simple del flujo actual y armar el caso input → output.
+2. Hacer dos pruebas en paralelo: (a) con instructivo detallado, (b) modo desafío sin instrucciones.
+3. Medir % de exactitud. Iterar prompt hasta superar 95%.
+4. Si funciona, replicar en las hojas/clientes restantes.
+
+## Quote relevante
+
+> "Si el input siempre es el mismo y las reglas son claras, igual que tiene que estar el output, se puede reautomatizar. Este tipo de cosas se puede reautomatizar."
+`;
+
 const briefingMD = `
 # Briefing Ejecutivo — Agustina Vidal
 
@@ -292,6 +329,7 @@ function renderCard(){document.getElementById('card-front').textContent=flashDat
 function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
 function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
 document.getElementById('briefing-md').innerHTML=marked.parse(briefingMD);
+document.getElementById('postbrief-md').innerHTML=marked.parse(postBriefMD);
 document.getElementById('intel-md').innerHTML=marked.parse(intelMD);
 document.getElementById('research-md').innerHTML=marked.parse(researchMD);
 buildQuiz();renderCard();

@@ -87,6 +87,7 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="nav-tab active" onclick="show('briefing',this)"><i class="fa-solid fa-clipboard-list"></i> Executive Briefing</div>
+      <div class="nav-tab" onclick="show('postbrief',this)"><i class="fa-solid fa-file-circle-check"></i> Brief Post-Reunión</div>
       <div class="nav-tab" onclick="show('intel',this)"><i class="fa-solid fa-bullseye"></i> Competitive Intel</div>
       <div class="nav-tab" onclick="show('research',this)"><i class="fa-solid fa-magnifying-glass-chart"></i> Deep Research</div>
       <div class="nav-tab" onclick="show('quiz',this)"><i class="fa-solid fa-circle-question"></i> Knowledge Test</div>
@@ -95,6 +96,7 @@
     </aside>
     <main class="content">
 <div class="panel active" id="briefing"><div id="briefing-md"></div></div>
+<div class="panel" id="postbrief"><div id="postbrief-md"></div></div>
 <div class="panel" id="intel"><div id="intel-md"></div></div>
 <div class="panel" id="research"><div id="research-md"></div></div>
 <div class="panel" id="quiz">
@@ -131,6 +133,43 @@
   </div>
 </div>
 <script>
+const postBriefMD = `
+# Brief Post-Reunión — Leandro Saraví
+*Reunión del 7 de mayo 2026, 11:02 ART · transcript automático tldv*
+
+## ¿Qué pasó?
+
+Continuación del proyecto de **automatización de planillas de inversiones** (entorno mixto Microsoft Excel + Google Drive). Procesos mensuales: clasificar posiciones de cuenta en base a un listado maestro. Sumamos a Leandro al flujo arrancado con Agustina/Edna.
+
+## Puntos clave
+
+- Confirmado: usar **Opus 4.7** para modelar y documentar el proceso (el que menos alucina). Una vez estable, correrlo con un modelo más barato (**Haiku**) en producción — la lógica ya está capturada.
+- Conectar Google Drive a Claude: **Settings → Conectores → Google Drive** (2 clicks, no requiere integración custom).
+- Cargar como contexto una **carpeta entera** de Drive, no archivos sueltos. Todo lo que se agregue queda disponible automáticamente.
+- Workflow ideal: input → Claude procesa → output mismo formato → humano valida hasta 95-97% confianza → se programa para correr automáticamente.
+- **Skills de Claude** funcionan como "especialistas": cargarles contexto del negocio + reglas (ej: "no alucinar", "si algo queda como cabo suelto, preguntar").
+- Truco para reducir tokens: pedirle que **"hable como cavernícola"** en el razonamiento. Suena raro pero achica el output interno y baja consumo.
+- Límites del plan a tener presentes: ventana de uso cada ~5 horas + límite semanal. Opus consume ~30% más tokens que Sonnet.
+- **Cowork** es la herramienta correcta acá (no chat web) porque el proyecto necesita manejar archivos locales + Drive.
+
+## Decisiones tomadas
+
+- Usar Cowork con un Project dedicado, con la carpeta de Drive conectada como contexto base.
+- Probar ANTES de programar la corrida automática — iterar hasta 100%.
+
+## Próximos pasos
+
+1. Crear el Project en Cowork y conectar Google Drive a la carpeta correspondiente.
+2. Probar dos flujos: (a) automatizar Excel con instructivo paso a paso, (b) integrar Drive completo para leer y clasificar todas las posiciones.
+3. Iterar el prompt hasta 100% de exactitud antes de programar la corrida automática.
+4. Una vez estable, programar la tarea **SIN razonamiento extendido** para ahorrar tokens.
+5. Validar el comando \`/tokens\` en el chat para auditar consumo de cada sesión.
+
+## Quote relevante
+
+> "Hacelo una vez con Opus para que pueda registrar todo el paso a paso, todo lo que tiene que hacer. Y después la próxima vez que lo corras lo configurás con el modelo más bajo, porque ya tiene toda la lógica."
+`;
+
 const briefingMD = `
 # Briefing Ejecutivo — Leandro Saraví
 
@@ -324,6 +363,7 @@ function renderCard(){document.getElementById('card-front').textContent=flashDat
 function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
 function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
 document.getElementById('briefing-md').innerHTML=marked.parse(briefingMD);
+document.getElementById('postbrief-md').innerHTML=marked.parse(postBriefMD);
 document.getElementById('intel-md').innerHTML=marked.parse(intelMD);
 document.getElementById('research-md').innerHTML=marked.parse(researchMD);
 buildQuiz();renderCard();

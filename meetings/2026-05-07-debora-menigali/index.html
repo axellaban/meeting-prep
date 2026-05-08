@@ -87,6 +87,7 @@
   <div class="layout">
     <aside class="sidebar">
       <div class="nav-tab active" onclick="show('briefing',this)"><i class="fa-solid fa-clipboard-list"></i> Executive Briefing</div>
+      <div class="nav-tab" onclick="show('postbrief',this)"><i class="fa-solid fa-file-circle-check"></i> Brief Post-Reunión</div>
       <div class="nav-tab" onclick="show('intel',this)"><i class="fa-solid fa-bullseye"></i> Competitive Intel</div>
       <div class="nav-tab" onclick="show('research',this)"><i class="fa-solid fa-magnifying-glass-chart"></i> Deep Research</div>
       <div class="nav-tab" onclick="show('quiz',this)"><i class="fa-solid fa-circle-question"></i> Knowledge Test</div>
@@ -95,6 +96,7 @@
     </aside>
     <main class="content">
 <div class="panel active" id="briefing"><div id="briefing-md"></div></div>
+<div class="panel" id="postbrief"><div id="postbrief-md"></div></div>
 <div class="panel" id="intel"><div id="intel-md"></div></div>
 <div class="panel" id="research"><div id="research-md"></div></div>
 <div class="panel" id="quiz">
@@ -138,6 +140,42 @@
   </div>
 </div>
 <script>
+const postBriefMD = `
+# Brief Post-Reunión — Debora Menigali
+*Reunión del 7 de mayo 2026, 11:37 ART · transcript automático tldv*
+
+## ¿Qué pasó?
+
+Debora está armando un programa de capacitación interno y quiere automatizar **transcripts de entrevistas** para extraer procesos y construir manuales por área (RRHH, ventas, órdenes de compra, etc). Llegó al call con dudas sobre qué herramienta usar (probó Claude desktop, miraba SAPI/N8N).
+
+## Puntos clave
+
+- Para disponibilizar manuales / conocimiento ya escrito → usar **NotebookLM**: gratis, fácil, compartible. La herramienta más potente para ese caso hoy.
+- Para procesar transcripts → **Cowork + Claude** levanta los audios de una carpeta y produce automáticamente el brief (puntos clave + next steps).
+- **N8N / Zapier / Make quedaron obsoletos** para este tipo de caso. Eran 2025. Hoy Cowork resuelve sin curva de aprendizaje.
+- Idea avanzada: en cada evento de Calendar, poner un hashtag por área (ej: \`#RRHH\`) y que Claude aplique la lógica/contexto de esa área al procesar el transcript.
+- En la **próxima clase** se va a mostrar este flujo (transcript → brief con next steps) como ejemplo práctico.
+- **Microsoft Teams**: Debora usa Teams en su empresa. Pendiente confirmar si Teams expone transcripts de forma nativa (probablemente sí, simplifica todo). Si no, la solución open source actual cubre.
+- Estructura del project: carpeta con audios + contexto de empresa + contexto personal + reglas (anti-alucinación).
+
+## Decisiones tomadas
+
+- Avanzar con **Cowork + Claude**. Descartar N8N, Zapier, Make.
+- Pensar el flujo end-to-end **antes** de implementar (no construir reactivamente).
+
+## Próximos pasos
+
+1. Verificar si Microsoft Teams expone los transcripts de forma nativa.
+2. Armar el project en Cowork con la estructura definida (audios + contextos + reglas).
+3. Definir el formato de output (Google Doc, .doc local, mail, web) según cada destinatario.
+4. Crear el prompt que cada mañana levante los audios nuevos y produzca el brief.
+5. Iniciar con UN proceso (probablemente RRHH) antes de escalar a todas las áreas.
+
+## Quote relevante
+
+> "Me salvaste porque ya estaba mareada, así que me orientaste a poder caminar hacia pasos específicos."
+`;
+
 const briefingMD = `
 # Briefing Ejecutivo — Débora Menigali · Drogueria del Sud
 
@@ -358,6 +396,7 @@ function renderCard(){document.getElementById('card-front').textContent=flashDat
 function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
 function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
 document.getElementById('briefing-md').innerHTML=marked.parse(briefingMD);
+document.getElementById('postbrief-md').innerHTML=marked.parse(postBriefMD);
 document.getElementById('intel-md').innerHTML=marked.parse(intelMD);
 document.getElementById('research-md').innerHTML=marked.parse(researchMD);
 buildQuiz();renderCard();
