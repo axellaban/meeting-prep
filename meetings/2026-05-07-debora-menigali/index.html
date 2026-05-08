@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Débora Menigali · Drogueria del Sud</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root{--bg:#08080c;--panel:rgba(255,255,255,.04);--panel-border:rgba(255,255,255,.08);--text:#e6e6ec;--muted:#8a8a99;--accent:#3b82f6;--gold:#f0b429;--green:#22c55e;--red:#ef4444;--purple:#a855f7;--cyan:#06b6d4;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;background-image:radial-gradient(circle at 15% 10%,rgba(6,182,212,.12),transparent 40%),radial-gradient(circle at 85% 80%,rgba(59,130,246,.10),transparent 45%);}
+  .navbar{padding:18px 32px;border-bottom:1px solid var(--panel-border);display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(10px);position:sticky;top:0;z-index:10;background:rgba(8,8,12,.7)}
+  .brand{font-weight:700;font-size:18px;letter-spacing:-.01em}
+  .brand .dot{color:var(--gold)}
+  .date{color:var(--muted);font-size:13px}
+  .container{max-width:1280px;margin:0 auto;padding:32px}
+  .header{display:flex;gap:24px;align-items:flex-start;margin-bottom:32px;padding:28px;background:var(--panel);border:1px solid var(--panel-border);border-radius:16px;backdrop-filter:blur(8px)}
+  .avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:32px;flex-shrink:0}
+  .header-info h1{font-size:30px;letter-spacing:-.02em;margin-bottom:6px}
+  .role{color:var(--muted);font-size:15px;margin-bottom:12px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{padding:5px 12px;border-radius:999px;background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.3);font-size:12px;color:#67e8f9;font-weight:500}
+  .meta{margin-left:auto;text-align:right;color:var(--muted);font-size:13px;line-height:1.7}
+  .meta strong{color:var(--text);font-weight:500}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+  .stat{padding:24px;background:var(--panel);border:1px solid var(--panel-border);border-radius:14px}
+  .stat-label{color:var(--muted);font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+  .stat-value{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .stat-sub{color:var(--gold);font-size:13px;margin-top:4px;font-weight:500}
+  .layout{display:grid;grid-template-columns:240px 1fr;gap:24px}
+  .sidebar{position:sticky;top:88px;height:fit-content;background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:12px}
+  .nav-tab{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:14px;transition:all .15s}
+  .nav-tab i{width:18px;text-align:center}
+  .nav-tab:hover{background:rgba(255,255,255,.04);color:var(--text)}
+  .nav-tab.active{background:rgba(6,182,212,.15);color:#67e8f9;border-left:2px solid var(--cyan);padding-left:12px}
+  .content{background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:36px;min-height:600px}
+  .panel{display:none}.panel.active{display:block}
+  .panel h1,.panel h2,.panel h3{letter-spacing:-.01em;margin:1.6em 0 .6em;font-weight:700}
+  .panel h1{font-size:26px;margin-top:0}.panel h2{font-size:21px;color:#a5f3fc;border-bottom:1px solid var(--panel-border);padding-bottom:8px}.panel h3{font-size:17px;color:var(--gold)}
+  .panel p,.panel li{font-size:15px;line-height:1.7;color:#d1d1da}
+  .panel ul,.panel ol{padding-left:24px;margin:.8em 0}.panel li{margin:.4em 0}
+  .panel strong{color:var(--text);font-weight:600}
+  .panel table{width:100%;border-collapse:collapse;margin:1em 0;font-size:14px}
+  .panel th,.panel td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--panel-border)}
+  .panel th{color:var(--gold);font-weight:600;background:rgba(240,180,41,.05)}
+  .panel blockquote{border-left:3px solid var(--cyan);padding:10px 16px;color:var(--muted);background:rgba(6,182,212,.05);margin:1em 0;border-radius:0 8px 8px 0}
+  .quiz-q{padding:20px;background:rgba(255,255,255,.02);border:1px solid var(--panel-border);border-radius:12px;margin-bottom:14px}
+  .quiz-q-title{font-weight:600;margin-bottom:14px}
+  .quiz-opt{display:block;padding:12px 14px;margin:6px 0;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--panel-border);cursor:pointer;font-size:14px;transition:all .15s}
+  .quiz-opt:hover{background:rgba(6,182,212,.08);border-color:var(--cyan)}
+  .quiz-opt.correct{background:rgba(34,197,94,.15);border-color:var(--green);color:#86efac}
+  .quiz-opt.wrong{background:rgba(239,68,68,.15);border-color:var(--red);color:#fca5a5}
+  .quiz-score{padding:14px;background:rgba(240,180,41,.1);border:1px solid var(--gold);border-radius:10px;text-align:center;font-weight:600;margin-bottom:20px}
+  .flash-stage{perspective:1500px;display:flex;flex-direction:column;align-items:center;gap:24px}
+  .flash-card{width:100%;max-width:560px;height:280px;cursor:pointer;transform-style:preserve-3d;transition:transform .6s}
+  .flash-card.flipped{transform:rotateY(180deg)}
+  .flash-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:14px;padding:30px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px;line-height:1.5}
+  .flash-front{background:linear-gradient(135deg,rgba(6,182,212,.15),rgba(59,130,246,.10));border:1px solid var(--panel-border);font-weight:600}
+  .flash-back{background:linear-gradient(135deg,rgba(240,180,41,.12),rgba(34,197,94,.08));border:1px solid rgba(240,180,41,.3);transform:rotateY(180deg);color:#fde68a}
+  .flash-controls{display:flex;gap:14px;align-items:center}
+  .flash-btn{padding:10px 18px;background:var(--panel);border:1px solid var(--panel-border);color:var(--text);border-radius:8px;cursor:pointer;font-size:14px}
+  .flash-btn:hover{background:rgba(6,182,212,.1)}
+  .flash-counter{color:var(--muted);font-size:14px}
+  .flash-dots{display:flex;gap:6px}.flash-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2)}.flash-dot.active{background:var(--gold)}
+  @media (max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:static}.stats{grid-template-columns:1fr}.meta{margin-left:0;text-align:left}.header{flex-direction:column}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="brand">Cowork<span class="dot">.</span>OS · Meeting Prep</div><div class="date">Jueves, 7 de mayo de 2026</div></nav>
+<div class="container">
+  <div class="header">
+    <div class="avatar">DM</div>
+    <div class="header-info">
+      <h1>Débora Menigali</h1>
+      <div class="role"><i class="fa-solid fa-pills"></i> &nbsp;Drogueria del Sud SA · Distribuidor pharma líder de Argentina</div>
+      <div class="tags"><span class="tag">Pharma B2B</span><span class="tag">E-commerce farmacéutico</span><span class="tag">Logística automatizada</span><span class="tag">Macchiavello group</span></div>
+    </div>
+    <div class="meta"><strong>Hoy 11:30 — 12:00</strong> ART<br>30 min · Cal.com video<br><a href="https://app.cal.com/video/hW85v9pgC6NMEUQoWQNJUy" style="color:#67e8f9;text-decoration:none">Abrir sala</a></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Escala DelSud</div><div class="stat-value">228M+</div><div class="stat-sub">unidades anuales · 8.000 farmacias clientes</div></div>
+    <div class="stat"><div class="stat-label">Centro Avellaneda</div><div class="stat-value">16.000 m²</div><div class="stat-sub">El más automatizado de Latam · 25.000 productos</div></div>
+    <div class="stat"><div class="stat-label">CEO actual</div><div class="stat-value">Lopardo</div><div class="stat-sub">Eduardo Lopardo asumió 03-NOV-2025 (ex Arcos Dorados)</div></div>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="nav-tab active" onclick="show('briefing',this)"><i class="fa-solid fa-clipboard-list"></i> Executive Briefing</div>
+      <div class="nav-tab" onclick="show('intel',this)"><i class="fa-solid fa-bullseye"></i> Competitive Intel</div>
+      <div class="nav-tab" onclick="show('research',this)"><i class="fa-solid fa-magnifying-glass-chart"></i> Deep Research</div>
+      <div class="nav-tab" onclick="show('quiz',this)"><i class="fa-solid fa-circle-question"></i> Knowledge Test</div>
+      <div class="nav-tab" onclick="show('flash',this)"><i class="fa-solid fa-layer-group"></i> Flashcards</div>
+      <div class="nav-tab" onclick="show('sources',this)"><i class="fa-solid fa-link"></i> Fuentes & NotebookLM</div>
+    </aside>
+    <main class="content">
+<div class="panel active" id="briefing"><div id="briefing-md"></div></div>
+<div class="panel" id="intel"><div id="intel-md"></div></div>
+<div class="panel" id="research"><div id="research-md"></div></div>
+<div class="panel" id="quiz">
+<h1>Knowledge Test — 8 preguntas</h1>
+<div class="quiz-score" id="score">Score: 0 / 8</div>
+<div id="quiz-host"></div>
+</div>
+<div class="panel" id="flash">
+<h1>Flashcards — 10 hechos clave</h1>
+<div class="flash-stage">
+<div class="flash-card" id="card" onclick="this.classList.toggle('flipped')">
+<div class="flash-face flash-front" id="card-front"></div>
+<div class="flash-face flash-back" id="card-back"></div>
+</div>
+<div class="flash-controls"><button class="flash-btn" onclick="prevCard()"><i class="fa-solid fa-chevron-left"></i></button><div class="flash-counter" id="counter">1 / 10</div><button class="flash-btn" onclick="nextCard()"><i class="fa-solid fa-chevron-right"></i></button></div>
+<div class="flash-dots" id="dots"></div>
+</div>
+</div>
+<div class="panel" id="sources">
+<h1>Fuentes & Recursos</h1>
+<h3>NotebookLM</h3>
+<ul><li><a href="https://notebooklm.google.com/notebook/33b084d5-9559-4578-be0f-ca6887e9ec2b" target="_blank">Notebook: Meeting Prep - Débora Menigali</a> — perfil cargado, deep research lanzado, 4 fuentes indexadas.</li></ul>
+<h3>Persona</h3>
+<ul>
+<li><a href="https://ar.linkedin.com/in/debora-menigali-069036100" target="_blank">Débora Menigali · LinkedIn</a></li>
+<li><a href="https://theorg.com/org/drogueria-del-sud-s-a/org-chart/debora-menigali" target="_blank">Débora Menigali · TheOrg (org chart Drogueria del Sud)</a></li>
+<li><a href="https://cofarco.com.ar/ar/2019/05/22/capacitacion-sobre-e-commercer-a-nivel-pais/" target="_blank">Capacitación E-Commerce a nivel país (Cofarco, 2019)</a></li>
+</ul>
+<h3>Empresa</h3>
+<ul>
+<li><a href="https://www.delsud.com.ar/" target="_blank">Drogueria del Sud · sitio oficial</a></li>
+<li><a href="https://institucional.delsud.com.ar/portal/negocios-digitales" target="_blank">DelSud · Negocios Digitales</a></li>
+<li><a href="https://infonegocios.info/nota-principal/drogueria-del-sud-encendio-su-nuevo-centro-de-distribucion-16-000-m2-25-000-productos-para-abastecer-2-000-clientes-farmacias-y-mas" target="_blank">Centro de distribución 16.000 m² (InfoNegocios)</a></li>
+<li><a href="https://comercioyjusticia.info/negocios/drogueria-del-sud-inauguro-nuevo-centro-de-distribucion-en-cordoba/" target="_blank">Centro Córdoba 2025 (Comercio y Justicia)</a></li>
+<li><a href="https://www.cronista.com/infotechnology/actualidad/la-drogueria-bonaerense-que-cambio-50-anos-de-tradicion-por-tres-robots-que-hacen-un-trabajo-dificil/" target="_blank">Robotización con BD Rowa (Cronista)</a></li>
+<li><a href="https://mercado.com.ar/protagonistas/drogueria-del-sud-tiene-nuevo-ceo/" target="_blank">Eduardo Lopardo nuevo CEO (Mercado)</a></li>
+<li><a href="https://www.webretail.com.ar/eduardo-lopardo-asume-como-nuevo-ceo-de-drogueria-del-sud/" target="_blank">Lopardo asume CEO (WebRetail)</a></li>
+</ul>
+</div>
+    </main>
+  </div>
+</div>
+<script>
+const briefingMD = `
+# Briefing Ejecutivo — Débora Menigali · Drogueria del Sud
+
+## 1. Perfil de la persona
+
+**Débora Menigali** trabaja en **Drogueria del Sud SA**, distribuidor pharma líder de Argentina. LinkedIn: [debora-menigali-069036100](https://ar.linkedin.com/in/debora-menigali-069036100). Aparece en el org chart de DelSud en TheOrg con perfil ejecutivo. En **mayo 2019 dictó una capacitación sobre "E-Commerce a nivel país"** en el Colegio de Farmacéuticos de Corrientes — fuerte señal de que su rol está vinculado al **canal digital / e-commerce / negocios digitales** dentro de DelSud.
+
+**Hipótesis fuerte de rol:** Gerencia o liderazgo en **Negocios Digitales / E-commerce / Canal Farmacia** dentro de DelSud, encargada de productos como GPSfarma, programa Aliadas, Javit (logística last-mile).
+
+> ✅ Es la reunión con perfil **mejor confirmado** del día. Hablás con alguien que decide o influye en la estrategia digital de uno de los players más grandes de pharma en LatAm.
+
+## 2. Perfil de la empresa — Drogueria del Sud (DelSud)
+
+**Distribuidor integral líder del canal farmacéutico en Argentina.** Pertenece al grupo familiar **Macchiavello**.
+
+**Liderazgo (2026):**
+- **CEO:** Eduardo Lopardo (asumió 03-NOV-2025). Contador + Lic. en Administración + MBA. Vino de Arcos Dorados.
+- **Antecesores:** Hernán Bagliero (2021-04/2025), Fernando Oris de Roa (interino, hoy director del grupo).
+- **Director de Operaciones:** Bernardo Marlats.
+
+**Escala operativa:**
+- **10 centros de distribución** en Argentina.
+- **Centro Avellaneda:** 16.000 m², 25.000 productos, **el más automatizado de Latinoamérica**.
+- **Centro Córdoba (Estación Juárez Celman):** inaugurado 2025, totalmente automatizado, 150 empleados.
+- **400+ laboratorios** proveedores · **8.000+ farmacias** cliente · **228M+ unidades/año**.
+- Abastece a Ministerio de Salud, PAMI, hospitales públicos, obras sociales.
+
+**Stack digital y unidades emergentes:**
+- **GPSfarma.com** — e-commerce propio para consumidor final (a través de farmacias).
+- **Aliadas** — programa de fidelización de farmacias.
+- **Javit** — servicio propio de logística de última milla.
+- Robots **BD Rowa Technologies** (Alemania) — dispensan 8 contenedores simultáneos.
+
+## 3. Oportunidad de mercado — Pharma AR 2025-2026
+
+- Mercado de medicamentos retail AR: **USD 4.000M+** anuales.
+- Competidores directos: **Suizo Argentina, Disprofarma, Drogueria Cofarsur, Asoprofarma**.
+- Tendencias dominantes:
+  - **E-commerce de medicamentos** (con receta digital + retiro en farmacia).
+  - **Omnicanalidad** entre la farmacia física y la app del paciente.
+  - **IA aplicada a forecasting de stock y demanda**.
+  - **Telemedicina + receta digital** (regulada por ANMAT).
+  - **Last-mile** como ventaja competitiva (Javit es la apuesta de DelSud).
+  - **Loyalty B2B2C** — captar al consumidor final a través de la farmacia.
+
+## 4. Puntos clave de conversación (5 ángulos)
+
+1. **Forecasting de demanda con IA para stock.**
+   - Pregunta: *"¿Cómo manejan hoy el forecasting de demanda con 25.000 SKUs y 8.000 farmacias? ¿Hay modelo predictivo o sigue siendo histórico + manual?"*
+   - Pitch: pilots con LLMs + series temporales para reducir stock-out / sobre-stock 10-20 %.
+
+2. **GPSfarma + agentes IA conversacionales.**
+   - Pregunta: *"En GPSfarma, ¿cuál es el principal cuello de botella hoy: tráfico, conversión, retención, recompra?"*
+   - Pitch: agente IA en WhatsApp/web que recomienda productos, recuerda recompra, gestiona consultas — sin médico real.
+
+3. **Programa Aliadas + automatización del onboarding de farmacias.**
+   - Pregunta: *"Cuando entra una farmacia nueva al programa Aliadas, ¿cuánto tarda el onboarding y dónde se traba?"*
+   - Pitch: workflows n8n para onboarding, integración con sistemas de la farmacia, training automatizado.
+
+4. **Javit y last-mile inteligente.**
+   - Pregunta: *"Javit ya está corriendo. ¿Cuál es el ratio de pedidos automatizables vs los que requieren intervención humana?"*
+   - Pitch: ruteo + tracking + comunicación automatizada con farmacia y consumidor final.
+
+5. **Compliance regulatorio automatizado (ANMAT, drogas trazadas, datos sensibles).**
+   - Pregunta: *"Con la trazabilidad de medicamentos y datos sensibles del paciente, ¿cuánto tiempo come compliance al mes?"*
+   - Pitch: auditoría automatizada, reportes a ANMAT, alertas de excepciones — todo con human-in-the-loop.
+
+## 5. Manejo de objeciones
+
+| Objeción | Respuesta |
+|---|---|
+| "Tenemos equipo de IT enorme y consultoras top." | "Por eso vengo con un ángulo distinto. No vengo a competir con SAP / Salesforce / la consultora estratégica. Vengo a la capa que está en el medio: automatizaciones tipo 'última milla operativa' que el equipo de IT no prioriza porque son demasiado chicas individualmente, pero sumadas mueven la aguja." |
+| "Pharma es muy regulado, no se puede aplicar IA libremente." | "Concuerdo 100 %. Por eso los casos de IA generativa los uso en datos NO sensibles (forecasting, contenido para farmacias, FAQs). La data de pacientes va a modelos privados o queda en el sistema actual. Te muestro la arquitectura segregada." |
+| "El proyecto pasa por el CEO nuevo (Lopardo) y todavía está acomodándose." | "Entiendo. Justamente por eso conviene tener un POC chiquito armado para cuando él pregunte. Te ayudo a llegar a esa primera reunión con un slide y un demo, no con una intuición." |
+| "No tenemos data limpia para entrenar nada." | "Eso es lo que más escucho. Y la realidad es que los modelos de hoy (GPT-5, Claude Opus) no requieren data perfecta — requieren contexto bien armado. Empezamos con lo que hay y la limpieza es output, no input." |
+| "El año pasado un proyecto de IA fracasó." | "Lo más común es que fracase porque se intenta resolver el problema más complejo primero. Yo voy al revés: pilotos de 4-6 semanas con métrica clara. Si no se mueve la aguja, paramos." |
+
+## 6. Próximos pasos recomendados
+
+1. **Match alto + dolor concreto:** propuesta de **POC de 6 semanas** sobre 1 caso (recomendar GPSfarma con agente IA, o forecasting de stock para 100 SKUs A). Fee fijo, métrica de éxito explícita.
+2. **Match medio:** workshop de 2 horas con su equipo digital + ejemplos de IA en pharma de otros mercados (Brasil, México, Europa).
+3. **Match bajo (poco probable):** intercambio + invitación a una mesa redonda sobre IA en pharma con otros referentes del sector. Construir relación a largo plazo.
+
+## 7. Bonus — preguntas estratégicas para Débora (que la van a hacer pensar)
+
+- *"Si Lopardo te pide HOY que automatices un solo proceso para mostrarle resultados en 90 días, ¿cuál elegirías?"*
+- *"¿GPSfarma compite con la farmacia o la potencia? ¿Cómo lo viven las 8.000 farmacias del programa Aliadas?"*
+- *"En 3 años, ¿DelSud sigue siendo distribuidor o se vuelve plataforma de salud digital?"*
+`;
+
+const intelMD = `
+# Competitive Intel — DelSud y el canal pharma AR 2026
+
+## TOP 3 cosas a saber
+
+### 1. DelSud lleva 5 años convirtiéndose de distribuidor a plataforma — y ahora tiene CEO nuevo
+
+**Evidencia:**
+- Inversión en automatización (BD Rowa, robots alemanes) en 2 centros (Avellaneda + Córdoba 2025).
+- Desarrolló **3 productos digitales paralelos**: GPSfarma (D2C vía farmacia), Aliadas (loyalty B2B), Javit (logística).
+- Eduardo Lopardo (ex Arcos Dorados) llega en 11/2025 — perfil orientado a operaciones a escala + transformación.
+- El relato externo es "ya no somos solo distribuidor".
+
+**Tu ángulo:** todo CEO nuevo necesita mostrar resultado en 6-12 meses. **Las automatizaciones rápidas con IA son el mejor "quick win"** para mostrarle al directorio.
+
+### 2. La amenaza estructural ya no es Suizo, es Mercado Pago + Rappi + Farmacity directo
+
+**Evidencia:**
+- **Farmacity** (cadena retail) integró su propio canal digital y compite directo con la farmacia chica.
+- **Rappi / PedidosYa** entran al delivery de medicamentos OTC en grandes ciudades.
+- **Mercado Pago** ya monetiza el carrito de farmacia con cuotas e insurtech.
+- **Apps de consultas + receta digital** (Llamando al Doctor, doc24) bypassean al circuito tradicional.
+
+**Tu ángulo:** Aliadas + GPSfarma son la respuesta defensiva. Necesitan **inteligencia digital de nivel Rappi** para retener a la farmacia chica. Ahí entran agentes IA, automatización de marketing y CRM con farmacias.
+
+### 3. La trazabilidad y la receta digital son el norte regulatorio próximo
+
+**Evidencia:**
+- **ANMAT** sigue avanzando con trazabilidad de medicamentos.
+- **Receta digital** ya regulada y obligatoria en varios planos (PAMI, obras sociales).
+- **Datos personales sensibles** = framework de protección (Ley 25.326) + lineamientos europeos GDPR como benchmark.
+
+**Tu ángulo:** automatización con human-in-the-loop y arquitectura **segregada (data sensible vs no sensible)** es un diferencial. Hablalo desde el principio: te diferencia de "el chico que vino a vender ChatGPT".
+
+## NÚMEROS PARA SOLTAR
+
+- **228M+** unidades / año mueve DelSud.
+- **8.000+** farmacias cliente (1 de cada 3 farmacias AR).
+- **400+** laboratorios proveedores.
+- **16.000 m²** centro Avellaneda automatizado.
+- **150** empleados centro Córdoba 2025.
+- **USD 4.000M+** mercado retail farmacéutico AR.
+- **+30 %** crecimiento de la categoría OTC en e-commerce LatAm 2024-2026.
+- **20-30 %** uplift típico en conversión cuando se mete agente IA en e-commerce farmacéutico (caso México, Brasil).
+- **15-25 %** reducción de stock-out con forecasting IA en distribución pharma (benchmark).
+
+## QUIÉN ESTÁ EN LA ÓRBITA DE DELSUD
+
+- **Eduardo Lopardo** — CEO, decision-maker estratégico nuevo. Origen: Arcos Dorados.
+- **Bernardo Marlats** — Director de Operaciones.
+- **Fernando Oris de Roa** — Director del grupo familiar Macchiavello.
+- **Familia Macchiavello** — controlante.
+- **BD Rowa Technologies (Alemania)** — proveedor de la robotización.
+- **Competidores directos:** Suizo Argentina, Disprofarma, Cofarsur, Asoprofarma.
+- **Amenazas digitales:** Farmacity directo, Rappi, PedidosYa, Mercado Pago, Llamando al Doctor.
+- **Reguladores:** ANMAT, Ministerio de Salud, AAIP (datos personales).
+- **8.000 farmacias del programa Aliadas** — la "red" en juego.
+`;
+
+const researchMD = `
+# Deep Research — Pharma distribution AR en su salto digital
+
+## Resumen ejecutivo
+
+Drogueria del Sud está en el momento más interesante de su historia: ya completó la **fase 1 (automatización física con robots BD Rowa)** y atacó la **fase 2 (productos digitales propios: GPSfarma, Aliadas, Javit)**. La **fase 3 — IA generativa y agentes inteligentes en cada touchpoint** — es donde la conversación con Axel se vuelve relevante. El timing es óptimo porque hay un CEO nuevo (Lopardo, 11/2025) que necesita resultado visible en su primer año, y porque competidores como Farmacity directo, Rappi y Mercado Pago están comprimiendo márgenes desde abajo.
+
+## Tabla — fuentes clave
+
+| Fuente | Insight | Por qué importa |
+|---|---|---|
+| InfoNegocios | Centro Avellaneda 16.000 m², 25.000 productos | Confirma escala y nivel de automatización |
+| Comercio y Justicia | Centro Córdoba 2025, totalmente automatizado | Inversión continua en infraestructura |
+| Cronista InfoTech | Robots BD Rowa, 50 años de tradición disruptados | Cultura abierta a tecnología |
+| Mercado / WebRetail | Lopardo nuevo CEO desde 11/2025 | Decision-maker nuevo + necesidad de quick wins |
+| Pharmabaires | Bagliero deja en 04/2025, Oris de Roa interino | Período de transición de liderazgo |
+| Cofarco 2019 | Débora dictó capacitación E-Commerce | Confirma rol digital de Débora |
+| TheOrg | Débora en org chart de DelSud | Confirma vinculación actual con la empresa |
+| Sitio institucional | GPSfarma + Aliadas + Javit | 3 productos digitales activos |
+| LIDE Argentina | Centro Estación Juárez Celman | Tercera planta automatizada |
+| Web Retail Lopardo | Background en Arcos Dorados | Perfil de operaciones a escala |
+
+## 5 temas clave en profundidad
+
+### 1. La transformación digital de pharma distribution AR
+DelSud, Suizo, Cofarsur están en una carrera para dejar de ser solo "logística + facturación" y volverse "plataformas de salud" con productos propios. Quien primero capture al consumidor final a través de la farmacia gana. **Implicancia:** GPSfarma necesita escala rápida + UX de Rappi + retención tipo Mercado Libre.
+
+### 2. IA generativa en operaciones pharma
+El primer caso que escala en 2025-2026 es **forecasting de demanda** con LLMs híbridos (data histórica + señales externas tipo brote estacional, Google Trends, redes sociales). Reducción de stock-out 15-25 % es el benchmark. Segundo caso: agentes conversacionales en e-commerce. Tercero: automatización de procesos administrativos (compliance, conciliaciones).
+
+### 3. Las 8.000 farmacias como red activa
+El programa Aliadas convierte a las farmacias en **canal de adquisición + retención** en lugar de solo cliente B2B. La diferencia con Suizo / Cofarsur está en cuánto invierte DelSud en hacer que esas farmacias **vendan más en su nombre** vs solo comprarle.
+
+### 4. Receta digital + telemedicina + IA = nuevo flujo
+La receta digital obligatoria + telemedicina (Llamando al Doctor, doc24, etc.) + IA crea un flujo nuevo: paciente consulta online → receta digital → farmacia (Aliadas) → entrega (Javit). Si DelSud orquesta los 4 puntos, se convierte en el rail de salud digital de Argentina.
+
+### 5. La amenaza Farmacity y Mercado Pago
+Farmacity como cadena vertical y Mercado Pago monetizando el carrito + cuotas son los 2 jugadores que pueden acelerar o frenar la apuesta digital de DelSud. **Implicancia:** alianza con Mercado Pago / fintech y diferenciación clara vs Farmacity (DelSud = neutralidad de canal, apoya a la farmacia chica) son ejes estratégicos del próximo año.
+`;
+
+const quizData = [
+  {q:"¿Quién es el CEO actual de Drogueria del Sud y desde cuándo?",o:["Hernán Bagliero, desde 2021","Fernando Oris de Roa, desde 2024","Eduardo Lopardo, desde 03-NOV-2025","Bernardo Marlats, desde 2023"],a:2},
+  {q:"¿Cuántas farmacias cliente tiene DelSud?",o:["1.200","2.500","8.000+","20.000+"],a:2},
+  {q:"¿Qué tres productos digitales propios tiene DelSud?",o:["GPSfarma, Aliadas, Javit","Mercado Libre, Rappi, PedidosYa","DelSudPay, Salud24, Mailtech","WebShop, Loyalty, Express"],a:0},
+  {q:"¿Cuánto mide el centro de distribución de Avellaneda?",o:["6.000 m²","16.000 m²","25.000 m²","100.000 m²"],a:1},
+  {q:"¿Quién provee los robots de DelSud?",o:["KUKA","BD Rowa Technologies","Boston Dynamics","ABB"],a:1},
+  {q:"¿Cuál es el rol más probable de Débora Menigali?",o:["Logística pura","Negocios Digitales / E-commerce / Canal Farmacia","RRHH","Compliance regulatorio"],a:1},
+  {q:"¿Cuál NO es competidor directo de DelSud?",o:["Suizo Argentina","Disprofarma","Sueño Dorado","Asoprofarma"],a:2},
+  {q:"¿Qué uplift típico genera un agente IA en e-commerce farmacéutico LatAm?",o:["1-3 %","20-30 %","60-80 %","Más de 100 %"],a:1}
+];
+const flashData = [
+  {q:"¿Quién controla a Drogueria del Sud?",a:"Grupo familiar Macchiavello. Fernando Oris de Roa es director del grupo."},
+  {q:"¿Cuándo asumió el nuevo CEO?",a:"Eduardo Lopardo asumió el 03 de noviembre de 2025. Vino de Arcos Dorados."},
+  {q:"¿Qué experiencia previa señala el rol digital de Débora?",a:"En mayo 2019 dictó una capacitación sobre E-Commerce a nivel país en el Colegio de Farmacéuticos de Corrientes."},
+  {q:"¿Cuál es el centro de distribución más automatizado de Latam?",a:"El centro de DelSud en Avellaneda — 16.000 m², 25.000 productos, robots BD Rowa."},
+  {q:"¿Qué es GPSfarma?",a:"E-commerce propio de DelSud para consumidor final, vendiendo a través de farmacias."},
+  {q:"¿Qué es el programa Aliadas?",a:"Programa de fidelización para 8.000 farmacias clientes — convierte a la farmacia chica en canal activo de venta."},
+  {q:"¿Qué es Javit?",a:"Servicio propio de logística de última milla de DelSud."},
+  {q:"¿Cuál es el primer caso de IA con mejor ROI demostrado en pharma distribution?",a:"Forecasting de demanda — reduce stock-out 15-25 % con LLMs híbridos + series temporales."},
+  {q:"¿Cuál es la objeción más fuerte y cómo se responde?",a:"'Pharma es muy regulado' → arquitectura segregada: data sensible queda interna, IA generativa solo en data no sensible (forecasting, contenido)."},
+  {q:"¿Cuál es el next step propuesto para match alto?",a:"POC de 6 semanas sobre 1 caso (agente IA en GPSfarma o forecasting de stock 100 SKUs A) con fee fijo y métrica de éxito explícita."}
+];
+function show(id,el){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');el.classList.add('active');}
+let score=0;let answered=new Set();
+function buildQuiz(){const host=document.getElementById('quiz-host');host.innerHTML=quizData.map((q,i)=>`<div class="quiz-q"><div class="quiz-q-title">Q${i+1}. ${q.q}</div>${q.o.map((o,j)=>`<div class="quiz-opt" onclick="answer(${i},${j},this)">${String.fromCharCode(65+j)}) ${o}</div>`).join('')}</div>`).join('');}
+function answer(qi,oi,el){if(answered.has(qi))return;answered.add(qi);const correct=quizData[qi].a===oi;el.classList.add(correct?'correct':'wrong');if(correct)score++;else{const opts=el.parentElement.querySelectorAll('.quiz-opt');opts[quizData[qi].a].classList.add('correct');}document.getElementById('score').textContent=`Score: ${score} / ${quizData.length}`;}
+let cur=0;
+function renderCard(){document.getElementById('card-front').textContent=flashData[cur].q;document.getElementById('card-back').textContent=flashData[cur].a;document.getElementById('card').classList.remove('flipped');document.getElementById('counter').textContent=`${cur+1} / ${flashData.length}`;document.getElementById('dots').innerHTML=flashData.map((_,i)=>`<div class="flash-dot ${i===cur?'active':''}"></div>`).join('');}
+function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
+function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
+document.getElementById('briefing-md').innerHTML=marked.parse(briefingMD);
+document.getElementById('intel-md').innerHTML=marked.parse(intelMD);
+document.getElementById('research-md').innerHTML=marked.parse(researchMD);
+buildQuiz();renderCard();
+</script>
+</body></html>

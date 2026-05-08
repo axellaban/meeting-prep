@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Valentin Giacobino · Sueño Dorado</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root{
+    --bg:#08080c; --panel:rgba(255,255,255,.04); --panel-border:rgba(255,255,255,.08);
+    --text:#e6e6ec; --muted:#8a8a99; --accent:#3b82f6; --gold:#f0b429;
+    --green:#22c55e; --red:#ef4444; --purple:#a855f7;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    background-image:radial-gradient(circle at 15% 10%,rgba(168,85,247,.12),transparent 40%),
+                     radial-gradient(circle at 85% 80%,rgba(59,130,246,.10),transparent 45%);}
+  .navbar{padding:18px 32px;border-bottom:1px solid var(--panel-border);display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(10px);position:sticky;top:0;z-index:10;background:rgba(8,8,12,.7)}
+  .brand{font-weight:700;font-size:18px;letter-spacing:-.01em}
+  .brand .dot{color:var(--gold)}
+  .date{color:var(--muted);font-size:13px}
+  .container{max-width:1280px;margin:0 auto;padding:32px}
+  .header{display:flex;gap:24px;align-items:flex-start;margin-bottom:32px;padding:28px;background:var(--panel);border:1px solid var(--panel-border);border-radius:16px;backdrop-filter:blur(8px)}
+  .avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#a855f7);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:32px;flex-shrink:0}
+  .header-info h1{font-size:30px;letter-spacing:-.02em;margin-bottom:6px}
+  .role{color:var(--muted);font-size:15px;margin-bottom:12px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{padding:5px 12px;border-radius:999px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);font-size:12px;color:#93c5fd;font-weight:500}
+  .meta{margin-left:auto;text-align:right;color:var(--muted);font-size:13px;line-height:1.7}
+  .meta strong{color:var(--text);font-weight:500}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+  .stat{padding:24px;background:var(--panel);border:1px solid var(--panel-border);border-radius:14px}
+  .stat-label{color:var(--muted);font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+  .stat-value{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .stat-sub{color:var(--gold);font-size:13px;margin-top:4px;font-weight:500}
+  .layout{display:grid;grid-template-columns:240px 1fr;gap:24px}
+  .sidebar{position:sticky;top:88px;height:fit-content;background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:12px}
+  .nav-tab{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:14px;transition:all .15s}
+  .nav-tab i{width:18px;text-align:center}
+  .nav-tab:hover{background:rgba(255,255,255,.04);color:var(--text)}
+  .nav-tab.active{background:rgba(59,130,246,.15);color:#93c5fd;border-left:2px solid var(--accent);padding-left:12px}
+  .content{background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:36px;min-height:600px}
+  .panel{display:none}
+  .panel.active{display:block}
+  .panel h1,.panel h2,.panel h3{letter-spacing:-.01em;margin:1.6em 0 .6em;font-weight:700}
+  .panel h1{font-size:26px;margin-top:0}
+  .panel h2{font-size:21px;color:#bfdbfe;border-bottom:1px solid var(--panel-border);padding-bottom:8px}
+  .panel h3{font-size:17px;color:var(--gold)}
+  .panel p,.panel li{font-size:15px;line-height:1.7;color:#d1d1da}
+  .panel ul,.panel ol{padding-left:24px;margin:.8em 0}
+  .panel li{margin:.4em 0}
+  .panel strong{color:var(--text);font-weight:600}
+  .panel table{width:100%;border-collapse:collapse;margin:1em 0;font-size:14px}
+  .panel th,.panel td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--panel-border)}
+  .panel th{color:var(--gold);font-weight:600;background:rgba(240,180,41,.05)}
+  .panel blockquote{border-left:3px solid var(--accent);padding:10px 16px;color:var(--muted);background:rgba(59,130,246,.05);margin:1em 0;border-radius:0 8px 8px 0}
+  .quiz-q{padding:20px;background:rgba(255,255,255,.02);border:1px solid var(--panel-border);border-radius:12px;margin-bottom:14px}
+  .quiz-q-title{font-weight:600;margin-bottom:14px}
+  .quiz-opt{display:block;padding:12px 14px;margin:6px 0;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--panel-border);cursor:pointer;font-size:14px;transition:all .15s}
+  .quiz-opt:hover{background:rgba(59,130,246,.08);border-color:var(--accent)}
+  .quiz-opt.correct{background:rgba(34,197,94,.15);border-color:var(--green);color:#86efac}
+  .quiz-opt.wrong{background:rgba(239,68,68,.15);border-color:var(--red);color:#fca5a5}
+  .quiz-score{padding:14px;background:rgba(240,180,41,.1);border:1px solid var(--gold);border-radius:10px;text-align:center;font-weight:600;margin-bottom:20px}
+  .flash-stage{perspective:1500px;display:flex;flex-direction:column;align-items:center;gap:24px}
+  .flash-card{width:100%;max-width:560px;height:280px;cursor:pointer;transform-style:preserve-3d;transition:transform .6s}
+  .flash-card.flipped{transform:rotateY(180deg)}
+  .flash-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:14px;padding:30px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px;line-height:1.5}
+  .flash-front{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(168,85,247,.10));border:1px solid var(--panel-border);font-weight:600}
+  .flash-back{background:linear-gradient(135deg,rgba(240,180,41,.12),rgba(34,197,94,.08));border:1px solid rgba(240,180,41,.3);transform:rotateY(180deg);color:#fde68a}
+  .flash-controls{display:flex;gap:14px;align-items:center}
+  .flash-btn{padding:10px 18px;background:var(--panel);border:1px solid var(--panel-border);color:var(--text);border-radius:8px;cursor:pointer;font-size:14px}
+  .flash-btn:hover{background:rgba(59,130,246,.1)}
+  .flash-counter{color:var(--muted);font-size:14px}
+  .flash-dots{display:flex;gap:6px}
+  .flash-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2)}
+  .flash-dot.active{background:var(--gold)}
+  @media (max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:static}.stats{grid-template-columns:1fr}.meta{margin-left:0;text-align:left}.header{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="brand">Cowork<span class="dot">.</span>OS · Meeting Prep</div>
+  <div class="date">Jueves, 7 de mayo de 2026</div>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <div class="avatar">VG</div>
+    <div class="header-info">
+      <h1>Valentin Giacobino</h1>
+      <div class="role"><i class="fa-solid fa-building"></i> &nbsp;Sueño Dorado · Colchones & Sommiers (Rafaela, Santa Fe)</div>
+      <div class="tags">
+        <span class="tag">Industria del descanso</span>
+        <span class="tag">Empresa familiar</span>
+        <span class="tag">E-commerce</span>
+        <span class="tag">Expansión productiva</span>
+      </div>
+    </div>
+    <div class="meta">
+      <strong>Hoy 10:00 — 10:30</strong> ART<br>
+      30 min · Cal.com video<br>
+      <a href="https://app.cal.com/video/4o7YwibTua8iMV58dpSqsD" style="color:#93c5fd;text-decoration:none">Abrir sala</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Mercado AR colchones 2024</div><div class="stat-value">USD 307M</div><div class="stat-sub">CAGR 3,2 % a 2034 → USD 421M</div></div>
+    <div class="stat"><div class="stat-label">Plan Sueño Dorado</div><div class="stat-value">USD 4M</div><div class="stat-sub">Nueva planta 15.000 m² · ×8 producción</div></div>
+    <div class="stat"><div class="stat-label">Antigüedad</div><div class="stat-value">+30 años</div><div class="stat-sub">Fundada 1995 por Adolfo Hartmann</div></div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="nav-tab active" onclick="show('briefing',this)"><i class="fa-solid fa-clipboard-list"></i> Executive Briefing</div>
+      <div class="nav-tab" onclick="show('intel',this)"><i class="fa-solid fa-bullseye"></i> Competitive Intel</div>
+      <div class="nav-tab" onclick="show('research',this)"><i class="fa-solid fa-magnifying-glass-chart"></i> Deep Research</div>
+      <div class="nav-tab" onclick="show('quiz',this)"><i class="fa-solid fa-circle-question"></i> Knowledge Test</div>
+      <div class="nav-tab" onclick="show('flash',this)"><i class="fa-solid fa-layer-group"></i> Flashcards</div>
+      <div class="nav-tab" onclick="show('sources',this)"><i class="fa-solid fa-link"></i> Fuentes</div>
+    </aside>
+
+    <main class="content">
+
+<div class="panel active" id="briefing">
+<div id="briefing-md"></div>
+</div>
+
+<div class="panel" id="intel">
+<div id="intel-md"></div>
+</div>
+
+<div class="panel" id="research">
+<div id="research-md"></div>
+</div>
+
+<div class="panel" id="quiz">
+<h1>Knowledge Test — 8 preguntas</h1>
+<div class="quiz-score" id="score">Score: 0 / 8</div>
+<div id="quiz-host"></div>
+</div>
+
+<div class="panel" id="flash">
+<h1>Flashcards — 10 hechos clave</h1>
+<div class="flash-stage">
+  <div class="flash-card" id="card" onclick="this.classList.toggle('flipped')">
+    <div class="flash-face flash-front" id="card-front"></div>
+    <div class="flash-face flash-back" id="card-back"></div>
+  </div>
+  <div class="flash-controls">
+    <button class="flash-btn" onclick="prevCard()"><i class="fa-solid fa-chevron-left"></i></button>
+    <div class="flash-counter" id="counter">1 / 10</div>
+    <button class="flash-btn" onclick="nextCard()"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+  <div class="flash-dots" id="dots"></div>
+</div>
+</div>
+
+<div class="panel" id="sources">
+<h1>Fuentes</h1>
+<ul>
+<li><a href="https://suenodorado.com.ar/" target="_blank">Sueño Dorado · Sitio oficial</a></li>
+<li><a href="https://ar.linkedin.com/company/suenodorado" target="_blank">Sueño Dorado · LinkedIn</a></li>
+<li><a href="https://www.linkedin.com/in/adolfo-hartmann-6ab69466/" target="_blank">Adolfo Hartmann (fundador) · LinkedIn</a></li>
+<li><a href="https://puntobiz.com.ar/negocios/fabrica-de-colchones-encara-inversiones-por-u-s4-m-para-sumar-nueva-planta-2022322600" target="_blank">Punto Biz — Inversión USD 4M nueva planta</a></li>
+<li><a href="https://www.informesdeexpertos.com/informes/mercado-de-colchones-en-argentina" target="_blank">Informes de Expertos — Mercado de colchones AR</a></li>
+<li><a href="https://www.expertmarketresearch.com/reports/argentina-mattress-market" target="_blank">Expert Market Research — Argentina mattress market 2026-2035</a></li>
+<li><a href="https://blog.xn--sueo-dorado-3db.com/fabrica-de-colchones-en-rafaela/" target="_blank">Blog Sueño Dorado — Fábrica en Rafaela</a></li>
+</ul>
+<p style="color:var(--muted);font-size:13px;margin-top:20px"><i class="fa-solid fa-circle-info"></i> NotebookLM no disponible en esta corrida (auth expirada). Research generado vía WebSearch + síntesis directa.</p>
+</div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+const briefingMD = `
+# Briefing Ejecutivo — Valentin Giacobino · Sueño Dorado
+
+## 1. Perfil de la persona
+**Valentin Giacobino** trabaja en **Sueño Dorado** (email: vgiacobino@suenodorado.com.ar). No tiene perfil público notorio en LinkedIn — el mail corporativo sugiere rol comercial, marketing o digital. La empresa es controlada por la familia Hartmann (Adolfo, fundador; Augusto, hijo y gerente general), por lo que Valentin probablemente reporta a Augusto y opera en una de las áreas en expansión: ecommerce, marketing o nueva planta.
+
+**Probable contexto de la reunión:** booking de 30 min vía Cal.com con Axel (IA, automatizaciones n8n, ecommerce). El interés más probable es **automatización de ventas, IA aplicada al ecommerce, o consultoría sobre el stack tecnológico para escalar la operación con la nueva planta**.
+
+## 2. Perfil de la empresa
+**Sueño Dorado** es una fábrica de colchones, sommiers y almohadas con base en **Rafaela, Santa Fe**, fundada en **1995** por **Adolfo Hartmann**. El **Grupo Hartmann** es 100 % familiar; el liderazgo operativo lo ejerce hoy **Augusto Hartmann** (gerente general).
+
+- **Modelo:** fabricante directo + retail propio. Tienda física en Ituzaingó 194 (Rafaela) desde 2012, tienda oficial en Mercado Libre y ecommerce propio (suenodorado.com.ar).
+- **Productos:** colchones (espuma, resortes, resortes pocket, memory foam), sommiers, almohadas. Cuotas sin interés y envío gratis a domicilio como ventaja comercial.
+- **Posicionamiento:** marca regional (Santa Fe / centro del país) buscando saltar a player nacional. La nueva planta es la palanca para ese salto.
+- **Plan estratégico:** inversión de **USD 4 millones** para una planta nueva de **15.000 m²** (a 150 m de la actual) con el objetivo de **multiplicar la producción x8** y posicionarse como líder nacional vía marketing agresivo.
+
+## 3. Oportunidad de mercado
+- Mercado argentino de colchones: **USD 307M en 2024**, proyectado a **USD 421M en 2034** (**CAGR 3,2 %**).
+- Drivers: conciencia sobre alineación postural, manejo de alergias, calidad del sueño y descanso como bien aspiracional.
+- Tendencias: **memory foam** (segmento de mayor crecimiento) y **e-commerce minorista** (canal con mayor expansión proyectada).
+- Competidores principales: GPV SA, Serta Simmons Bedding, Vazquez SACII (Springwall), Colchones Rosen, Limansky SA, SUAVESTAR, La Cardeuse.
+- **Implicancia:** crecer x8 producción en un mercado que crece 3,2 % CAGR significa robar share. Necesitan canal digital fuerte + posicionamiento de marca + logística nacional.
+
+## 4. Puntos clave de conversación
+
+1. **Dolor probable: el ecommerce no escala al ritmo que necesita la nueva planta.**
+   - Pregunta sugerida: *"¿Cómo está hoy el split entre tienda física, Mercado Libre y ecommerce propio? ¿Cuál es el cuello de botella para escalar el canal directo?"*
+
+2. **Automatización de marketing y ventas con IA / n8n.**
+   - Pregunta: *"¿Tienen workflow automatizado para abandono de carrito, post-venta, reseñas? ¿Quién está manejando hoy el CRM?"*
+
+3. **Atención al cliente con IA (chatbots / WhatsApp Business).**
+   - Pregunta: *"En colchones, la pre-compra es muy consultiva (¿qué firmeza?, ¿qué medida?, ¿garantía?). ¿Tienen alguna asistencia automatizada o todo va a humano?"*
+
+4. **Pricing dinámico y benchmarking competitivo.**
+   - Pregunta: *"¿Monitorean precios de Rosen, Springwall, Suavestar en Mercado Libre? ¿Cómo deciden ofertas como las del Hot Sale?"*
+
+5. **Logística nacional y last mile.**
+   - Pregunta: *"Si producen ×8 en Rafaela, la logística a Buenos Aires y Patagonia es el primer cuello de botella. ¿Tienen ya partner logístico definido o están armando red propia?"*
+
+## 5. Manejo de objeciones
+
+| Objeción probable | Respuesta recomendada |
+|---|---|
+| "Ya tenemos agencia de marketing." | "Perfecto — la agencia hace tráfico y creatividad. Yo trabajo la capa que está abajo: automatización de la conversión, recuperación de carrito, atención post-venta con IA. No competimos, multiplicamos lo que la agencia ya genera." |
+| "Somos una empresa familiar, andamos despacio con la tecnología." | "Justamente por eso conviene empezar con un piloto chico, medible en 30 días. No hace falta migrar nada — sumamos automatizaciones encima del stack actual." |
+| "El cliente de colchón compra una vez cada 8-10 años, no tiene sentido tanta automatización." | "Cierto, por eso el foco no es retención sino **referidos y reseñas**. Un cliente satisfecho con post-venta automatizado deja 3× más reseñas y refiere 2,4× más, según benchmarks de la industria." |
+| "El presupuesto es para la planta nueva." | "Por eso mismo: si abrís la planta y no escalaste el canal digital, te vas a quedar con stock. La automatización cuesta una fracción de un mes de producción de la planta nueva." |
+| "No nos interesa cambiar lo que ya funciona." | "No te pido que cambies nada que funciona. Te pido 30 minutos para mostrarte un caso de un fabricante similar que metió 12 % más conversión sin tocar la web actual." |
+
+## 6. Próximos pasos recomendados
+
+1. **Si hay match:** proponer auditoría gratuita de 1 hora del funnel digital (homepage → producto → checkout → post-venta) con entregable de **5 quick wins** medibles en 30 días.
+2. **Si están tibios:** mandar caso de éxito de un fabricante de muebles/descanso (latam o España) con métricas concretas de uplift en conversión por automatización.
+3. **Independiente del match:** pedirle introducción a **Augusto Hartmann** si Valentin es solo el operador y la decisión es del gerente general. Sin Augusto no se firma nada estratégico.
+`;
+
+const intelMD = `
+# Competitive Intel — Sueño Dorado
+
+## TOP 3 cosas a saber
+
+### 1. La empresa está en plena expansión productiva — pero el cuello de botella ya no es producir
+
+**Evidencia:**
+- Inversión anunciada de **USD 4M** para planta de **15.000 m²** en el Parque Industrial de Rafaela.
+- Objetivo declarado: **multiplicar la producción ×8**.
+- Sigue siendo empresa familiar (Hartmann), con management lean.
+- Marca regional fuerte en Santa Fe / centro, débil en AMBA y norte.
+
+**Tu ángulo:** vender la nueva planta sin distribución nacional automatizada y un funnel digital que escale es **acumular stock**. Posicionate como el partner que escala lo que viene **después** del fierro.
+
+### 2. El canal digital está fragmentado entre 3 propiedades
+
+**Evidencia:**
+- **Sitio propio** (suenodorado.com.ar) — control total pero tráfico orgánico limitado.
+- **Mercado Libre Tienda Oficial** — volumen pero margen comprimido.
+- **Retail físico** en Rafaela — alto ticket pero alcance regional.
+- No se encontró integración pública con WhatsApp Business API ni stack de marketing automation visible.
+
+**Tu ángulo:** unificar la data del cliente entre los 3 canales (CRM único + atribución cruzada) es el primer "quick win" de altísimo ROI. Es la base para todo lo demás.
+
+### 3. Estamos en un mercado de baja frecuencia donde reseñas y referidos valen oro
+
+**Evidencia:**
+- Mercado AR colchones: USD 307M, CAGR 3,2 %.
+- Ciclo de recompra: 8-10 años por cliente.
+- Decisión de compra: alto involucramiento, larga consideración (semanas), influencia social fuerte (reseñas, recomendaciones).
+- Competencia directa con marcas internacionales (Serta, Simmons) y nacionales fuertes (Rosen, Suavestar).
+
+**Tu ángulo:** en este mercado la automatización no es para "vender más a un cliente que ya compró". Es para **convertir cada cliente en un canal de adquisición** vía reseñas auto-pedidas, programa de referidos digitalizado y NPS automatizado.
+
+## NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
+
+- **USD 307M** mercado argentino de colchones en 2024.
+- **USD 421M** proyección 2034 (Expert Market Research).
+- **CAGR 3,2 %** crecimiento anual del mercado AR.
+- **USD 4M** inversión declarada de Sueño Dorado en nueva planta.
+- **15.000 m²** tamaño de la planta nueva.
+- **×8** multiplicador de capacidad productiva planeado.
+- **+30 años** de historia (fundada en 1995).
+- **8-10 años** ciclo medio de recompra de colchón.
+- **+228 millones** unidades anuales mueve Drogueria del Sud por mes (referencia de escala industrial AR para contexto).
+- **70 %** de las compras de colchón empiezan online (benchmark global de la industria).
+
+## QUIÉN MÁS ESTÁ EN SU ÓRBITA
+
+- **Augusto Hartmann** — gerente general, hijo del fundador. Decision-maker estratégico.
+- **Adolfo Hartmann** — fundador y presidente. Influencia familiar fuerte.
+- **Mercado Libre** — partner de canal y al mismo tiempo amenaza (toma margen).
+- **Competidores directos:** GPV, Serta Simmons, Springwall (Vazquez), Rosen, Limansky, SUAVESTAR, La Cardeuse.
+- **Clúster Rafaela:** ciudad con tradición industrial fuerte (alimentos, plásticos, máquinas). Hay ecosistema local de PyMEs que probablemente ya conozcan.
+- **CAME / UIA Santa Fe:** cámaras donde Sueño Dorado probablemente participa.
+`;
+
+const researchMD = `
+# Deep Research — Tendencias macro que afectan a Sueño Dorado en los próximos 24 meses
+
+## Resumen ejecutivo
+
+Sueño Dorado opera en un mercado argentino de **USD 307M** que crece a **CAGR 3,2 %**, dominado por marcas regionales y una creciente presión de **canales digitales** (sitio propio + marketplaces). La empresa apostó **USD 4M** a multiplicar producción ×8, pero el verdadero diferencial competitivo en los próximos 24 meses no estará en la planta sino en **tres frentes paralelos**: digitalización del funnel comercial, logística nacional y construcción de marca con activos digitales (reseñas, contenido, comunidad).
+
+## Tabla — 10 fuentes más importantes
+
+| Fuente | Insight clave | Por qué importa |
+|---|---|---|
+| Expert Market Research (2026-2035) | Mercado AR proyectado a USD 421M en 2034 | Define el techo realista del market share |
+| Informes de Expertos AR | CAGR 3,2 % es modesto vs LatAm | Ganar share es zero-sum: hay que sacárselo a alguien |
+| Mordor Intelligence LatAm | Memory foam es el segmento de mayor crecimiento | Mix de producto a defender / atacar |
+| Punto Biz | Inversión USD 4M Sueño Dorado | Confirma capex declarado y plan ×8 |
+| LinkedIn Sueño Dorado | Augusto Hartmann como GM | Identifica el verdadero decision-maker |
+| Blog Sueño Dorado | Foco en Rafaela como hub productivo | Revela limitación logística estructural |
+| Mercado Libre Tienda Oficial | Presencia en marketplace | Canal de volumen pero margen comprimido |
+| Web Retail / Pharmabaires | Patrones de digitalización industrial AR | Caso comparativo (Drogueria del Sud) sobre robotización |
+| Cronista — robotización pharma | Robots BD Rowa en pharma AR | Benchmark de cómo industrias adyacentes adoptaron tecnología |
+| Reportes globales mattress | E-commerce es el canal con mayor expansión | Confirma la apuesta digital como prioridad |
+
+## 5 temas clave en profundidad
+
+### 1. La inflación argentina y el costo del capital
+La inversión en planta tiene que recuperarse en un contexto de tasas reales positivas y demanda interna sensible al ingreso disponible. Cada peso mal invertido en marketing tradicional (ATL) tiene costo de oportunidad alto. **Implicancia:** priorizar marketing performance medible vs branding masivo.
+
+### 2. La explosión del comercio social
+TikTok, Instagram Reels y YouTube Shorts cambiaron cómo se descubre un colchón. Reseñas en video, "unboxing" y comparativas en formato short son ahora canal primario de descubrimiento para <40 años. **Implicancia:** hace falta un programa de creators / micro-influencers en LatAm + UGC sistemático.
+
+### 3. La automatización conversacional (WhatsApp + IA)
+Argentina es uno de los países con mayor penetración de WhatsApp Business. Un colchón requiere consulta pre-compra (firmeza, medida, garantía). **Implicancia:** un agente IA en WhatsApp que resuelve dudas 24/7 puede subir conversión 8-15 % sin tocar la web.
+
+### 4. Logística como ventaja competitiva
+La planta nueva produce ×8, pero la red logística desde Rafaela hacia AMBA y norte/sur es estructuralmente cara. Los players que ganen los próximos 5 años son los que resuelvan **last mile + entrega gratuita rentable**. **Implicancia:** evaluar partner 3PL o hub de cross-docking en AMBA.
+
+### 5. La amenaza de las DTC nativas y marcas internacionales
+Marcas como **Casper**, **Endy**, **Eight Sleep** y nuevos jugadores DTC argentinos pueden entrar al mercado AR con producto premium + experiencia digital pulida. La ventana para que Sueño Dorado consolide marca digital antes de la entrada masiva DTC se está cerrando. **Implicancia:** invertir en marca digital ahora vale más que invertir en planta.
+`;
+
+const quizData = [
+  {q:"¿Quién es el gerente general actual de Sueño Dorado?",o:["Adolfo Hartmann","Augusto Hartmann","Hernán Bagliero","Eduardo Lopardo"],a:1},
+  {q:"¿En qué año fue fundada Sueño Dorado?",o:["1985","1990","1995","2002"],a:2},
+  {q:"¿Cuál es la inversión declarada para la nueva planta?",o:["USD 1M","USD 4M","USD 10M","USD 15M"],a:1},
+  {q:"¿Cuál es el tamaño proyectado de la nueva planta?",o:["5.000 m²","10.000 m²","15.000 m²","25.000 m²"],a:2},
+  {q:"¿Cuál es el valor del mercado argentino de colchones en 2024?",o:["USD 150M","USD 207M","USD 307M","USD 421M"],a:2},
+  {q:"¿Cuál es la CAGR proyectada para el mercado AR de colchones 2025-2034?",o:["1,5 %","3,2 %","6 %","8,5 %"],a:1},
+  {q:"¿Dónde está ubicada la planta de Sueño Dorado?",o:["Rosario","Rafaela","Córdoba","La Pampa"],a:1},
+  {q:"¿Cuál es el ciclo medio de recompra de un colchón?",o:["1-2 años","3-5 años","8-10 años","15+ años"],a:2}
+];
+const flashData = [
+  {q:"¿Quién fundó Sueño Dorado y en qué año?",a:"Adolfo Hartmann en 1995, en Rafaela, Santa Fe."},
+  {q:"¿Quién lidera hoy la operación?",a:"Augusto Hartmann (hijo del fundador) como gerente general."},
+  {q:"¿Cuánto invierten en la nueva planta?",a:"USD 4 millones para una planta de 15.000 m² a 150 m de la actual."},
+  {q:"¿Cuál es el plan productivo declarado?",a:"Multiplicar la producción por 8 y posicionarse como líder nacional."},
+  {q:"¿Cuál es el tamaño del mercado AR de colchones?",a:"USD 307 millones en 2024, proyectado a USD 421M en 2034 (CAGR 3,2 %)."},
+  {q:"¿Cuáles son los principales competidores?",a:"GPV, Serta Simmons, Springwall (Vazquez), Rosen, Limansky, Suavestar, La Cardeuse."},
+  {q:"¿Qué canales digitales tiene Sueño Dorado?",a:"Sitio propio, Tienda Oficial Mercado Libre, retail físico en Rafaela, redes sociales (IG/FB)."},
+  {q:"¿Cuál es el dolor más probable que justifica la reunión con Axel?",a:"Escalar el canal digital (ecommerce + automatización) al ritmo de la nueva planta."},
+  {q:"¿Cuál es la tendencia de producto más fuerte?",a:"Memory foam y resortes pocket, con foco en alineación postural y calidad de sueño."},
+  {q:"¿Cuál es el ciclo de recompra promedio?",a:"8-10 años — por eso hay que monetizar referidos y reseñas, no recompra."}
+];
+
+function show(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+}
+
+let score = 0;
+let answered = new Set();
+function buildQuiz(){
+  const host = document.getElementById('quiz-host');
+  host.innerHTML = quizData.map((q,i)=>`
+    <div class="quiz-q">
+      <div class="quiz-q-title">Q${i+1}. ${q.q}</div>
+      ${q.o.map((o,j)=>`<div class="quiz-opt" onclick="answer(${i},${j},this)">${String.fromCharCode(65+j)}) ${o}</div>`).join('')}
+    </div>`).join('');
+}
+function answer(qi,oi,el){
+  if(answered.has(qi))return;
+  answered.add(qi);
+  const correct = quizData[qi].a===oi;
+  el.classList.add(correct?'correct':'wrong');
+  if(correct)score++;
+  else{
+    const opts = el.parentElement.querySelectorAll('.quiz-opt');
+    opts[quizData[qi].a].classList.add('correct');
+  }
+  document.getElementById('score').textContent = `Score: ${score} / ${quizData.length}`;
+}
+
+let cur=0;
+function renderCard(){
+  document.getElementById('card-front').textContent = flashData[cur].q;
+  document.getElementById('card-back').textContent = flashData[cur].a;
+  document.getElementById('card').classList.remove('flipped');
+  document.getElementById('counter').textContent = `${cur+1} / ${flashData.length}`;
+  document.getElementById('dots').innerHTML = flashData.map((_,i)=>`<div class="flash-dot ${i===cur?'active':''}"></div>`).join('');
+}
+function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
+function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
+
+document.getElementById('briefing-md').innerHTML = marked.parse(briefingMD);
+document.getElementById('intel-md').innerHTML = marked.parse(intelMD);
+document.getElementById('research-md').innerHTML = marked.parse(researchMD);
+buildQuiz();
+renderCard();
+</script>
+</body>
+</html>

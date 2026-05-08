@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Agustina Vidal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root{--bg:#08080c;--panel:rgba(255,255,255,.04);--panel-border:rgba(255,255,255,.08);--text:#e6e6ec;--muted:#8a8a99;--accent:#3b82f6;--gold:#f0b429;--green:#22c55e;--red:#ef4444;--purple:#a855f7;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;background-image:radial-gradient(circle at 15% 10%,rgba(168,85,247,.12),transparent 40%),radial-gradient(circle at 85% 80%,rgba(59,130,246,.10),transparent 45%);}
+  .navbar{padding:18px 32px;border-bottom:1px solid var(--panel-border);display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(10px);position:sticky;top:0;z-index:10;background:rgba(8,8,12,.7)}
+  .brand{font-weight:700;font-size:18px;letter-spacing:-.01em}
+  .brand .dot{color:var(--gold)}
+  .date{color:var(--muted);font-size:13px}
+  .container{max-width:1280px;margin:0 auto;padding:32px}
+  .header{display:flex;gap:24px;align-items:flex-start;margin-bottom:32px;padding:28px;background:var(--panel);border:1px solid var(--panel-border);border-radius:16px;backdrop-filter:blur(8px)}
+  .avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:32px;flex-shrink:0}
+  .header-info h1{font-size:30px;letter-spacing:-.02em;margin-bottom:6px}
+  .role{color:var(--muted);font-size:15px;margin-bottom:12px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{padding:5px 12px;border-radius:999px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);font-size:12px;color:#d8b4fe;font-weight:500}
+  .meta{margin-left:auto;text-align:right;color:var(--muted);font-size:13px;line-height:1.7}
+  .meta strong{color:var(--text);font-weight:500}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+  .stat{padding:24px;background:var(--panel);border:1px solid var(--panel-border);border-radius:14px}
+  .stat-label{color:var(--muted);font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+  .stat-value{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .stat-sub{color:var(--gold);font-size:13px;margin-top:4px;font-weight:500}
+  .layout{display:grid;grid-template-columns:240px 1fr;gap:24px}
+  .sidebar{position:sticky;top:88px;height:fit-content;background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:12px}
+  .nav-tab{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:14px;transition:all .15s}
+  .nav-tab i{width:18px;text-align:center}
+  .nav-tab:hover{background:rgba(255,255,255,.04);color:var(--text)}
+  .nav-tab.active{background:rgba(168,85,247,.15);color:#d8b4fe;border-left:2px solid var(--purple);padding-left:12px}
+  .content{background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:36px;min-height:600px}
+  .panel{display:none}.panel.active{display:block}
+  .panel h1,.panel h2,.panel h3{letter-spacing:-.01em;margin:1.6em 0 .6em;font-weight:700}
+  .panel h1{font-size:26px;margin-top:0}.panel h2{font-size:21px;color:#e9d5ff;border-bottom:1px solid var(--panel-border);padding-bottom:8px}.panel h3{font-size:17px;color:var(--gold)}
+  .panel p,.panel li{font-size:15px;line-height:1.7;color:#d1d1da}
+  .panel ul,.panel ol{padding-left:24px;margin:.8em 0}.panel li{margin:.4em 0}
+  .panel strong{color:var(--text);font-weight:600}
+  .panel table{width:100%;border-collapse:collapse;margin:1em 0;font-size:14px}
+  .panel th,.panel td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--panel-border)}
+  .panel th{color:var(--gold);font-weight:600;background:rgba(240,180,41,.05)}
+  .panel blockquote{border-left:3px solid var(--purple);padding:10px 16px;color:var(--muted);background:rgba(168,85,247,.05);margin:1em 0;border-radius:0 8px 8px 0}
+  .quiz-q{padding:20px;background:rgba(255,255,255,.02);border:1px solid var(--panel-border);border-radius:12px;margin-bottom:14px}
+  .quiz-q-title{font-weight:600;margin-bottom:14px}
+  .quiz-opt{display:block;padding:12px 14px;margin:6px 0;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--panel-border);cursor:pointer;font-size:14px;transition:all .15s}
+  .quiz-opt:hover{background:rgba(168,85,247,.08);border-color:var(--purple)}
+  .quiz-opt.correct{background:rgba(34,197,94,.15);border-color:var(--green);color:#86efac}
+  .quiz-opt.wrong{background:rgba(239,68,68,.15);border-color:var(--red);color:#fca5a5}
+  .quiz-score{padding:14px;background:rgba(240,180,41,.1);border:1px solid var(--gold);border-radius:10px;text-align:center;font-weight:600;margin-bottom:20px}
+  .flash-stage{perspective:1500px;display:flex;flex-direction:column;align-items:center;gap:24px}
+  .flash-card{width:100%;max-width:560px;height:280px;cursor:pointer;transform-style:preserve-3d;transition:transform .6s}
+  .flash-card.flipped{transform:rotateY(180deg)}
+  .flash-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:14px;padding:30px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px;line-height:1.5}
+  .flash-front{background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(59,130,246,.10));border:1px solid var(--panel-border);font-weight:600}
+  .flash-back{background:linear-gradient(135deg,rgba(240,180,41,.12),rgba(34,197,94,.08));border:1px solid rgba(240,180,41,.3);transform:rotateY(180deg);color:#fde68a}
+  .flash-controls{display:flex;gap:14px;align-items:center}
+  .flash-btn{padding:10px 18px;background:var(--panel);border:1px solid var(--panel-border);color:var(--text);border-radius:8px;cursor:pointer;font-size:14px}
+  .flash-btn:hover{background:rgba(168,85,247,.1)}
+  .flash-counter{color:var(--muted);font-size:14px}
+  .flash-dots{display:flex;gap:6px}.flash-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2)}.flash-dot.active{background:var(--gold)}
+  @media (max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:static}.stats{grid-template-columns:1fr}.meta{margin-left:0;text-align:left}.header{flex-direction:column}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="brand">Cowork<span class="dot">.</span>OS · Meeting Prep</div><div class="date">Jueves, 7 de mayo de 2026</div></nav>
+<div class="container">
+  <div class="header">
+    <div class="avatar">AV</div>
+    <div class="header-info">
+      <h1>Agustina Vidal</h1>
+      <div class="role"><i class="fa-solid fa-user-tag"></i> &nbsp;Perfil a confirmar al inicio del call · agustina.vidal.carballo@gmail.com</div>
+      <div class="tags"><span class="tag">Reunión exploratoria</span><span class="tag">Discovery</span><span class="tag">IA aplicada</span><span class="tag">Productos digitales</span></div>
+    </div>
+    <div class="meta"><strong>Hoy 10:30 — 11:00</strong> ART<br>30 min · Cal.com video<br><a href="https://app.cal.com/video/p4nSoPfvHrt57t8RiY1dDL" style="color:#d8b4fe;text-decoration:none">Abrir sala</a></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Confianza del match</div><div class="stat-value">Bajo</div><div class="stat-sub">No hay perfil único confirmado · usar Discovery</div></div>
+    <div class="stat"><div class="stat-label">Estrategia recomendada</div><div class="stat-value">4 W</div><div class="stat-sub">Who · What · Why now · What if</div></div>
+    <div class="stat"><div class="stat-label">Objetivo del call</div><div class="stat-value">Mapear</div><div class="stat-sub">Qué hace + qué busca + cuándo decide</div></div>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="nav-tab active" onclick="show('briefing',this)"><i class="fa-solid fa-clipboard-list"></i> Executive Briefing</div>
+      <div class="nav-tab" onclick="show('intel',this)"><i class="fa-solid fa-bullseye"></i> Discovery Plan</div>
+      <div class="nav-tab" onclick="show('research',this)"><i class="fa-solid fa-magnifying-glass-chart"></i> Hipótesis de perfil</div>
+      <div class="nav-tab" onclick="show('quiz',this)"><i class="fa-solid fa-circle-question"></i> Knowledge Test</div>
+      <div class="nav-tab" onclick="show('flash',this)"><i class="fa-solid fa-layer-group"></i> Flashcards</div>
+      <div class="nav-tab" onclick="show('sources',this)"><i class="fa-solid fa-link"></i> Fuentes & NotebookLM</div>
+    </aside>
+    <main class="content">
+<div class="panel active" id="briefing"><div id="briefing-md"></div></div>
+<div class="panel" id="intel"><div id="intel-md"></div></div>
+<div class="panel" id="research"><div id="research-md"></div></div>
+<div class="panel" id="quiz">
+<h1>Knowledge Test — 8 preguntas</h1>
+<div class="quiz-score" id="score">Score: 0 / 8</div>
+<div id="quiz-host"></div>
+</div>
+<div class="panel" id="flash">
+<h1>Flashcards — 10 hechos clave</h1>
+<div class="flash-stage">
+<div class="flash-card" id="card" onclick="this.classList.toggle('flipped')">
+<div class="flash-face flash-front" id="card-front"></div>
+<div class="flash-face flash-back" id="card-back"></div>
+</div>
+<div class="flash-controls"><button class="flash-btn" onclick="prevCard()"><i class="fa-solid fa-chevron-left"></i></button><div class="flash-counter" id="counter">1 / 10</div><button class="flash-btn" onclick="nextCard()"><i class="fa-solid fa-chevron-right"></i></button></div>
+<div class="flash-dots" id="dots"></div>
+</div>
+</div>
+<div class="panel" id="sources">
+<h1>Fuentes & Recursos</h1>
+<h3>NotebookLM (research lanzado)</h3>
+<ul><li><a href="https://notebooklm.google.com/notebook/0ae91d84-7c3d-414e-a3ed-2cfd93bf18d9" target="_blank">Notebook: Meeting Prep - Agustina Vidal</a> — incluye perfil cargado y deep research en curso (modo fast).</li></ul>
+<h3>Posibles perfiles públicos a verificar</h3>
+<ul>
+<li><a href="https://www.linkedin.com/in/vidalagustina/" target="_blank">Agustina Vidal — La Caja de Ahorro y Seguro (LinkedIn)</a></li>
+<li><a href="https://www.linkedin.com/in/agustina-vidal-024057213/" target="_blank">Agustina Vidal — Fox Sports / San Andrés (LinkedIn)</a></li>
+<li><a href="https://www.linkedin.com/in/agustina-vidal-1193a9a0/" target="_blank">Agustina Vidal — Singular Stories (LinkedIn)</a></li>
+<li><a href="https://twitter.com/AgusVidal__" target="_blank">@AgusVidal__ — Locutora / relatora de fútbol (Twitter/X)</a></li>
+<li><a href="https://www.youtube.com/c/AgustinaVidal/videos" target="_blank">Agustina Vidal — YouTube (locución y voz)</a></li>
+</ul>
+<p style="color:var(--muted);font-size:13px;margin-top:20px"><i class="fa-solid fa-circle-info"></i> Sin match único confirmado por email. Estrategia: pregunta abierta al arranque para mapear perfil real en 2-3 minutos.</p>
+</div>
+    </main>
+  </div>
+</div>
+<script>
+const briefingMD = `
+# Briefing Ejecutivo — Agustina Vidal
+
+## ⚠️ Lo más importante: no hay perfil único confirmado
+
+El email \`agustina.vidal.carballo@gmail.com\` no devuelve un match único en LinkedIn público ni en otras fuentes. Hay al menos 4 candidatas posibles en Argentina con perfiles muy distintos (corporativo, periodismo deportivo, marca personal/locución, productora). **No vayas a la reunión asumiendo cuál es** — el primer minuto del call tiene que resolver esa ambigüedad.
+
+## Cómo arrancar la llamada (literal)
+
+> "Hola Agustina, antes que nada — tu nombre es bastante común y no quiero arrancar con suposiciones. Contame en una frase: ¿en qué andás hoy y qué te trajo a agendar este call conmigo?"
+
+Esa pregunta resuelve el perfil en 2-3 minutos y orienta toda la conversación.
+
+## Marcos a tener listos según lo que diga
+
+| Si dice... | Vos abrís con... |
+|---|---|
+| "Trabajo en marketing/ventas en una empresa" | Casos de IA/n8n para automatización corporativa |
+| "Tengo mi propio emprendimiento / soy consultora" | Productos digitales, marca personal, marketing automation |
+| "Soy locutora / hago contenido / streamer" | Monetización de audiencia, cursos, membresías, IA en producción de contenido |
+| "Soy estudiante / quiero entrar al mundo IA" | Tu rol como docente UBA, comunidades, formación |
+| "Me recomendaron tu perfil" | Discovery más profundo: quién, por qué, qué dolor concreto |
+
+## Las 4 W de la primera mitad de la llamada
+
+1. **Who** — ¿Cómo te ves profesionalmente hoy? (rol, empresa o proyecto)
+2. **What** — ¿Qué proyecto/objetivo concreto tenés en mente?
+3. **Why now** — ¿Por qué este es el momento? ¿Qué pasó que te empujó a agendar?
+4. **What if** — ¿Cómo se ve el "éxito" en 90 días si trabajamos juntos?
+
+## Manejo de objeciones genéricas
+
+| Objeción | Respuesta |
+|---|---|
+| "No sé si esto es para mí, vine a explorar." | "Perfecto — explorar es exactamente para lo que sirve este call. Contame qué te llamó la atención del perfil y vemos si hay match real." |
+| "No tengo presupuesto todavía." | "No me preocupa el presupuesto hoy. Si después de hablar te llevás 2-3 ideas concretas que valen la pena, ya el call cumplió. Después decidimos." |
+| "Sigo a mucha gente, no sé en qué te diferenciás." | "La diferencia no la armo yo, la marca el problema que tenés. Contame uno y te muestro cómo lo encararía yo." |
+
+## Próximos pasos según outcome
+
+- **Match alto + dolor concreto:** propuesta de auditoría 1h gratis o consultoría de 4 sesiones.
+- **Match medio / explora:** mandarle 1 caso + 1 recurso gratis (skill IA, plantilla n8n) y agendar follow-up en 2 semanas.
+- **Match bajo:** referirla a contenido de UBA, podcast, o comunidad. No forzar.
+`;
+
+const intelMD = `
+# Discovery Plan — el call que valga los 30 minutos
+
+## Estructura recomendada (30 min)
+
+| Min | Bloque | Objetivo |
+|---|---|---|
+| 0-2 | Apertura + 4 W | Mapear quién es y por qué vino |
+| 2-10 | Profundizar el dolor | Entender el problema raíz, no el síntoma |
+| 10-20 | Mostrar valor | 1-2 ejemplos concretos relevantes a su perfil |
+| 20-25 | Co-diseñar el "next step" | Que ella proponga el siguiente paso, no vos |
+| 25-30 | Cierre y follow-up acordado | Recurso, fecha, expectativa clara |
+
+## Preguntas de oro (usá 3-4, no las 12)
+
+1. *"¿Qué intentaste antes para resolver esto y por qué no funcionó?"*
+2. *"Si esto se resuelve, ¿qué cambia en tu día a día / en tu negocio?"*
+3. *"¿Quién más decide / influye además de vos?"*
+4. *"¿Cuál es el peor escenario si no hacés nada en los próximos 6 meses?"*
+5. *"¿Cuánto vale para vos resolver esto, en pesos / horas / oportunidad perdida?"*
+6. *"¿Qué recurso (tiempo, plata, equipo) tenés disponible hoy para atacarlo?"*
+7. *"En tus palabras, ¿qué te tendría que mostrar yo hoy para que valga la pena seguir hablando?"*
+
+## Banderas rojas a detectar
+
+- ❌ Habla solo de funcionalidades, no de objetivos de negocio.
+- ❌ "Quiero hacer todo, no sé por dónde empezar." → necesita formación, no consultoría.
+- ❌ Otra persona es el verdadero decision-maker y ni siquiera está en el call.
+- ❌ Compara con cursos de USD 30 — anchor de precio no compatible.
+
+## Banderas verdes
+
+- ✅ Tiene métrica concreta de éxito y plazo.
+- ✅ Ya intentó algo (probó una herramienta, contrató freelance, hizo un curso).
+- ✅ Hace preguntas específicas tipo "¿esto se integra con X?".
+- ✅ Vino con preparación: vio tus posts, escuchó un podcast, la mandó alguien.
+`;
+
+const researchMD = `
+# Hipótesis de perfil — qué bibliotecas mentales tener listas
+
+## Hipótesis A — Profesional corporativa (probabilidad ~35 %)
+
+Si dice trabajar en empresa (ej. La Caja, alguna corporación):
+- **Dolor probable:** automatizar reportes, atención al cliente con IA, marketing automation interno.
+- **Tu ángulo:** consultoría de mediano plazo, integración con stack existente (HubSpot, Salesforce, etc.), pilotos medibles.
+- **Pricing anchor:** USD 3-8K por proyecto / USD 800-1500 por mes en retainer.
+
+## Hipótesis B — Emprendedora / consultora (probabilidad ~25 %)
+
+Si tiene su propio negocio:
+- **Dolor probable:** vende su tiempo (1-a-1) y no escala. Quiere productizar conocimiento.
+- **Tu ángulo:** productos digitales (curso, comunidad, membresía), automatización del funnel.
+- **Pricing anchor:** USD 1500-4000 mentoría 8 semanas / USD 297-997 producto digital.
+
+## Hipótesis C — Comunicadora / marca personal (probabilidad ~20 %)
+
+Si es la perfil pública (locutora, periodista, streamer):
+- **Dolor probable:** tiene audiencia pero no monetiza, o monetiza solo con marcas.
+- **Tu ángulo:** monetización de audiencia, cursos pagos, IA para producción de contenido (clipping, transcripción, repurpose).
+- **Pricing anchor:** comisión sobre revenue / sprint de 4 semanas USD 2-5K.
+
+## Hipótesis D — Estudiante / explorando (probabilidad ~15 %)
+
+Si está empezando:
+- **Dolor probable:** quiere entrar al mundo IA pero no sabe por dónde.
+- **Tu ángulo:** orientarla a tu contenido gratuito (UBA, podcast, comunidad), no venderle consultoría 1-a-1.
+- **Outcome ideal:** que te recomiende a alguien con más fit comercial.
+
+## Hipótesis E — Otra (probabilidad ~5 %)
+
+Stage de descubrimiento puro. Mantener mente abierta y aplicar 4 W sin atajos.
+
+---
+
+## Tendencias macro que probablemente tocan el caso (cualquiera sea el perfil)
+
+1. **IA ya no es ventaja, es tabla rasa.** El que sabe usarla bien gana al que no, en cualquier industria. Pero ya no es diferencial — es requisito.
+2. **El video corto es el canal de descubrimiento dominante.** TikTok, Reels, Shorts. LinkedIn nativo subiendo. Cualquier producto digital nuevo necesita video corto desde día 1.
+3. **n8n / make / agentes IA** democratizaron la automatización para no-developers. Es el momento de productizar workflows.
+4. **Comunidades pagas** (Skool, Whop, Circle) están en boom. Membresía recurrente > venta única.
+5. **La atención fragmentada empuja al producto vivo:** cohortes en vivo > curso evergreen muerto.
+`;
+
+const quizData = [
+  {q:"¿Cuál es la primera prioridad en el minuto 0 del call con Agustina?",o:["Presentar tu propuesta de servicios","Confirmar quién es ella usando una pregunta abierta","Mostrar casos de éxito","Preguntar el presupuesto"],a:1},
+  {q:"¿Cuántos perfiles distintos de Agustina Vidal aparecen en LinkedIn público?",o:["1 confirmado","2 candidatos","Al menos 4 candidatos sin match único","Ninguno"],a:2},
+  {q:"¿Qué framework propone Daniel G para la primera mitad del discovery?",o:["AIDA","Las 4 W (Who/What/Why now/What if)","SPIN selling","BANT"],a:1},
+  {q:"Si Agustina dice 'no tengo presupuesto todavía', ¿cuál es la respuesta recomendada?",o:["Cortar el call y agendar para más adelante","Bajar el precio inmediatamente","No me preocupa el presupuesto hoy, vemos si las ideas valen la pena","Ofrecer financiación"],a:2},
+  {q:"¿Qué pricing anchor aplicaría a la hipótesis 'profesional corporativa'?",o:["USD 100-300","USD 1500-4000","USD 3-8K por proyecto","USD 50K+"],a:2},
+  {q:"¿Cuál es una bandera roja en el discovery?",o:["Tiene métrica de éxito clara","Vino con preparación previa","Habla solo de funcionalidades, no de objetivos","Hace preguntas específicas"],a:2},
+  {q:"¿Qué outcome conviene si el match es bajo?",o:["Forzar la venta","Ofrecer descuento agresivo","Referirla a contenido o comunidad y no forzar","Cerrar el call enseguida"],a:2},
+  {q:"¿Cuál es la duración total del call agendado?",o:["15 minutos","30 minutos","45 minutos","1 hora"],a:1}
+];
+const flashData = [
+  {q:"¿Cuál es la primera pregunta a hacer en el call?",a:"'Contame en una frase: ¿en qué andás hoy y qué te trajo a agendar este call?'"},
+  {q:"¿Cuántas hipótesis de perfil hay que tener listas?",a:"5: corporativa, emprendedora, comunicadora, estudiante, otra."},
+  {q:"¿Qué significan las 4 W?",a:"Who (quién es), What (qué busca), Why now (por qué ahora), What if (cómo se ve el éxito)."},
+  {q:"¿Cuántas preguntas de discovery usar como máximo?",a:"3-4 de las 7 de la lista — más es interrogatorio."},
+  {q:"¿Pricing anchor para emprendedora?",a:"USD 1500-4000 mentoría 8 semanas; USD 297-997 producto digital."},
+  {q:"¿Pricing anchor para corporativa?",a:"USD 3-8K por proyecto / USD 800-1500 por mes en retainer."},
+  {q:"¿Tendencia clave en monetización de audiencia 2026?",a:"Comunidades pagas (Skool, Whop, Circle) y cohortes en vivo > curso evergreen."},
+  {q:"¿Bandera verde más importante?",a:"Tiene métrica concreta de éxito y plazo definido."},
+  {q:"¿Qué hacer si solo vino a explorar?",a:"Mandarle 1 caso + 1 recurso gratis y agendar follow-up en 2 semanas."},
+  {q:"¿Qué evitar si pertenece a Hipótesis D (estudiante)?",a:"No venderle consultoría 1-a-1. Orientarla a contenido gratuito y comunidad."}
+];
+
+function show(id,el){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');el.classList.add('active');}
+let score=0;let answered=new Set();
+function buildQuiz(){const host=document.getElementById('quiz-host');host.innerHTML=quizData.map((q,i)=>`<div class="quiz-q"><div class="quiz-q-title">Q${i+1}. ${q.q}</div>${q.o.map((o,j)=>`<div class="quiz-opt" onclick="answer(${i},${j},this)">${String.fromCharCode(65+j)}) ${o}</div>`).join('')}</div>`).join('');}
+function answer(qi,oi,el){if(answered.has(qi))return;answered.add(qi);const correct=quizData[qi].a===oi;el.classList.add(correct?'correct':'wrong');if(correct)score++;else{const opts=el.parentElement.querySelectorAll('.quiz-opt');opts[quizData[qi].a].classList.add('correct');}document.getElementById('score').textContent=`Score: ${score} / ${quizData.length}`;}
+let cur=0;
+function renderCard(){document.getElementById('card-front').textContent=flashData[cur].q;document.getElementById('card-back').textContent=flashData[cur].a;document.getElementById('card').classList.remove('flipped');document.getElementById('counter').textContent=`${cur+1} / ${flashData.length}`;document.getElementById('dots').innerHTML=flashData.map((_,i)=>`<div class="flash-dot ${i===cur?'active':''}"></div>`).join('');}
+function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
+function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
+document.getElementById('briefing-md').innerHTML=marked.parse(briefingMD);
+document.getElementById('intel-md').innerHTML=marked.parse(intelMD);
+document.getElementById('research-md').innerHTML=marked.parse(researchMD);
+buildQuiz();renderCard();
+</script>
+</body></html>

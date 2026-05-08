@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Leandro Saraví · RG Advisors</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root{--bg:#08080c;--panel:rgba(255,255,255,.04);--panel-border:rgba(255,255,255,.08);--text:#e6e6ec;--muted:#8a8a99;--accent:#3b82f6;--gold:#f0b429;--green:#22c55e;--red:#ef4444;--purple:#a855f7;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;background-image:radial-gradient(circle at 15% 10%,rgba(34,197,94,.10),transparent 40%),radial-gradient(circle at 85% 80%,rgba(59,130,246,.10),transparent 45%);}
+  .navbar{padding:18px 32px;border-bottom:1px solid var(--panel-border);display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(10px);position:sticky;top:0;z-index:10;background:rgba(8,8,12,.7)}
+  .brand{font-weight:700;font-size:18px;letter-spacing:-.01em}
+  .brand .dot{color:var(--gold)}
+  .date{color:var(--muted);font-size:13px}
+  .container{max-width:1280px;margin:0 auto;padding:32px}
+  .header{display:flex;gap:24px;align-items:flex-start;margin-bottom:32px;padding:28px;background:var(--panel);border:1px solid var(--panel-border);border-radius:16px;backdrop-filter:blur(8px)}
+  .avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:32px;flex-shrink:0}
+  .header-info h1{font-size:30px;letter-spacing:-.02em;margin-bottom:6px}
+  .role{color:var(--muted);font-size:15px;margin-bottom:12px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{padding:5px 12px;border-radius:999px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);font-size:12px;color:#86efac;font-weight:500}
+  .meta{margin-left:auto;text-align:right;color:var(--muted);font-size:13px;line-height:1.7}
+  .meta strong{color:var(--text);font-weight:500}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+  .stat{padding:24px;background:var(--panel);border:1px solid var(--panel-border);border-radius:14px}
+  .stat-label{color:var(--muted);font-size:12px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+  .stat-value{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .stat-sub{color:var(--gold);font-size:13px;margin-top:4px;font-weight:500}
+  .layout{display:grid;grid-template-columns:240px 1fr;gap:24px}
+  .sidebar{position:sticky;top:88px;height:fit-content;background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:12px}
+  .nav-tab{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:14px;transition:all .15s}
+  .nav-tab i{width:18px;text-align:center}
+  .nav-tab:hover{background:rgba(255,255,255,.04);color:var(--text)}
+  .nav-tab.active{background:rgba(34,197,94,.15);color:#86efac;border-left:2px solid var(--green);padding-left:12px}
+  .content{background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:36px;min-height:600px}
+  .panel{display:none}.panel.active{display:block}
+  .panel h1,.panel h2,.panel h3{letter-spacing:-.01em;margin:1.6em 0 .6em;font-weight:700}
+  .panel h1{font-size:26px;margin-top:0}.panel h2{font-size:21px;color:#bbf7d0;border-bottom:1px solid var(--panel-border);padding-bottom:8px}.panel h3{font-size:17px;color:var(--gold)}
+  .panel p,.panel li{font-size:15px;line-height:1.7;color:#d1d1da}
+  .panel ul,.panel ol{padding-left:24px;margin:.8em 0}.panel li{margin:.4em 0}
+  .panel strong{color:var(--text);font-weight:600}
+  .panel table{width:100%;border-collapse:collapse;margin:1em 0;font-size:14px}
+  .panel th,.panel td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--panel-border)}
+  .panel th{color:var(--gold);font-weight:600;background:rgba(240,180,41,.05)}
+  .panel blockquote{border-left:3px solid var(--green);padding:10px 16px;color:var(--muted);background:rgba(34,197,94,.05);margin:1em 0;border-radius:0 8px 8px 0}
+  .quiz-q{padding:20px;background:rgba(255,255,255,.02);border:1px solid var(--panel-border);border-radius:12px;margin-bottom:14px}
+  .quiz-q-title{font-weight:600;margin-bottom:14px}
+  .quiz-opt{display:block;padding:12px 14px;margin:6px 0;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--panel-border);cursor:pointer;font-size:14px;transition:all .15s}
+  .quiz-opt:hover{background:rgba(34,197,94,.08);border-color:var(--green)}
+  .quiz-opt.correct{background:rgba(34,197,94,.15);border-color:var(--green);color:#86efac}
+  .quiz-opt.wrong{background:rgba(239,68,68,.15);border-color:var(--red);color:#fca5a5}
+  .quiz-score{padding:14px;background:rgba(240,180,41,.1);border:1px solid var(--gold);border-radius:10px;text-align:center;font-weight:600;margin-bottom:20px}
+  .flash-stage{perspective:1500px;display:flex;flex-direction:column;align-items:center;gap:24px}
+  .flash-card{width:100%;max-width:560px;height:280px;cursor:pointer;transform-style:preserve-3d;transition:transform .6s}
+  .flash-card.flipped{transform:rotateY(180deg)}
+  .flash-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:14px;padding:30px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:18px;line-height:1.5}
+  .flash-front{background:linear-gradient(135deg,rgba(34,197,94,.15),rgba(59,130,246,.10));border:1px solid var(--panel-border);font-weight:600}
+  .flash-back{background:linear-gradient(135deg,rgba(240,180,41,.12),rgba(34,197,94,.08));border:1px solid rgba(240,180,41,.3);transform:rotateY(180deg);color:#fde68a}
+  .flash-controls{display:flex;gap:14px;align-items:center}
+  .flash-btn{padding:10px 18px;background:var(--panel);border:1px solid var(--panel-border);color:var(--text);border-radius:8px;cursor:pointer;font-size:14px}
+  .flash-btn:hover{background:rgba(34,197,94,.1)}
+  .flash-counter{color:var(--muted);font-size:14px}
+  .flash-dots{display:flex;gap:6px}.flash-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2)}.flash-dot.active{background:var(--gold)}
+  @media (max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:static}.stats{grid-template-columns:1fr}.meta{margin-left:0;text-align:left}.header{flex-direction:column}}
+</style>
+</head>
+<body>
+<nav class="navbar"><div class="brand">Cowork<span class="dot">.</span>OS · Meeting Prep</div><div class="date">Jueves, 7 de mayo de 2026</div></nav>
+<div class="container">
+  <div class="header">
+    <div class="avatar">LS</div>
+    <div class="header-info">
+      <h1>Leandro Saraví</h1>
+      <div class="role"><i class="fa-solid fa-chart-line"></i> &nbsp;Director · RG Advisors SA (asesoramiento financiero, CABA) — a confirmar</div>
+      <div class="tags"><span class="tag">Mercado de capitales</span><span class="tag">Asesoramiento financiero</span><span class="tag">IA aplicada a finanzas</span><span class="tag">Discovery moderado</span></div>
+    </div>
+    <div class="meta"><strong>Hoy 11:00 — 11:30</strong> ART<br>30 min · Cal.com video<br><a href="https://app.cal.com/video/vzoeDurpPrzZXpyeFySygt" style="color:#86efac;text-decoration:none">Abrir sala</a></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Hipótesis principal</div><div class="stat-value">RG Advisors</div><div class="stat-sub">Director / Presidente · 25 de Mayo 611, CABA</div></div>
+    <div class="stat"><div class="stat-label">Industria</div><div class="stat-value">Wealth Mgmt</div><div class="stat-sub">Asesores financieros independientes en boom AR</div></div>
+    <div class="stat"><div class="stat-label">Ángulo principal</div><div class="stat-value">IA + Cripto</div><div class="stat-sub">Research automatizado · agentes IA · educación digital</div></div>
+  </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="nav-tab active" onclick="show('briefing',this)"><i class="fa-solid fa-clipboard-list"></i> Executive Briefing</div>
+      <div class="nav-tab" onclick="show('intel',this)"><i class="fa-solid fa-bullseye"></i> Competitive Intel</div>
+      <div class="nav-tab" onclick="show('research',this)"><i class="fa-solid fa-magnifying-glass-chart"></i> Deep Research</div>
+      <div class="nav-tab" onclick="show('quiz',this)"><i class="fa-solid fa-circle-question"></i> Knowledge Test</div>
+      <div class="nav-tab" onclick="show('flash',this)"><i class="fa-solid fa-layer-group"></i> Flashcards</div>
+      <div class="nav-tab" onclick="show('sources',this)"><i class="fa-solid fa-link"></i> Fuentes & NotebookLM</div>
+    </aside>
+    <main class="content">
+<div class="panel active" id="briefing"><div id="briefing-md"></div></div>
+<div class="panel" id="intel"><div id="intel-md"></div></div>
+<div class="panel" id="research"><div id="research-md"></div></div>
+<div class="panel" id="quiz">
+<h1>Knowledge Test — 8 preguntas</h1>
+<div class="quiz-score" id="score">Score: 0 / 8</div>
+<div id="quiz-host"></div>
+</div>
+<div class="panel" id="flash">
+<h1>Flashcards — 10 hechos clave</h1>
+<div class="flash-stage">
+<div class="flash-card" id="card" onclick="this.classList.toggle('flipped')">
+<div class="flash-face flash-front" id="card-front"></div>
+<div class="flash-face flash-back" id="card-back"></div>
+</div>
+<div class="flash-controls"><button class="flash-btn" onclick="prevCard()"><i class="fa-solid fa-chevron-left"></i></button><div class="flash-counter" id="counter">1 / 10</div><button class="flash-btn" onclick="nextCard()"><i class="fa-solid fa-chevron-right"></i></button></div>
+<div class="flash-dots" id="dots"></div>
+</div>
+</div>
+<div class="panel" id="sources">
+<h1>Fuentes & Recursos</h1>
+<h3>NotebookLM</h3>
+<ul><li><a href="https://notebooklm.google.com/notebook/2b903af9-2fbb-4f87-997c-553c829ea16d" target="_blank">Notebook: Meeting Prep - Leandro Saraví</a> — perfil cargado + deep research lanzado.</li></ul>
+<h3>Verificación de identidad / contexto</h3>
+<ul>
+<li><a href="https://www.zoominfo.com/p/Leandro-Saravi/3757826562" target="_blank">ZoomInfo — Leandro Saravi · Director RG Advisors</a></li>
+<li><a href="https://ar.ypgo.net/Rg+Advisors+Sa-6747092748" target="_blank">RG Advisors SA — directorio empresarial AR (25 de Mayo 611)</a></li>
+<li><a href="https://www.dateas.com/es/empresa/rg-advisors-sa-30705464738" target="_blank">RG Advisors SA — Dateas (CUIT 30-70546473-8)</a></li>
+<li><a href="https://argsecurities.com/" target="_blank">ARG Securities Advisors — referencia del sector</a></li>
+<li><a href="https://rgg-group.net/" target="_blank">RGG Group — referencia del sector</a></li>
+</ul>
+<p style="color:var(--muted);font-size:13px;margin-top:20px"><i class="fa-solid fa-circle-info"></i> Match probable pero no confirmado por self-identification. Confirmar al inicio del call.</p>
+</div>
+    </main>
+  </div>
+</div>
+<script>
+const briefingMD = `
+# Briefing Ejecutivo — Leandro Saraví
+
+## 1. Perfil más probable de la persona
+
+**Hipótesis principal:** **Leandro Saraví, Director de RG Advisors SA** — firma de asesoramiento financiero ubicada en **25 de Mayo 611, CABA** (cambio de domicilio en 2018 a Paraguay 862, PB). En registros argentinos figura un **Leandro Daniel Saraví electo Presidente de RG Advisors SA en 2005**. ZoomInfo lo identifica como Director con email \`l***@rgadvisors.com\`. CUIT empresa: 30-70546473-8.
+
+> ⚠️ La hipótesis es fuerte pero no confirmada por self-identification al email gmail. Posible que use gmail para temas no laborales o haya cambiado de empresa. **Confirmá al arrancar.**
+
+## 2. Perfil de la empresa
+
+**RG Advisors SA** opera en el sector de asesoramiento financiero / inversiones en Argentina. Estructura típica:
+- Asesoramiento patrimonial a personas físicas y jurídicas.
+- Operaciones en mercado de capitales (acciones, bonos, FCI).
+- Probable Agente Productor (AP) o ALyC en el ecosistema de CNV.
+- Cliente típico: alta y media-alta renta, empresarios, profesionales.
+
+Hay **dos entidades distintas** que podrían confundirse:
+- **RG Advisors SA** (Leandro Saraví, hipótesis principal).
+- **RG Inversiones** — fundada por Ramiro Goncalves, opera con cursos y membresías. **No es el mismo Leandro.**
+
+## 3. Oportunidad de mercado — Wealth management AR 2025-2026
+
+- **Boom de asesores financieros independientes** en Argentina post-régimen de inflación 2022-2024 y dolarización selectiva del ahorro.
+- **Mercado de capitales argentino:** market cap ~USD 100B, volumen diario en alza por el blanqueo + estabilización.
+- **Cripto regulado:** ley argentina con marco para PSAV (Lemon, Buenbit, Ripio operando con licencia).
+- **Educación financiera digital** en boom: cursos, membresías, comunidades pagas. Caso "RG Inversiones" como referencia del modelo.
+- **IA en research financiero:** copilots tipo Bloomberg AI, agentes que generan reports diarios para clientes, screening automatizado.
+
+## 4. Puntos clave de conversación (4-5 ángulos a tener listos)
+
+1. **Research automatizado para clientes con IA / n8n.**
+   - Pregunta: *"¿Hoy mandás morning briefs / weeklies a tus clientes? ¿Quién los arma y cuánto te lleva?"*
+   - Pitch: agente IA + scraping de fuentes + plantilla → reduce 80% el tiempo de preparación.
+
+2. **CRM y nurturing automatizado de leads / referidos.**
+   - Pregunta: *"¿Cómo entran clientes nuevos hoy? ¿Tenés sistema o todo es boca-en-boca?"*
+   - Pitch: pipeline en HubSpot/Pipedrive + secuencias n8n por etapa.
+
+3. **Productos digitales (educación / membresía).**
+   - Pregunta: *"¿Tenés contenido que se monetice además del 1-a-1? ¿Ves potencial en eso?"*
+   - Pitch: caso "RG Inversiones" como benchmark — membresía + curso de 50 horas. Diversificación de revenue.
+
+4. **Cripto: cómo hablar con clientes que preguntan.**
+   - Pregunta: *"¿Cuántos clientes te preguntan por cripto y cómo lo manejás?"*
+   - Pitch: tu experiencia (Axel) en crypto + frameworks para asesorar sin tomar riesgo regulatorio innecesario.
+
+5. **Compliance y automatización de reportes regulatorios (CNV, AFIP).**
+   - Pregunta: *"¿Cuánto te come el compliance al mes?"*
+   - Pitch: ahorro de horas con automatizaciones específicas.
+
+## 5. Manejo de objeciones
+
+| Objeción | Respuesta |
+|---|---|
+| "El sector está muy regulado, no se puede automatizar tanto." | "Justamente — hay un piso de procesos repetitivos por compliance. La IA acelera la parte preparatoria del reporte, vos firmás. No reemplaza al asesor, le saca tareas administrativas." |
+| "Los clientes valoran el trato 1-a-1, no quiero algoritmizar." | "Concuerdo. Por eso la IA va atrás del trato, no adelante. El cliente sigue hablando con vos — vos llegás más preparado, con más data, en la mitad del tiempo." |
+| "Ya probamos un CRM y nadie lo usa." | "Lo más común. La diferencia: en lugar de pedirle al asesor que cargue, lo cargamos automáticamente desde mail/WhatsApp/calendar. El asesor no cambia su rutina." |
+| "Demasiado riesgo confiar data de clientes a una IA." | "Lo trabajamos con modelos privados / on-premise para data sensible. La parte pública (research de mercado) sí va a IA pública. Damos arquitectura segregada." |
+| "Mostrame un caso real del sector." | "Te puedo conectar con [referencia] que aplica esto a su práctica. ¿Querés que te lo arme y mando un loom con el set-up?" |
+
+## 6. Próximos pasos recomendados
+
+1. **Match alto + dolor concreto:** auditoría de 1h gratis sobre el funnel actual (research → comunicación → onboarding) con 5 quick wins automatizables en 30 días.
+2. **Match medio:** mandarle un loom de 8 min con un caso del sector + invitarlo a una mesa redonda / contenido próximo.
+3. **Match bajo:** intercambio de redes y referencia mutua (vos referís cliente con duda crypto, él te conecta con su red de inversores que pueden ser clientes corporativos para tus consultorías de IA).
+`;
+
+const intelMD = `
+# Competitive Intel — Wealth Management AR 2026
+
+## TOP 3 cosas a saber
+
+### 1. Argentina pasó de "miedo a perder" a "miedo a no estar" en 24 meses
+
+**Evidencia:**
+- Estabilización macro post-2024 + blanqueo de capitales 2024-2025.
+- Volumen del mercado de capitales AR creciendo doble dígito YoY.
+- Apertura de cuentas en ALyCs nuevas en niveles récord.
+- Inflación AR proyectada 2026: ~25-35 % anual (vs 200%+ en 2023).
+
+**Tu ángulo:** los AP / asesores que **escalen su capacidad de atención** ahora capturan los nuevos clientes. Los que sigan haciendo todo a mano se quedan.
+
+### 2. La pelea es por share of attention, no share of wallet
+
+**Evidencia:**
+- Cliente típico AR de alta renta tiene ya cuenta en banca privada + 1-2 ALyCs + algún broker internacional.
+- Lo que decide la lealtad ya no es producto (todos venden lo mismo) sino **frecuencia y calidad del contacto**.
+- Newsletter / morning brief / WhatsApp diario son los activos de retención más potentes.
+
+**Tu ángulo:** automatización del contacto = más frecuencia con la misma capacidad humana = más retención.
+
+### 3. La generación heredera necesita educación, no consejo
+
+**Evidencia:**
+- Transferencia generacional masiva de patrimonio en AR (los hijos de los empresarios de 60-70 reciben USD).
+- La generación heredera está digital, exige interfaz tipo Lemon / Cocos pero con asesoramiento humano.
+- Cursos y membresías financieras crecen 30-40 % YoY (caso RG Inversiones, MasterTrader).
+
+**Tu ángulo:** Leandro probablemente está perdiendo o le cuesta retener al hijo del cliente original. La educación digital + producto digital es la puerta de entrada.
+
+## NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
+
+- **USD 100B+** market cap del mercado argentino de capitales.
+- **+85 %** del ahorro privado AR está dolarizado (formal + informal).
+- **30-40 %** crecimiento YoY de cursos y membresías financieras digitales en LatAm.
+- **80 %** del tiempo de un asesor se va en tareas administrativas (research, reportes, compliance).
+- **3-5 %** comisión típica anual sobre AUM en asesoramiento independiente AR.
+- **USD 250-500** ticket medio de membresía financiera digital en LatAm (mensual / anual).
+- **+228 %** crecimiento de cuentas comitentes nuevas en CNV en últimos 18 meses (orden de magnitud).
+- **20 %** de los clientes ya pregunta por cripto al asesor tradicional, sólo el 5 % de asesores tiene respuesta estructurada.
+
+## QUIÉN ESTÁ EN LA ÓRBITA
+
+- **Cocos Capital, Balanz, IOL InvertirOnline:** brokers retail digitales que se llevan al cliente joven.
+- **Lemon, Buenbit, Ripio:** PSAV cripto, competencia por share of wallet del joven.
+- **Bloomberg, Refinitiv, Sentieo:** stack de research que solo grandes firmas pueden pagar.
+- **MasterTrader, RG Inversiones, ProsAcademy:** referencias del modelo "asesor + curso + comunidad".
+- **CNV (Comisión Nacional de Valores):** regulador, define el techo de qué se puede automatizar.
+- **AFIP / UIF:** compliance.
+`;
+
+const researchMD = `
+# Deep Research — Asesoramiento financiero AR en transición digital
+
+## Resumen ejecutivo
+
+El mercado argentino de wealth management vive su mayor reconfiguración estructural en 20 años: estabilización macro, blanqueo, dolarización y transferencia generacional de patrimonio se cruzan con la maduración de cripto regulado y la disrupción de IA en research. Para un asesor independiente como Leandro, el riesgo principal **no es la regulación** sino **quedarse fuera del flujo de atención del cliente joven** que recibe el patrimonio familiar.
+
+## Tabla — fuentes y señales clave
+
+| Fuente / señal | Insight | Por qué importa |
+|---|---|---|
+| ZoomInfo + registros AR | Leandro Saraví Director RG Advisors SA | Confirma perfil y empresa hipotética |
+| 25 de Mayo 611 / Paraguay 862 | Domicilio histórico CABA microcentro | Ubicación de banca privada tradicional |
+| Boom CNV cuentas comitentes | Mercado en expansión | Hay viento de cola para crecer |
+| Caso RG Inversiones (Goncalves) | Membresía 50hs + asesoramiento | Benchmark de monetización digital |
+| Cocos / Balanz / IOL retail digital | Captan al cliente joven con UX | Amenaza estructural para AP tradicional |
+| Lemon / Buenbit / Ripio | Cripto regulado AR | Categoría que el asesor no puede ignorar |
+| Bloomberg AI + Sentieo | IA en research institucional | Tecnología llegando al independiente |
+| MasterTrader / ProsAcademy | Cursos pagos LatAm | Mercado validado |
+| Reglamentaciones CNV 2024-2026 | Marco para AP y ALyC | Define lo automatizable |
+| Inflación AR cayendo | Más volumen, menos urgencia coyuntural | Cliente vuelve a pensar largo plazo |
+
+## 5 temas clave en profundidad
+
+### 1. La transferencia generacional silenciosa
+En AR, los empresarios de 55-75 años acumularon patrimonio en USD físicos, inmuebles e instrumentos offshore. Sus hijos (30-45) reciben ese patrimonio y **no quieren al asesor de papá**. Quieren UX digital, transparencia y educación. **Implicancia para Leandro:** si no tiene producto digital + canal joven, va a perder cuentas grandes en los próximos 5-10 años.
+
+### 2. El research como commodity
+Los reports diarios que un asesor manda manualmente ahora se generan en 90 segundos con IA + scraping de fuentes. **Implicancia:** si Leandro automatiza esto, libera 2-3 horas/día para hacer lo único que la IA no replica: la conversación humana de confianza.
+
+### 3. Cripto como tema de mesa, no de portfolio
+20 % de los clientes pregunta. Sólo 5 % de asesores tradicionales tiene respuesta estructurada. **Implicancia:** la educación crypto (no la operación) es un activo de retención. Axel tiene know-how directo acá.
+
+### 4. Compliance automatizable
+CNV, UIF y AFIP exigen reportes repetitivos que se pueden auto-generar desde el CRM. **Implicancia:** ahorro de 15-25 horas/mes por equipo. Es el "quick win" más fácil de demostrar.
+
+### 5. Educación digital como segundo revenue stream
+RG Inversiones, MasterTrader y similares facturan 6-7 cifras anuales en cursos y membresías. **Implicancia:** Leandro puede empaquetar su know-how como producto educativo y agregar 20-40 % de revenue sin tomar más clientes 1-a-1.
+`;
+
+const quizData = [
+  {q:"¿Cuál es la hipótesis más fuerte sobre Leandro?",o:["Locutor de fútbol","Director de RG Advisors SA en CABA","CEO de un banco","Estudiante UBA"],a:1},
+  {q:"¿En qué año fue electo Presidente de RG Advisors SA?",o:["1998","2002","2005","2012"],a:2},
+  {q:"¿Cuál es el ángulo principal para abrir la conversación?",o:["Vender un curso","Research automatizado con IA + n8n","Crypto trading agresivo","Pitch de 30 minutos"],a:1},
+  {q:"¿Qué porcentaje del tiempo de un asesor se va en tareas administrativas?",o:["20 %","50 %","80 %","95 %"],a:2},
+  {q:"¿Qué porcentaje de clientes ya pregunta por cripto al asesor tradicional?",o:["5 %","20 %","45 %","75 %"],a:1},
+  {q:"¿Cuál NO es competencia digital del asesor independiente AR?",o:["Cocos Capital","Balanz","Mercado Pago Inversiones","Sueño Dorado"],a:3},
+  {q:"¿Cuál es el riesgo estructural principal para Leandro a 5-10 años?",o:["Inflación","Perder al heredero (gen joven) que rechaza el asesor de papá","Sanciones de CNV","Crisis cambiaria"],a:1},
+  {q:"¿Cuál es la objeción y respuesta más alineada al tono regulatorio?",o:["Es muy caro / Te lo descuento","Demasiada regulación / IA va atrás del proceso, vos firmás","No tengo tiempo / Te lo armo yo","No me sirve / Otra industria"],a:1}
+];
+const flashData = [
+  {q:"¿Cuál es la empresa hipotética de Leandro?",a:"RG Advisors SA — domicilio 25 de Mayo 611 / Paraguay 862, CABA. CUIT 30-70546473-8."},
+  {q:"¿Cuál es la diferencia entre RG Advisors y RG Inversiones?",a:"Son entidades distintas. RG Advisors = Saraví (asesoramiento). RG Inversiones = Ramiro Goncalves (cursos/membresía)."},
+  {q:"¿Cuál es la pregunta de apertura recomendada?",a:"'Para arrancar bien, contame en qué andás hoy: ¿RG Advisors? ¿Algo nuevo?'"},
+  {q:"¿Cuál es el dolor más probable de un asesor financiero independiente?",a:"80 % del tiempo en tareas administrativas — research, reportes, compliance. La parte humana se reduce."},
+  {q:"¿Cuál es el quick win más fácil de demostrar?",a:"Automatización de reportes regulatorios (CNV, UIF, AFIP) — ahorra 15-25 horas/mes por equipo."},
+  {q:"¿Cuáles son los 3 ángulos principales del pitch?",a:"1) Research automatizado con IA. 2) CRM con nurturing automatizado. 3) Productos digitales (membresía + curso)."},
+  {q:"¿Cuál es la amenaza estructural a 5-10 años?",a:"Transferencia generacional: los hijos del cliente original prefieren UX digital y rechazan al asesor tradicional."},
+  {q:"¿Por qué cripto es relevante para esta reunión?",a:"20 % de clientes pregunta, solo 5 % de asesores tiene respuesta. La educación crypto es activo de retención."},
+  {q:"¿Cuál es la línea para defender frente a 'demasiado riesgo confiar data a IA'?",a:"Modelos privados / on-premise para data sensible; público para research de mercado. Arquitectura segregada."},
+  {q:"¿Cuál es el next step ideal si el match es alto?",a:"Auditoría de 1h gratis del funnel actual (research → comunicación → onboarding) con 5 quick wins en 30 días."}
+];
+function show(id,el){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');el.classList.add('active');}
+let score=0;let answered=new Set();
+function buildQuiz(){const host=document.getElementById('quiz-host');host.innerHTML=quizData.map((q,i)=>`<div class="quiz-q"><div class="quiz-q-title">Q${i+1}. ${q.q}</div>${q.o.map((o,j)=>`<div class="quiz-opt" onclick="answer(${i},${j},this)">${String.fromCharCode(65+j)}) ${o}</div>`).join('')}</div>`).join('');}
+function answer(qi,oi,el){if(answered.has(qi))return;answered.add(qi);const correct=quizData[qi].a===oi;el.classList.add(correct?'correct':'wrong');if(correct)score++;else{const opts=el.parentElement.querySelectorAll('.quiz-opt');opts[quizData[qi].a].classList.add('correct');}document.getElementById('score').textContent=`Score: ${score} / ${quizData.length}`;}
+let cur=0;
+function renderCard(){document.getElementById('card-front').textContent=flashData[cur].q;document.getElementById('card-back').textContent=flashData[cur].a;document.getElementById('card').classList.remove('flipped');document.getElementById('counter').textContent=`${cur+1} / ${flashData.length}`;document.getElementById('dots').innerHTML=flashData.map((_,i)=>`<div class="flash-dot ${i===cur?'active':''}"></div>`).join('');}
+function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
+function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
+document.getElementById('briefing-md').innerHTML=marked.parse(briefingMD);
+document.getElementById('intel-md').innerHTML=marked.parse(intelMD);
+document.getElementById('research-md').innerHTML=marked.parse(researchMD);
+buildQuiz();renderCard();
+</script>
+</body></html>
