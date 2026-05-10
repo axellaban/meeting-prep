@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Cecilia Escudero</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  :root { --bg:#08080c; --surface:#111118; --surface2:#1a1a26; --border:rgba(255,255,255,0.08); --accent:#3b82f6; --accent2:#8b5cf6; --gold:#f0b429; --text:#e2e8f0; --text-muted:#94a3b8; --success:#10b981; --danger:#ef4444; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; }
+  .navbar-back:hover { color:var(--text); }
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(59,130,246,0.05)); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,#8b5cf6,#3b82f6); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-icon.purple { background:rgba(139,92,246,0.15); color:#a78bfa; }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .notebooklm-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:14px; color:var(--gold); text-decoration:none; background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; transition:all 0.2s; }
+  .notebooklm-btn:hover { background:rgba(240,180,41,0.15); }
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(139,92,246,0.12),rgba(59,130,246,0.1)); border:1px solid rgba(139,92,246,0.3); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> Cowork OS — Meeting Prep</div>
+  <div class="navbar-date">Lunes 11 de Mayo, 2026</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+</nav>
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">CE</div>
+    <div class="header-info">
+      <div class="header-name">Cecilia Escudero</div>
+      <div class="header-title">Growth Performance Lead · GIGA IT | Ex-Docente UBA</div>
+      <div class="header-tags">
+        <span class="tag tag-purple"><i class="fas fa-rocket"></i> Growth Marketing</span>
+        <span class="tag tag-blue"><i class="fas fa-laptop-code"></i> GIGA IT</span>
+        <span class="tag tag-gold"><i class="fas fa-university"></i> Ex-UBA Posgrado</span>
+        <span class="tag tag-green"><i class="fas fa-chart-bar"></i> Performance</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> 10:30 hs</div>
+      <div class="meeting-date">Lunes 11/05/2026</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> Cal.com Video Call · 30 min</div>
+    </div>
+  </div>
+</div>
+<div style="max-width:1200px;margin:0 auto;padding:24px 32px;">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-dollar-sign"></i></div>
+      <div><div class="stat-value">$23.5B</div><div class="stat-label">Mercado IT Argentina 2026</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple"><i class="fas fa-percentage"></i></div>
+      <div><div class="stat-value">14.3%</div><div class="stat-label">CAGR IT Argentina hasta 2031</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-globe"></i></div>
+      <div><div class="stat-value">USA+AR</div><div class="stat-label">Presencia global de GIGA IT</div></div>
+    </div>
+  </div>
+</div>
+<div class="main-layout">
+  <div class="sidebar">
+    <div class="sidebar-tab active" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+    <div class="sidebar-tab" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+    <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
+    <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+    <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
+    <a href="https://notebooklm.google.com/notebook/2ad9257a-52c9-43c1-b629-127e2abcb62c" target="_blank" class="notebooklm-btn">
+      <i class="fas fa-book-open"></i> Abrir en NotebookLM
+    </a>
+  </div>
+  <div class="content">
+    <div id="tab-briefing" class="tab-pane active"><div class="markdown-body" id="briefing-content"></div></div>
+    <div id="tab-intel" class="tab-pane"><div class="markdown-body" id="intel-content"></div></div>
+    <div id="tab-research" class="tab-pane"><div class="markdown-body" id="research-content"></div></div>
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Click para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-chevron-left"></i></button>
+          <div class="dots" id="dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const briefingMd = `# Documento Ejecutivo de Preparación Pre-Reunión
+## Cecilia Escudero · GIGA IT
+---
+
+## 1) Perfil de la Persona
+
+**Cecilia Escudero** es una profesional con un perfil híbrido poco común: ejecutiva de growth en una empresa de IT global + ex-docente universitaria de posgrado en la UBA. Esta combinación le da una perspectiva única sobre la aplicación práctica de la tecnología y su transmisión académica.
+
+**Cargo actual:**
+- **Growth Performance Lead / Manager de Marketing** — GIGA IT (grupo-giga.com)
+- Dominio corporativo: grupo-giga.com (con presencia en Argentina y Houston, Texas)
+
+**Trayectoria:**
+- Growth Performance Lead — GIGA IT (presente)
+- Manager de Marketing — GIGA IT
+- **Docente de Posgrado — Universidad de Buenos Aires (UBA)**
+- Licenciada en Comunicación Social — UBA
+
+**Especialidades:**
+- Growth Marketing y Performance digital
+- Gestión ágil de proyectos tecnológicos
+- Digital Business y Ecommerce
+- Tecnología aplicada al marketing
+- Educación universitaria de posgrado
+
+**Contexto de la reunión:** 30 minutos vía Cal.com (10:30 hs Argentina). Perfil académico-ejecutivo. Ángulos potenciales: IA en growth, automatización de marketing, sinergia con ecosistema universitario.
+
+---
+
+## 2) Perfil de la Empresa (GIGA IT)
+
+**GIGA IT** es una empresa de tecnología e IT con operación en Argentina y USA (Houston, Texas).
+
+- **Dominio:** grupo-giga.com
+- **Servicios:** IT staff augmentation, desarrollo de software, servicios tecnológicos para empresas
+- **Presencia:** Argentina + Houston, TX (USA)
+- **CEO:** Eduardo Gonzalez Alcazar (enfoque en "pushing the boundaries of what's possible with technology")
+- **Reviews Clutch:** 8 reviews verificadas con calificaciones de performance
+- **Posicionamiento:** Staff augmentation y desarrollo de soluciones tecnológicas custom
+
+---
+
+## 3) Oportunidad de Mercado
+
+| Métrica | Cifra |
+|---|---|
+| Mercado IT Argentina 2025 | **USD 20.58 Billion** |
+| Mercado IT Argentina 2026 | **USD 23.52 Billion** |
+| CAGR IT Argentina hasta 2031 | **14.29%** |
+| Cloud Services CAGR hasta 2031 | **14.55%** |
+| Argentina ICT para 2031 | **USD 45.86 Billion** |
+
+**Tendencias clave del sector:**
+- **Desregulación Milei:** internet satelital competitivo, relajamiento de controles cambiarios, mandato digital en servicios públicos
+- **5G standalone privado:** operadores privados desplegando redes 5G independientes
+- **IA + IT Staff Augmentation:** demanda creciente de perfiles tech con expertise en IA
+- **Argentina como exportador de talento IT:** advantage competitiva en costos vs. USA/Europa
+
+---
+
+## 4) Puntos Clave de Conversación
+
+**1. Growth con IA — ¿Qué está usando GIGA IT?**
+Como Growth Performance Lead en una empresa de IT, Cecilia está en el epicentro de la adopción de IA en el sector.
+> *"Cecilia, en GIGA IT están en el cruce perfecto entre tecnología y growth. ¿Están integrando herramientas de IA en sus estrategias de adquisición de clientes? ¿Qué está funcionando mejor en el mercado de IT services para atraer clientes en USA?"*
+
+**2. El Puente Academia-Empresa — Docencia en UBA**
+Fue docente de posgrado en UBA. Eso le da acceso a talento emergente y credibilidad académica.
+> *"Tu experiencia como docente en la UBA es muy interesante. ¿Ves una brecha entre lo que se enseña en los posgrados y lo que realmente necesitan las empresas de IT? ¿Cómo está cambiando la demanda de skills en el mercado?"*
+
+**3. Staff Augmentation — El Modelo de Negocio Ganador en LATAM**
+El staff augmentation es el servicio de mayor crecimiento para empresas de IT en Argentina exportando a USA.
+> *"El modelo de staff augmentation hacia USA está explotando desde Argentina. ¿Es el principal driver de crecimiento de GIGA IT? ¿Cuáles son los desafíos más grandes en la escala de ese modelo?"*
+
+**4. Marketing para IT Services — Un Mercado Específico**
+El marketing de IT services B2B tiene sus propias reglas. Como Growth Lead, Cecilia es experta en esto.
+> *"El marketing para empresas de IT services es muy diferente al B2C. ¿Qué canales son los más efectivos para generar leads calificados de clientes empresariales en USA desde Argentina?"*
+
+**5. Automatización del Growth — Herramientas y Procesos**
+Como Growth Performance Lead, seguramente gestiona múltiples herramientas de automatización.
+> *"¿Qué stack de herramientas de growth y automatización están usando actualmente en GIGA IT? ¿Hay algún proceso que todavía sea manual y que les esté frenando el crecimiento?"*
+
+---
+
+## 5) Manejo de Objeciones
+
+| Objeción | Respuesta Recomendada |
+|---|---|
+| "Nuestro growth está cubierto internamente, no necesitamos apoyo externo" | Reencuadrar: no es sobre reemplazar sino sobre agregar capacidades específicas de IA o automatización que complementen al equipo existente. Preguntar qué proyectos están en el backlog pero sin recursos para ejecutar. |
+| "El mercado de IT services ya es muy competitivo, diferenciarse es difícil" | Validar: Argentina tiene 900+ empresas de IT exportando. Explorar qué hace único el positioning de GIGA IT y cómo se puede amplificar ese diferenciador con estrategias de growth más sofisticadas. |
+| "Tenemos presencia en USA pero no conocemos bien tu propuesta" | Usar la reunión como discovery, no como pitch. Explorar sus desafíos actuales y construir un caso de uso específico para GIGA IT en el follow-up. |
+
+---
+
+## 6) Próximos Pasos Recomendados
+
+1. **Mapear el growth stack actual de GIGA IT:** Identificar qué herramientas usan para generación de leads, automatización y medición para proponer integraciones de IA específicas
+
+2. **Conexión con el ecosistema UBA:** Explorar si hay oportunidad de colaborar en algún programa de posgrado — acceso directo a talento emergente de IT que GIGA IT podría necesitar contratar
+
+3. **Deep-dive en modelo USA:** Entender el proceso de venta y captación de clientes en el mercado norteamericano para identificar dónde hay mayor palanca de growth
+`;
+
+const intelMd = `# Cheat Sheet — Inteligencia Competitiva
+## Cecilia Escudero & GIGA IT
+---
+
+## TOP 3 COSAS A SABER
+
+**💡 1. Perfil Híbrido Único: Ejecutiva + Académica**
+- Growth Performance Lead en GIGA IT (empresa con presencia en Argentina y Houston, TX)
+- Ex-Docente de Posgrado en la UBA (Comunicación Social)
+- Esta combinación es inusual: ejecutiva que entendió cómo vender tecnología Y cómo enseñarla
+- Manager de Marketing en empresa de IT con clientes en USA
+> **Tu ángulo:** Hablarle desde la intersección tecnología-negocio-educación; es un trifecta único
+
+**🚀 2. GIGA IT — IT Staff Augmentation con Foco Global**
+- Empresa de IT con presencia en Argentina y Houston, Texas
+- CEO Eduardo Gonzalez Alcazar: foco en "pushing boundaries" con tecnología de punta
+- Mercado IT Argentina creciendo 14.29% CAGR hasta 2031
+- Staff augmentation: el modelo de negocio más escalable desde Argentina hacia USA
+> **Tu ángulo:** IA aplicada al growth de empresas de IT services que exportan a USA
+
+**📈 3. Mercado IT Argentina — Viento de Cola Extraordinario**
+- USD 20.58B (2025) → USD 23.52B (2026) → USD 45.86B (2031)
+- Desregulación Milei + estabilización macro = boom de inversión IT
+- Argentina exporta talento tech a tasas competitivas vs USA/Europa
+- 5G standalone privado en despliegue
+> **Tu ángulo:** Posicionarte como el que entiende la macro argentina Y el mercado tech global
+
+---
+
+## NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
+
+| Cifra | Contexto |
+|---|---|
+| **USD 23.52B** | Mercado IT Argentina proyectado para 2026 |
+| **14.29%** | CAGR del mercado IT argentino hasta 2031 |
+| **USD 45.86B** | Proyección mercado IT Argentina para 2031 |
+| **14.55%** | CAGR de Cloud Services en Argentina hasta 2031 |
+| **900+** | Empresas argentinas exportando IT services |
+| **Houston, TX** | Sede USA de GIGA IT — bridging LATAM con Norte América |
+| **UBA Posgrado** | Donde Cecilia enseñó — red de alumni tech argentina |
+| **B2B** | El foco del negocio de GIGA IT — marketing muy diferente al B2C |
+
+---
+
+## QUIÉN MÁS ESTÁ EN SU ÓRBITA
+
+- **Eduardo Gonzalez Alcazar** — CEO de GIGA IT, visionario de expansión
+- **UBA (Universidad de Buenos Aires)** — ex-institución como docente
+- **ARSAT / Mercado IT Argentino** — ecosystem al que pertenece GIGA IT
+- **Clutch.co** — plataforma de reviews donde GIGA IT tiene presencia verificada
+- **TechBehemoths** — directorio donde GIGA IT aparece entre top de Argentina
+- **Clientes de GIGA IT en USA** — empresas norteamericanas que contratan IT staff
+`;
+
+const researchMd = `# Reporte de Investigación Profunda
+## Cecilia Escudero & GIGA IT — IT Argentina 2025/2026
+---
+
+## Resumen Ejecutivo
+
+Cecilia Escudero es una profesional con un perfil híbrido valioso: ejecutiva de growth en GIGA IT (empresa de IT con operación en Argentina y USA) y ex-docente universitaria de posgrado en la UBA. El contexto macro es de oportunidad excepcional para empresas de IT argentinas: el mercado local crece de USD 20.58B (2025) a USD 23.52B (2026) con CAGR del 14.29% hasta 2031, impulsado por la desregulación del gobierno de Milei, la estabilización económica y la demanda global de talento tech latinoamericano.
+
+---
+
+## Tabla de Fuentes Clave
+
+| Fuente | Insight Clave | Por Qué Importa |
+|---|---|---|
+| GIGA IT — grupo-giga.com | Empresa de IT con operación en Argentina y Houston, TX | Entender el negocio y servicios |
+| CEO GIGA IT — SME Business Review | Foco en "pushing boundaries" con tecnología | Cultura y dirección estratégica |
+| Clutch.co — GIGA IT | 8 reviews verificadas con calificaciones | Reputación y tipo de clientes |
+| TechBehemoths — IT Staff Augmentation AR | GIGA IT en el top de Argentina 2026 | Competencia y posicionamiento |
+| Technavio — IT Market Argentina | USD 20.58B (2025) → crecimiento 9% anual | Tamaño del mercado |
+| Mordor Intelligence — ICT Argentina | CAGR 14.29%; Cloud Services 14.55% | Proyecciones de crecimiento |
+| Xcapit — Top AI Companies Argentina 2026 | Líderes en desarrollo de IA en Argentina | Ecosistema competitivo |
+| BBVA Research — Argentina Economic Outlook | Proyecciones macro para 2026 | Contexto económico |
+| Athenaworks — LATAM Developer Insights | Tasas y ecosistemas tech en LATAM | Ventaja competitiva de Argentina |
+| LinkedIn Cecilia Escudero | Trayectoria: GIGA IT + UBA Posgrado | Perfil profesional confirmado |
+
+---
+
+## Análisis Profundo: 5 Temas Clave
+
+### 1. Argentina IT — El Boom Silencioso de 2025-2026
+
+Argentina está viviendo un momento excepcional para el sector IT. La combinación de desregulación (Milei eliminó controles cambiarios, habilitó internet satelital competitivo, adoptó mandato digital en servicios públicos) con una base de talento tech altamente calificado y de costos competitivos frente a USA/Europa está atrayendo inversión y clientes internacionales. El mercado IT crece de USD 20.58B en 2025 a USD 45.86B proyectados para 2031, con cloud services liderando al 14.55% CAGR.
+
+### 2. IT Staff Augmentation — El Modelo Ganador desde Argentina
+
+El staff augmentation —contratar talento tech argentino para trabajar en proyectos de empresas norteamericanas y europeas— es el modelo de negocio de mayor crecimiento para empresas como GIGA IT. Argentina ofrece: talento de alta calidad, zona horaria compatible con USA Eastern, inglés profesional y costos entre 3-5x menores que USA. GIGA IT tiene sede en Houston, TX, lo que le da credibilidad legal y comercial para vender en el mercado norteamericano.
+
+### 3. Growth Marketing para IT Services — Un Mundo Diferente
+
+El marketing de servicios IT B2B es radicalmente diferente al B2C. Los ciclos de venta son largos (3-18 meses), los decision makers son CTOs y VPs of Engineering, y los canales más efectivos son LinkedIn (ABM), contenido técnico, referidos y eventos del sector. Cecilia, como Growth Performance Lead, está en la trinchera de este desafío todos los días. Su expertise es muy específico y valioso.
+
+### 4. El Perfil Académico — La UBA como Red y Credibilidad
+
+Haber enseñado posgrados en la UBA no es solo un ítem en el CV: es acceso a una red de miles de profesionales tech y de comunicación que estudian en la universidad más grande de Argentina. Esta red incluye futuros CTOs, Founders y decisores de empresas que en 5-10 años serán los compradores de servicios IT. Cecilia es un puente natural entre el mundo académico y el corporativo.
+
+### 5. IA en Growth — La Próxima Frontera para GIGA IT
+
+La IA está transformando el growth marketing en el sector IT. Herramientas de intent data (Bombora, G2), ABM automatizado (6sense, Demandbase), outreach con IA (Clay, Apollo) y personalización de contenido están redefiniendo cómo se adquieren clientes B2B enterprise. Para GIGA IT, que necesita posicionarse como empresa de tecnología de punta en el mercado de USA, adoptar estas herramientas es tanto una necesidad táctica como un argumento de venta.
+`;
+
+const quizQuestions = [
+  { q: "¿Cuál es el cargo actual de Cecilia Escudero en GIGA IT?", opts: ["A) CEO","B) Growth Performance Lead","C) Directora de Ventas","D) Head of Product"], ans: "B" },
+  { q: "¿En qué ciudad de USA tiene sede GIGA IT?", opts: ["A) Miami","B) New York","C) Houston, Texas","D) San Francisco"], ans: "C" },
+  { q: "¿En qué universidad fue docente de posgrado Cecilia Escudero?", opts: ["A) Universidad Austral","B) ITBA","C) Universidad de Buenos Aires (UBA)","D) UADE"], ans: "C" },
+  { q: "¿Cuál es la proyección del mercado IT argentino para 2026?", opts: ["A) USD 15.8 Billion","B) USD 18.2 Billion","C) USD 20.58 Billion","D) USD 23.52 Billion"], ans: "D" },
+  { q: "¿Cuál es el CAGR del mercado IT argentino hasta 2031?", opts: ["A) 6.5%","B) 9.8%","C) 14.29%","D) 20.1%"], ans: "C" },
+  { q: "¿Cuál es la licenciatura de Cecilia Escudero?", opts: ["A) Administración de Empresas","B) Comunicación Social","C) Ingeniería en Sistemas","D) Marketing"], ans: "B" },
+  { q: "¿Cuál es el modelo de negocio más relevante de GIGA IT?", opts: ["A) SaaS propio","B) Consultoría de management","C) IT Staff Augmentation","D) Desarrollo de apps móviles"], ans: "C" },
+  { q: "¿A cuánto proyecta crecer el mercado IT argentino para 2031?", opts: ["A) USD 30 Billion","B) USD 38 Billion","C) USD 45.86 Billion","D) USD 55 Billion"], ans: "C" }
+];
+
+const flashcards = [
+  { q: "¿Qué es GIGA IT y dónde opera?", a: "Empresa de tecnología e IT con operación en Argentina y Houston, Texas (USA). Se especializa en IT staff augmentation y desarrollo de software para clientes empresariales principalmente norteamericanos." },
+  { q: "¿Cuál es el perfil híbrido único de Cecilia Escudero?", a: "Growth Performance Lead / Manager de Marketing en GIGA IT + ex-Docente de Posgrado en la UBA. Combina ejecución corporativa de growth con background académico universitario." },
+  { q: "¿Cuál es el CAGR del mercado IT argentino hasta 2031?", a: "14.29%. Cloud Services crece aún más rápido al 14.55% CAGR. El mercado proyecta pasar de USD 20.58B (2025) a USD 45.86B (2031)." },
+  { q: "¿Por qué Argentina es competitiva en IT Staff Augmentation para USA?", a: "Talento altamente calificado, zona horaria compatible con USA Eastern, inglés profesional, y costos 3-5x menores que desarrolladores en USA/Europa. GIGA IT tiene sede en Houston para facilitar la relación comercial." },
+  { q: "¿Qué factores impulsan el boom IT en Argentina para 2026?", a: "Desregulación del gobierno de Milei (internet satelital competitivo, eliminación controles cambiarios, mandato digital en servicios públicos), 5G standalone privado en despliegue, y estabilización macroeconómica." },
+  { q: "¿Cuál es la licenciatura y universidad de Cecilia Escudero?", a: "Licenciada en Comunicación Social por la Universidad de Buenos Aires (UBA), donde también ejerció como docente de posgrado." },
+  { q: "¿Cómo es el marketing B2B para IT Services comparado con B2C?", a: "Ciclos de venta de 3-18 meses, decision makers son CTOs/VPs Engineering, canales más efectivos son LinkedIn ABM, contenido técnico, referidos y eventos del sector. Muy diferente al marketing masivo de consumo." },
+  { q: "¿Qué plataformas validan la reputación de GIGA IT?", a: "Clutch.co (8 reviews verificadas con calificaciones de performance) y TechBehemoths (aparece en el top de empresas de IT Staff Augmentation de Argentina para 2026)." },
+  { q: "¿Cuál es la proyección del mercado IT de Argentina para 2026?", a: "USD 23.52 Billion (desde USD 20.58B en 2025), creciendo a un ritmo del 9% anual según Technavio." },
+  { q: "¿Qué herramientas de IA están redefiniendo el growth B2B en IT Services?", a: "Intent data (Bombora, G2), ABM automatizado (6sense, Demandbase), outreach con IA (Clay, Apollo), y personalización de contenido. Están transformando la adquisición de clientes enterprise en el sector tech." }
+];
+
+document.getElementById('briefing-content').innerHTML = marked.parse(briefingMd);
+document.getElementById('intel-content').innerHTML = marked.parse(intelMd);
+document.getElementById('research-content').innerHTML = marked.parse(researchMd);
+
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+let score = 0;
+let answered = new Array(quizQuestions.length).fill(false);
+document.getElementById('total').textContent = quizQuestions.length;
+const qContainer = document.getElementById('quiz-container');
+quizQuestions.forEach((q, qi) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `<div class="question-num">Pregunta ${qi+1} de ${quizQuestions.length}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((opt,oi) => `<div class="option" onclick="selectOption(this,${qi},'${String.fromCharCode(65+oi)}','${q.ans}')"><div class="option-letter">${String.fromCharCode(65+oi)}</div><span>${opt.substring(3)}</span></div>`).join('')}</div>`;
+  qContainer.appendChild(div);
+});
+
+function selectOption(el, qi, letter, correct) {
+  if (answered[qi]) return;
+  answered[qi] = true;
+  el.parentElement.querySelectorAll('.option').forEach(o => o.classList.add('answered'));
+  if (letter === correct) { el.classList.add('correct'); score++; document.getElementById('score').textContent = score; }
+  else { el.classList.add('wrong'); el.parentElement.querySelectorAll('.option').forEach(o => { if (o.querySelector('.option-letter').textContent === correct) o.classList.add('correct'); }); }
+}
+
+let fcIndex = 0;
+document.getElementById('fc-total').textContent = flashcards.length;
+function renderDots() { document.getElementById('dots').innerHTML = flashcards.map((_,i) => `<div class="dot${i===fcIndex?' active':''}"></div>`).join(''); }
+function showCard() { document.getElementById('flashcard').classList.remove('flipped'); setTimeout(() => { document.getElementById('fc-question').textContent = flashcards[fcIndex].q; document.getElementById('fc-answer').textContent = flashcards[fcIndex].a; document.getElementById('fc-current').textContent = fcIndex + 1; renderDots(); }, 150); }
+function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
+function nextCard() { fcIndex = (fcIndex + 1) % flashcards.length; showCard(); }
+function prevCard() { fcIndex = (fcIndex - 1 + flashcards.length) % flashcards.length; showCard(); }
+showCard();
+</script>
+</body>
+</html>

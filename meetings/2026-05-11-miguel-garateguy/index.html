@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Miguel Garateguy</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  :root { --bg:#08080c; --surface:#111118; --surface2:#1a1a26; --border:rgba(255,255,255,0.08); --accent:#3b82f6; --accent2:#8b5cf6; --gold:#f0b429; --text:#e2e8f0; --text-muted:#94a3b8; --success:#10b981; --danger:#ef4444; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; }
+  .navbar-back:hover { color:var(--text); }
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg,rgba(240,180,41,0.06),rgba(59,130,246,0.05)); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,#f0b429,#ef4444); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .notebooklm-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:14px; color:var(--gold); text-decoration:none; background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; transition:all 0.2s; }
+  .notebooklm-btn:hover { background:rgba(240,180,41,0.15); }
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(240,180,41,0.1),rgba(239,68,68,0.06)); border:1px solid rgba(240,180,41,0.25); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> Cowork OS — Meeting Prep</div>
+  <div class="navbar-date">Lunes 11 de Mayo, 2026</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+</nav>
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">MG</div>
+    <div class="header-info">
+      <div class="header-name">Miguel Garateguy</div>
+      <div class="header-title">Consultor B2B · Supply Chain · Consultor Certificado Mercado Libre | Uruguay</div>
+      <div class="header-tags">
+        <span class="tag tag-gold"><i class="fas fa-boxes"></i> Supply Chain</span>
+        <span class="tag tag-blue"><i class="fas fa-handshake"></i> B2B Procurement</span>
+        <span class="tag tag-green"><i class="fas fa-store"></i> Mercado Libre</span>
+        <span class="tag tag-purple"><i class="fas fa-robot"></i> IA en Logística</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> 11:30 hs</div>
+      <div class="meeting-date">Lunes 11/05/2026</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> Cal.com Video Call · 30 min</div>
+    </div>
+  </div>
+</div>
+<div style="max-width:1200px;margin:0 auto;padding:24px 32px;">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-dollar-sign"></i></div>
+      <div><div class="stat-value">$15B+</div><div class="stat-label">Inversión Mercado Libre en la región</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-shipping-fast"></i></div>
+      <div><div class="stat-value">20+</div><div class="stat-label">Años en supply chain global</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-book"></i></div>
+      <div><div class="stat-value">Autor</div><div class="stat-label">Libro en Amazon — Control de Inventarios</div></div>
+    </div>
+  </div>
+</div>
+<div class="main-layout">
+  <div class="sidebar">
+    <div class="sidebar-tab active" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+    <div class="sidebar-tab" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+    <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
+    <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+    <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
+    <a href="https://notebooklm.google.com/notebook/0973a6ea-3d94-4175-b06d-03c44890ebc4" target="_blank" class="notebooklm-btn">
+      <i class="fas fa-book-open"></i> Abrir en NotebookLM
+    </a>
+  </div>
+  <div class="content">
+    <div id="tab-briefing" class="tab-pane active"><div class="markdown-body" id="briefing-content"></div></div>
+    <div id="tab-intel" class="tab-pane"><div class="markdown-body" id="intel-content"></div></div>
+    <div id="tab-research" class="tab-pane"><div class="markdown-body" id="research-content"></div></div>
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Click para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-chevron-left"></i></button>
+          <div class="dots" id="dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const briefingMd = `# Documento Ejecutivo de Preparación Pre-Reunión
+## Miguel Garateguy · Consultor B2B & Supply Chain
+---
+
+## 1) Perfil de la Persona
+
+**Miguel Garateguy** es un consultor con más de 20 años de experiencia en supply chain, procurement y proyectos B2B globales. Combina su rol de consultor independiente con docencia universitaria y una incipiente especialización en IA generativa aplicada a la cadena de suministro.
+
+**Roles actuales:**
+- **Docente de Logística** — Instituto de Alta Especialización Montevideo (DGETP-UTU)
+- **Docente** — Universidad de la Empresa (UDE), Uruguay
+- **Consultor B2B y Supply Chain** — Independiente
+- **Consultor Certificado de Mercado Libre**
+- **Mentor** — INGENIO Business Incubator (con INEFOP y WideGroup® Consulting)
+
+**Educación:**
+- Master en Supply Chain & E-Logistics
+- Especialización en IA generativa aplicada a procurement y purchasing
+
+**Publicaciones:**
+- Autor del libro *"Estrategia, Táctica y Operativa Del Control y Auditoría De Inventarios"* (Amazon, 2024) — enfocado en evitar pérdidas, omisiones y errores en gestión de inventarios
+
+**Especialidades:**
+- B2B procurement y compras estratégicas
+- Supply Chain Management y logística
+- Operaciones cross-border e internacionalización
+- Consultoría Mercado Libre (canal B2B y B2C)
+- Marketing Digital B2B
+- IA generativa en procurement
+
+**Contexto de la reunión:** 30 minutos vía Cal.com (11:30 hs Argentina = 11:30 hs Uruguay). Consultor-académico con experiencia real en supply chain y apertura hacia la IA.
+
+---
+
+## 2) Perfil Profesional (Actividad)
+
+Miguel opera como consultor independiente enfocado en tres áreas:
+
+1. **Consultoría B2B/Procurement:** Optimización de costos, gestión de proveedores y procesos de compras para empresas medianas y grandes en Uruguay y la región
+2. **Docencia universitaria:** Logística en DGETP-UTU y UDE Montevideo — forma a la próxima generación de profesionales de supply chain
+3. **Consultoría Mercado Libre:** Consultor certificado que ayuda a empresas a operar en el marketplace, incluyendo el nuevo módulo B2B (Mercado Libre Negocios)
+
+---
+
+## 3) Oportunidad de Mercado
+
+| Métrica | Cifra |
+|---|---|
+| Inversión Mercado Libre en la región | **USD 15+ billion** anunciados |
+| Expansión Mercado Libre B2B (Negocios) | Lanzamiento en LATAM — Sep 2025 |
+| E-commerce Uruguay — crecimiento | Mercado madurando con penetración creciente |
+| B2B E-commerce trends | Estándares B2C (velocidad, UX) llegando al B2B |
+
+**Tendencias clave:**
+- **Mercado Libre B2B:** Lanzó "Mercado Libre Negocios" en Sep 2025, entrando al mercado mayorista B2B de LATAM — enorme oportunidad para consultores certificados como Miguel
+- **IA en Supply Chain:** Automatización de procurement, demand forecasting con ML, gestión de inventarios predictiva
+- **B2B E-commerce:** Según DHL, los compradores B2B ahora esperan la misma experiencia que el B2C (velocidad, UX, transparencia)
+
+---
+
+## 4) Puntos Clave de Conversación
+
+**1. Mercado Libre Negocios — La Gran Oportunidad de 2025/2026**
+Mercado Libre lanzó su plataforma B2B mayorista en septiembre 2025. Como consultor certificado, Miguel está en el mejor momento de su carrera.
+> *"Miguel, Mercado Libre lanzó Negocios en sep 2025 entrando al B2B. Para un consultor certificado como vos, eso es una oportunidad enorme. ¿Cuántos de tus clientes actuales ya están mirando ese canal? ¿Estás ayudando a empresas a entrar al B2B de ML?"*
+
+**2. IA en Procurement — Su Área de Exploración**
+Está investigando aplicaciones de IA generativa en procurement. Es un early adopter en su sector.
+> *"Vi que estás explorando IA generativa aplicada a procurement. Es un área fascinante — hay herramientas que están automatizando desde la búsqueda de proveedores hasta la negociación inicial. ¿Qué herramientas estás probando? ¿Cuál es el caso de uso que más te entusiasma?"*
+
+**3. El Libro de Inventarios — ¿Qué Está Escribiendo Ahora?**
+Publicó un libro en Amazon en 2024. Eso habla de alguien que reflexiona sobre su práctica y quiere trascender su impacto.
+> *"Tu libro sobre control y auditoría de inventarios en Amazon es una jugada interesante. ¿Cómo fue la experiencia de publicarlo? ¿Estás trabajando en un siguiente libro o en algún programa de formación basado en ese contenido?"*
+
+**4. Cross-Border y Expansión Regional**
+Con 20+ años de experiencia en proyectos B2B globales, tiene expertise único en internacionalización.
+> *"Con tu experiencia en cross-border y proyectos internacionales, ¿cuáles son los errores más comunes que ves cuando empresas uruguayas o argentinas quieren escalar a otros mercados? ¿Qué es lo primero que falla?"*
+
+**5. Mentoring y Ecosistema Emprendedor**
+Participa en INGENIO Business Incubator como mentor. Tiene mentalidad de multiplicar impacto.
+> *"Participás como mentor en INGENIO. ¿Cuáles son los desafíos más frecuentes que ves en los emprendedores que mentoreás en temas de supply chain y operaciones? ¿Qué conocimiento es el más difícil de transmitir?"*
+
+---
+
+## 5) Manejo de Objeciones
+
+| Objeción | Respuesta Recomendada |
+|---|---|
+| "Ya tengo mis clientes y mis métodos establecidos, no necesito cambiar nada" | Validar su experiencia de 20+ años. Presentar la IA no como un cambio disruptivo sino como una potenciación de sus métodos: automatizar lo repetitivo para que pueda enfocarse en el valor agregado que solo él puede dar. |
+| "La IA en supply chain es hype, los sistemas legacy son difíciles de integrar" | Coincidirle que los sistemas legacy son el mayor obstáculo real. Mostrar casos de IA que funcionan sobre datos existentes sin reemplazar sistemas (ej. análisis de contratos con NLP, demand forecasting con Excel como input). |
+| "Uruguay es un mercado chico, las soluciones globales no se adaptan" | Validar: Uruguay es chico pero muy abierto al exterior. Precisamente su expertise en cross-border lo posiciona para conectar lo local con lo global. La IA no tiene fronteras — los mismos modelos que usan empresas en USA pueden aplicarse en Uruguay. |
+
+---
+
+## 6) Próximos Pasos Recomendados
+
+1. **Compartir recursos de IA en procurement:** Enviarle un curated list de herramientas de IA aplicadas a supply chain (demand forecasting, contract review, supplier management) que pueda probar y eventualmente recomendar a sus clientes
+
+2. **Proponer colaboración en contenido:** Explorar si hay interés en co-crear contenido (artículo, webinar, masterclass) sobre IA en supply chain — su credibilidad operativa + capacidades de IA es una combinación poderosa
+
+3. **Conectar con el ecosistema ML Negocios:** Ofrecer introducción a recursos o contactos del mundo de Mercado Libre B2B para potenciar su consultoría certificada en el nuevo módulo de negocios mayoristas
+`;
+
+const intelMd = `# Cheat Sheet — Inteligencia Competitiva
+## Miguel Garateguy · Supply Chain & B2B Uruguay
+---
+
+## TOP 3 COSAS A SABER
+
+**📦 1. Experto con 20+ Años en Supply Chain + Publicó un Libro**
+- +20 años de experiencia en procurement, supply chain y proyectos B2B globales
+- Master en Supply Chain & E-Logistics
+- Autor del libro "Estrategia, Táctica y Operativa Del Control y Auditoría De Inventarios" (Amazon, 2024)
+- Docente en UTU y UDE Montevideo — forma a la próxima generación
+> **Tu ángulo:** Tratar de igual a igual en temas técnicos; traer perspectiva de IA que complementa su expertise clásico
+
+**🛒 2. Consultor Certificado de Mercado Libre en el Momento Exacto**
+- Consultor certificado de Mercado Libre justo cuando ML lanzó su plataforma B2B (Mercado Libre Negocios, Sep 2025)
+- ML anunció USD 15+ billion en inversiones regionales
+- El B2B de ML es una oportunidad sin precedentes para consultores certificados
+> **Tu ángulo:** Ser el experto en IA y automatización que potencia sus servicios de consultoría ML B2B
+
+**🤖 3. Early Adopter de IA en Procurement — Campo Virgen**
+- Está explorando activamente aplicaciones de IA generativa en procurement y purchasing
+- Es uno de los pocos consultores de supply chain de Uruguay en hacerlo
+- Sus clientes aún no saben qué esperar de la IA — él puede ser el guía
+> **Tu ángulo:** Partner de IA para su práctica consultora — proveerte de frameworks y herramientas que él pueda implementar con sus clientes
+
+---
+
+## NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
+
+| Cifra | Contexto |
+|---|---|
+| **USD 15+ billion** | Inversiones anunciadas por Mercado Libre en la región |
+| **Sep 2025** | Lanzamiento de Mercado Libre Negocios (B2B mayorista) |
+| **20+ años** | Experiencia de Miguel en supply chain global |
+| **2024** | Año de publicación de su libro en Amazon |
+| **UTU + UDE** | Dos instituciones universitarias donde enseña |
+| **INGENIO** | Incubadora donde hace mentoring con INEFOP |
+| **Cross-border** | Su área de especialidad para internacionalización |
+| **B2B DHL 2025** | Compradores B2B ahora exigen experiencia estándar B2C |
+
+---
+
+## QUIÉN MÁS ESTÁ EN SU ÓRBITA
+
+- **DGETP-UTU (Instituto de Alta Especialización Montevideo)** — empleador académico principal
+- **UDE (Universidad de la Empresa)** — segunda institución académica
+- **INGENIO Business Incubator** — ecosistema de mentoring y emprendimiento
+- **INEFOP** — Agencia estatal uruguaya (financia programas de INGENIO)
+- **WideGroup® Consulting** — socio estratégico en el programa de INGENIO
+- **Mercado Libre** — certificación como consultor; cliente implícito en su consultoría
+- **Empresas clientes B2B** — PyMEs y medianas empresas en Uruguay y región
+`;
+
+const researchMd = `# Reporte de Investigación Profunda
+## Miguel Garateguy · Supply Chain & B2B Uruguay 2025/2026
+---
+
+## Resumen Ejecutivo
+
+Miguel Garateguy es un consultor con un perfil sólido y una oportunidad de mercado extraordinaria convergiendo en el momento exacto: tiene 20+ años de expertise en supply chain y procurement, es consultor certificado de Mercado Libre, y está explorando IA generativa — todo esto en un momento donde Mercado Libre lanzó su plataforma B2B mayorista (septiembre 2025) con USD 15+ billion en inversiones regionales. Es un profesional que puede multiplicar su impacto significativamente si integra IA en su práctica consultora.
+
+---
+
+## Tabla de Fuentes Clave
+
+| Fuente | Insight Clave | Por Qué Importa |
+|---|---|---|
+| LinkedIn — Miguel Garateguy | +20 años supply chain, consultor ML, docente UTU/UDE | Perfil profesional completo |
+| Amazon — Su Libro | "Estrategia, Táctica y Operativa Del Control y Auditoría De Inventarios" (2024) | Credibilidad como autor y experto |
+| Worldef — ML B2B Sep 2025 | MercadoLibre entra al mercado B2B de LATAM | Oportunidad enorme para consultor certificado |
+| Digital Commerce 360 — ML Negocios | Detalles operativos del lanzamiento B2B mayorista | Contexto del nuevo canal |
+| BNamericas — ML Inversiones | USD 15+ billion en inversiones regionales | Escala de la apuesta de ML |
+| DHL — B2B E-Commerce Trends 2025 | Compradores B2B exigen estándares B2C | Tendencia macro del sector |
+| Uruguay XXI | Perspectiva comercio internacional Uruguay 2026 | Contexto local del mercado |
+| UruguayDigital 2025 | Agenda digital SME del gobierno uruguayo | Marco regulatorio favorable |
+| ML Impact Report 2024 | Robots y eficiencia en fulfillment | Tecnología que ML está desplegando |
+| Paymentscmi — Uruguay Ecommerce | Perfiles de compradores y logística en Uruguay | Dinámica del mercado local |
+
+---
+
+## Análisis Profundo: 5 Temas Clave
+
+### 1. Mercado Libre B2B: La Mayor Oportunidad de la Carrera de Miguel
+
+En septiembre de 2025, Mercado Libre lanzó "Mercado Libre Negocios", su plataforma de B2B mayorista para LATAM. Esto es transformacional para el sector: ML tiene 218 millones de usuarios activos y una infraestructura logística que ningún actor regional puede igualar. Para Miguel, como consultor certificado de ML, es el momento más oportuno de su carrera: las empresas que venden y compran en formato B2B necesitan guía experta para navegar esta nueva plataforma. Sus 20+ años de expertise en procurement B2B combinados con su certificación ML lo posicionan de forma única.
+
+### 2. IA en Supply Chain: El Nuevo Diferenciador
+
+La IA está transformando el supply chain de maneras concretas y medibles: demand forecasting con ML reduce el exceso de inventario 20-30%, contract review con NLP acelera el análisis de contratos 80%, supplier risk scoring automatizado previene disrupciones, y la optimización de rutas con IA reduce costos logísticos 10-15%. Miguel está en las etapas iniciales de explorar esto — hay una oportunidad real de ayudarlo a construir un framework de "IA en Procurement" que pueda usar con sus clientes y en sus clases universitarias.
+
+### 3. El Libro como Activo Estratégico
+
+Publicar un libro en Amazon (2024) sobre control y auditoría de inventarios es una movida estratégica inteligente. Le da credibilidad diferenciada frente a otros consultores, le genera leads (quien busca ese tema y encuentra el libro puede convertirse en cliente), y establece su autoridad intelectual en el sector. La pregunta lógica es: ¿hay un programa de formación o curso derivado del libro? ¿Hay un siguiente libro planeado (quizás sobre IA en supply chain)?
+
+### 4. Uruguay como Hub Estable para Supply Chain Regional
+
+Uruguay tiene ventajas únicas como base para operaciones de supply chain en LATAM: estabilidad política y económica, infraestructura portuaria (Puerto de Montevideo como hub regional), zona franca con beneficios fiscales, y un gobierno con agenda digital activa (UruguayDigital 2025). Para empresas que quieren penetrar el Cono Sur, Uruguay es frecuentemente el punto de entrada. Miguel conoce este ecosistema mejor que nadie.
+
+### 5. B2B E-Commerce: La Convergencia de Mundos
+
+El B2B e-commerce está convergiendo con el B2C en términos de expectativas. Según DHL (2025), los compradores B2B ahora esperan la misma velocidad de entrega, transparencia de tracking y experiencia de usuario que tienen en el B2C. Esto está redefiniendo cómo las empresas B2B deben configurar sus operaciones de supply chain. Miguel, con su expertise en procurement y su certificación de ML, está exactamente en la intersección de este cambio.
+`;
+
+const quizQuestions = [
+  { q: "¿Cuántos años de experiencia tiene Miguel Garateguy en supply chain global?", opts: ["A) 5 años","B) 10 años","C) 15 años","D) Más de 20 años"], ans: "D" },
+  { q: "¿Cuál es la certificación de Mercado Libre que tiene Miguel Garateguy?", opts: ["A) Partner Premium","B) Consultor Certificado","C) Vendedor Elite","D) Technical Advisor"], ans: "B" },
+  { q: "¿Cuándo lanzó Mercado Libre su plataforma B2B mayorista (Negocios)?", opts: ["A) Enero 2025","B) Marzo 2025","C) Septiembre 2025","D) Diciembre 2025"], ans: "C" },
+  { q: "¿Qué publicó Miguel Garateguy en Amazon en 2024?", opts: ["A) Un manual de logística para startups","B) Un libro sobre estrategia y auditoría de inventarios","C) Un curso de Mercado Libre","D) Un libro sobre supply chain en LATAM"], ans: "B" },
+  { q: "¿Cuánto anunció invertir Mercado Libre en la región?", opts: ["A) USD 5 billion","B) USD 8 billion","C) USD 12 billion","D) Más de USD 15 billion"], ans: "D" },
+  { q: "¿En qué área está explorando actualmente aplicaciones de IA Miguel Garateguy?", opts: ["A) Marketing digital","B) Recursos humanos","C) Procurement y purchasing","D) Finanzas corporativas"], ans: "C" },
+  { q: "¿En qué incubadora participa como mentor Miguel Garateguy?", opts: ["A) ANDE","B) INGENIO Business Incubator","C) Endeavor Uruguay","D) ANII"], ans: "B" },
+  { q: "¿Qué nivel de posgrado tiene Miguel Garateguy en su especialidad?", opts: ["A) Especialización en Logística","B) Master en Supply Chain & E-Logistics","C) MBA con foco en Operaciones","D) Doctorado en Supply Chain"], ans: "B" }
+];
+
+const flashcards = [
+  { q: "¿Cuáles son los 3 roles principales actuales de Miguel Garateguy?", a: "1) Docente de Logística en UTU/UDE Montevideo, 2) Consultor B2B y Supply Chain independiente, 3) Consultor Certificado de Mercado Libre. También mentor en INGENIO Business Incubator." },
+  { q: "¿Qué libro publicó Miguel Garateguy en Amazon y de qué trata?", a: "'Estrategia, Táctica y Operativa Del Control y Auditoría De Inventarios' (2024). Enseña cómo evitar pérdidas, omisiones y errores en la gestión de inventarios para maximizar la rentabilidad." },
+  { q: "¿Qué es Mercado Libre Negocios y cuándo se lanzó?", a: "La plataforma B2B mayorista de Mercado Libre, lanzada en septiembre de 2025. Permite a empresas comprar y vender en volumen (B2B) usando la infraestructura y red de MercadoLibre. Es una oportunidad enorme para consultores certificados como Miguel." },
+  { q: "¿Cuál es la nueva área de exploración de Miguel en su consultoría?", a: "IA generativa aplicada a procurement y purchasing. Está investigando cómo usar herramientas de IA para optimizar procesos de compras, análisis de proveedores y gestión de inventarios." },
+  { q: "¿Por qué Uruguay es estratégico para supply chain en LATAM?", a: "Estabilidad política y económica, Puerto de Montevideo como hub regional, zona franca con beneficios fiscales, agenda digital activa del gobierno (UruguayDigital 2025) y acceso geográfico al Cono Sur." },
+  { q: "¿Cuánta inversión anunció Mercado Libre para la región?", a: "Más de USD 15 billion en inversiones regionales para expandir su infraestructura logística, tecnológica y su nueva plataforma B2B (Mercado Libre Negocios)." },
+  { q: "¿Cómo está cambiando el B2B e-commerce según tendencias 2025?", a: "Los compradores B2B ahora exigen los mismos estándares que el B2C: velocidad de entrega, transparencia de tracking y buena experiencia de usuario. El B2B está convergiendo con el B2C en expectativas operativas." },
+  { q: "¿En qué instituciones enseña Miguel Garateguy en Uruguay?", a: "Instituto de Alta Especialización Montevideo (DGETP-UTU) como Docente de Logística, y Universidad de la Empresa (UDE) en Montevideo." },
+  { q: "¿Qué hace una consultoría certificada de Mercado Libre?", a: "Ayuda a empresas a operar eficientemente en la plataforma ML: configuración de tiendas, optimización de listings, estrategias de pricing, gestión de fulfillment y ahora acceso al nuevo módulo B2B (Mercado Libre Negocios)." },
+  { q: "¿Cuáles son las áreas de expertise B2B de Miguel Garateguy?", a: "Procurement y compras estratégicas, Supply Chain Management, logística, operaciones cross-border e internacionalización, Marketing Digital B2B, y IA generativa en procurement. Más de 20 años de experiencia acumulada." }
+];
+
+document.getElementById('briefing-content').innerHTML = marked.parse(briefingMd);
+document.getElementById('intel-content').innerHTML = marked.parse(intelMd);
+document.getElementById('research-content').innerHTML = marked.parse(researchMd);
+
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+let score = 0;
+let answered = new Array(quizQuestions.length).fill(false);
+document.getElementById('total').textContent = quizQuestions.length;
+const qContainer = document.getElementById('quiz-container');
+quizQuestions.forEach((q, qi) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `<div class="question-num">Pregunta ${qi+1} de ${quizQuestions.length}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((opt,oi) => `<div class="option" onclick="selectOption(this,${qi},'${String.fromCharCode(65+oi)}','${q.ans}')"><div class="option-letter">${String.fromCharCode(65+oi)}</div><span>${opt.substring(3)}</span></div>`).join('')}</div>`;
+  qContainer.appendChild(div);
+});
+
+function selectOption(el, qi, letter, correct) {
+  if (answered[qi]) return;
+  answered[qi] = true;
+  el.parentElement.querySelectorAll('.option').forEach(o => o.classList.add('answered'));
+  if (letter === correct) { el.classList.add('correct'); score++; document.getElementById('score').textContent = score; }
+  else { el.classList.add('wrong'); el.parentElement.querySelectorAll('.option').forEach(o => { if (o.querySelector('.option-letter').textContent === correct) o.classList.add('correct'); }); }
+}
+
+let fcIndex = 0;
+document.getElementById('fc-total').textContent = flashcards.length;
+function renderDots() { document.getElementById('dots').innerHTML = flashcards.map((_,i) => `<div class="dot${i===fcIndex?' active':''}"></div>`).join(''); }
+function showCard() { document.getElementById('flashcard').classList.remove('flipped'); setTimeout(() => { document.getElementById('fc-question').textContent = flashcards[fcIndex].q; document.getElementById('fc-answer').textContent = flashcards[fcIndex].a; document.getElementById('fc-current').textContent = fcIndex + 1; renderDots(); }, 150); }
+function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
+function nextCard() { fcIndex = (fcIndex + 1) % flashcards.length; showCard(); }
+function prevCard() { fcIndex = (fcIndex - 1 + flashcards.length) % flashcards.length; showCard(); }
+showCard();
+</script>
+</body>
+</html>

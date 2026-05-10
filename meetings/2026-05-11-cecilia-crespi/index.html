@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Cecilia Maria Crespi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  :root { --bg:#08080c; --surface:#111118; --surface2:#1a1a26; --border:rgba(255,255,255,0.08); --accent:#3b82f6; --accent2:#8b5cf6; --gold:#f0b429; --text:#e2e8f0; --text-muted:#94a3b8; --success:#10b981; --danger:#ef4444; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; }
+  .navbar-back:hover { color:var(--text); }
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(139,92,246,0.05)); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,#10b981,#3b82f6); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .notebooklm-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:14px; color:var(--gold); text-decoration:none; background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; transition:all 0.2s; }
+  .notebooklm-btn:hover { background:rgba(240,180,41,0.15); }
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> Cowork OS — Meeting Prep</div>
+  <div class="navbar-date">Lunes 11 de Mayo, 2026</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+</nav>
+
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">CC</div>
+    <div class="header-info">
+      <div class="header-name">Cecilia Maria Crespi</div>
+      <div class="header-title">Customer Success Manager · VTEX (AR-PE-UY-PA)</div>
+      <div class="header-tags">
+        <span class="tag tag-green"><i class="fas fa-shopping-bag"></i> Ecommerce</span>
+        <span class="tag tag-blue"><i class="fas fa-handshake"></i> Customer Success</span>
+        <span class="tag tag-purple"><i class="fas fa-graduation-cap"></i> Educación Digital</span>
+        <span class="tag tag-gold"><i class="fas fa-star"></i> CACE Ex-Directora</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> 10:00 hs</div>
+      <div class="meeting-date">Lunes 11/05/2026</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> Cal.com Video Call · 30 min</div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:24px 32px;">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-dollar-sign"></i></div>
+      <div><div class="stat-value">$228B</div><div class="stat-label">E-commerce LATAM 2028</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-percentage"></i></div>
+      <div><div class="stat-value">+42%</div><div class="stat-label">Conversión Walmart AR con VTEX</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-users"></i></div>
+      <div><div class="stat-value">10+</div><div class="stat-label">Años en ecosistema ecommerce AR</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="sidebar">
+    <div class="sidebar-tab active" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+    <div class="sidebar-tab" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+    <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
+    <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+    <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
+    <a href="https://notebooklm.google.com/notebook/40e9716a-bc6d-4bda-b239-6e7593dc34ba" target="_blank" class="notebooklm-btn">
+      <i class="fas fa-book-open"></i> Abrir en NotebookLM
+    </a>
+  </div>
+  <div class="content">
+    <div id="tab-briefing" class="tab-pane active"><div class="markdown-body" id="briefing-content"></div></div>
+    <div id="tab-intel" class="tab-pane"><div class="markdown-body" id="intel-content"></div></div>
+    <div id="tab-research" class="tab-pane"><div class="markdown-body" id="research-content"></div></div>
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Click para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-chevron-left"></i></button>
+          <div class="dots" id="dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const briefingMd = `# Documento Ejecutivo de Preparación Pre-Reunión
+## Cecilia Maria Crespi · VTEX
+---
+
+## 1) Perfil de la Persona
+
+**Cecilia Maria Crespi** es una de las referentes más reconocidas del ecosistema de ecommerce argentino, con más de 10 años de experiencia desarrollando estrategias de aceleración de negocios digitales.
+
+**Roles actuales:**
+- **Customer Success Manager / Commerce Engineer** — VTEX (región AR, PE, UY, PA)
+- **Directora Académica** — Programas de educación en ecommerce (eCommerce Institute)
+- **Docente voluntaria** — Programa Digit.all de VTEX (50 becas gratuitas por cohorte)
+
+**Trayectoria destacada:**
+- **Directora Ejecutiva — CACE** (Cámara Argentina de Comercio Electrónico): Co-organizó eCommerceDay, desarrolló CyberMonday, HotSale y el Estudio Anual de E-commerce en Argentina
+- **Gerente de Negocios Digitales — Droguerías del Sud:** Pionera en digitalización del sector farma
+- **Board Member — Vital Voices Global Partnership** y **Voces Vitales Argentina**
+- **Directora — Comisión de Educación y RRHH de CACE**
+
+**Logros clave:**
+- Arquitecta de CyberMonday y HotSale en Argentina (eventos que hoy mueven cientos de millones de dólares)
+- Referente en 4 países simultáneamente (AR, PE, UY, PA) para VTEX
+- Certificación CAC Level 1 y Commerce Management Certification Level 1
+
+**Contexto de la reunión:** 30 minutos vía Cal.com. Perfil híbrido: ejecutiva de plataforma + educadora + referente de industria. Ángulos potenciales: IA en commerce, educación digital, expansión regional.
+
+---
+
+## 2) Perfil de la Empresa (VTEX)
+
+**VTEX** es la plataforma de commerce headless líder en Latinoamérica, cotizada en NYSE (VTEX).
+
+- **Modelo de negocio:** SaaS de comercio unificado (B2C, B2B, marketplace, omnichannel)
+- **Clientes emblemáticos:** Walmart Argentina (+42% conversión), Motorola, Whirlpool, C&A, Coca-Cola
+- **Presencia:** Fuerte en Argentina, Brasil, México; expansión global
+- **Tendencia 2025-2026:** Pivote hacia plataforma multi-producto impulsada por IA
+- **Resultados Q4 2025:** Transición hacia modelo de plataforma AI-driven documentada en resultados financieros
+- **Reconocimiento:** Gartner Voice of the Customer 2025 — destacada en satisfacción de clientes
+
+---
+
+## 3) Oportunidad de Mercado
+
+| Métrica | Cifra |
+|---|---|
+| E-commerce LATAM 2028 | **$228 mil millones** |
+| Crecimiento LATAM ecommerce/retail | 12.3% → 15.9% para 2028 |
+| Aumento conversión Walmart AR con VTEX | **+42%** |
+| Mercado IT Argentina 2025 | USD 20.58 Billion |
+| Crecimiento mercado IT AR 2025→2026 | USD 20.58B → USD 23.52B |
+
+**Tendencias clave:**
+- **AI Commerce:** VTEX pivotó a plataforma multi-producto AI-driven en 2025 — posiciona a Crespi en el centro de esta transformación
+- **Omnicanalidad:** El caso Walmart AR (+42% conversión) muestra el potencial del commerce unificado
+- **Educación en ecommerce:** Creciente demanda de profesionales certificados; Cecilia lidera la formación de la próxima generación
+
+---
+
+## 4) Puntos Clave de Conversación
+
+**1. VTEX AI Platform — ¿Qué significa para sus clientes?**
+VTEX anunció su pivote a plataforma multi-producto AI-driven en Q4 2025. Cecilia está en el centro de esta transformación.
+> *"Cecilia, VTEX anunció su estrategia AI-first para 2026. ¿Cómo está impactando esto en la adopción de los clientes en Argentina? ¿Cuáles son los mayores desafíos que ves en el proceso de onboarding con estas nuevas capacidades?"*
+
+**2. El Legado CACE — CyberMonday & HotSale**
+Fue arquitecta de los eventos de ecommerce más importantes de Argentina. Son su credencial más poderosa.
+> *"Sos una de las personas que construyó el ecosistema de ecommerce en Argentina desde cero, desde la CACE. ¿Qué diferencia ves entre el ecommerce argentino de 2015 y el de hoy? ¿Hacia dónde creés que va en los próximos 2 años?"*
+
+**3. Omnicanalidad como Estándar — Caso Walmart Argentina**
+El caso Walmart AR (+42% en conversión) es un ejemplo concreto del impacto de VTEX.
+> *"El caso Walmart Argentina es impresionante. ¿Es la omnicanalidad la nueva línea de base para el retail argentino, o todavía es un diferenciador competitivo para los retailers que la implementan?"*
+
+**4. Educación Digital — Digit.all y el Futuro del Talento**
+Dirige un programa con 50 becas que forma analistas de ecommerce. Es su pasión más allá del rol corporativo.
+> *"El programa Digit.all de VTEX es una iniciativa increíble. ¿Cómo ves la brecha de talento en ecommerce en Argentina? ¿Qué habilidades son las más difíciles de encontrar en el mercado hoy?"*
+
+**5. Su Visión Regional — 4 Países Simultáneos**
+Maneja Argentina, Perú, Uruguay y Panamá. Tiene una perspectiva única sobre las diferencias de cada mercado.
+> *"Manejás 4 mercados muy diferentes al mismo tiempo (AR, PE, UY, PA). ¿Cuál es el mercado que más te sorprende en su evolución digital? ¿Dónde ves la mayor oportunidad sin explotar?"*
+
+---
+
+## 5) Manejo de Objeciones
+
+| Objeción | Respuesta Recomendada |
+|---|---|
+| "Estoy muy enfocada en los clientes actuales de VTEX, no tengo ancho de banda" | Reconocer el valor de su foco. Proponer algo que le ayude a sus clientes actuales, no que compita con su tiempo. Posicionarse como un recurso que potencia su trabajo. |
+| "Ya cubrimos todo lo que necesitan nuestros clientes con la plataforma VTEX" | Explorar las fricciones que sí existen: integración con sistemas legacy, formación de equipos, medición de ROI. Identificar dónde hay gaps que no cubre la plataforma. |
+| "Prefiero conectarte con el equipo de ventas de VTEX" | Agradecer la conexión y aclarar que el objetivo es aprender de su perspectiva de Customer Success — nadie conoce mejor las necesidades reales de los clientes que quien los acompaña post-venta. |
+
+---
+
+## 6) Próximos Pasos Recomendados
+
+1. **Conectar a través del ecosistema CACE/eCommerceDay:** Proponer aparecer juntos en un panel o evento de la industria — aprovecha su red y posiciona a Axel en el ecosistema
+
+2. **Compartir caso de uso de IA en Customer Success:** Enviar un caso específico de cómo herramientas de IA pueden reducir el tiempo de onboarding de clientes en plataformas SaaS de commerce
+
+3. **Explorar sinergia con Digit.all:** Proponer colaboración como speaker o mentor en el programa de formación de VTEX — acceso directo a la próxima generación de profesionales de ecommerce
+`;
+
+const intelMd = `# Cheat Sheet — Inteligencia Competitiva
+## Cecilia Crespi & VTEX Argentina
+---
+
+## TOP 3 COSAS A SABER
+
+**🏗️ 1. Arquitecta del Ecosistema Ecommerce Argentino**
+- Co-creó CyberMonday y HotSale siendo Directora Ejecutiva de la CACE
+- Estos eventos hoy mueven cientos de millones de dólares en Argentina
+- Construyó el Estudio Anual de E-commerce argentino (referencia de la industria)
+- Board member de Vital Voices Global Partnership (liderazgo femenino)
+> **Tu ángulo:** Hablarle como a una par que construyó la industria, no como a una ejecutiva corporativa más
+
+**🤖 2. VTEX en Pivote AI-First — Ella es el Puente**
+- VTEX anunció transición a plataforma multi-producto AI-driven en Q4 2025
+- Cecilia es el punto de contacto entre la tecnología y los clientes en 4 países
+- Caso emblema: Walmart Argentina +42% conversión con VTEX omnichannel
+- Gartner Voice of the Customer 2025: VTEX destacada en satisfacción
+> **Tu ángulo:** Ser el experto en IA que la ayuda a implementar la visión AI-first de VTEX con sus clientes
+
+**📚 3. Educadora y Formadora de Ecosistema**
+- Directora Académica en programas de ecommerce (eCommerce Institute)
+- Docente voluntaria en Digit.all: 50 becas gratuitas financiadas por VTEX
+- Pasión genuina por reducir la brecha de talento digital en LATAM
+> **Tu ángulo:** Colaboración en educación — posicionarte como speaker/mentor en sus programas
+
+---
+
+## NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
+
+| Cifra | Contexto |
+|---|---|
+| **+42%** | Aumento en conversión de Walmart Argentina con VTEX omnichannel |
+| **$228B** | E-commerce LATAM proyectado para 2028 |
+| **10 años** | Experiencia de Cecilia en el ecosistema digital argentino |
+| **4 países** | Mercados que maneja simultáneamente (AR, PE, UY, PA) |
+| **50 becas** | Por cohorte del programa Digit.all de VTEX |
+| **USD 23.52B** | Mercado IT Argentina proyectado para 2026 |
+| **15.9%** | Participación del ecommerce en retail LATAM para 2028 |
+| **Q4 2025** | Cuando VTEX anunció su pivote a plataforma AI-driven |
+
+---
+
+## QUIÉN MÁS ESTÁ EN SU ÓRBITA
+
+- **VTEX** — Plataforma empleadora, cotizada en NYSE
+- **CACE** — Ex-Directora Ejecutiva; red de todos los players del ecommerce argentino
+- **eCommerce Institute** — Directora académica de programas de formación
+- **Vital Voices Global Partnership** — Red global de liderazgo femenino
+- **Voces Vitales Argentina** — Capítulo local de Vital Voices
+- **Walmart Argentina** — Cliente referencia de VTEX con caso de éxito documentado
+- **eCommerceDay Argentina** — Co-organizadora, uno de los eventos más grandes de la industria
+`;
+
+const researchMd = `# Reporte de Investigación Profunda
+## Cecilia Crespi & VTEX — Ecosistema Ecommerce Argentina 2025/2026
+---
+
+## Resumen Ejecutivo
+
+Cecilia Crespi es una de las tres o cuatro personas que literalmente construyeron el ecosistema de ecommerce institucional en Argentina. Desde la CACE creó los eventos más grandes del sector (CyberMonday, HotSale) y hoy desde VTEX es el nexo entre la tecnología más avanzada de commerce y los retailers y marcas líderes de 4 países. El contexto 2026 es de transformación radical: VTEX pivotó a AI-first, el ecommerce LATAM sigue creciendo hacia $228B para 2028, y hay una brecha de talento digital que Cecilia está activamente tratando de cerrar.
+
+---
+
+## Tabla de Fuentes Clave
+
+| Fuente | Insight Clave | Por Qué Importa |
+|---|---|---|
+| eCommerce Day Argentina 2023 | Cecilia moderando casos de éxito VTEX | Rol de liderazgo en el ecosistema |
+| VTEX — Walmart Argentina Case | +42% conversión con estrategia omnichannel | Impacto concreto de la plataforma |
+| VTEX Annual Report 2025 | Pivote a plataforma AI multi-producto | Contexto estratégico de su empleador |
+| VTEX Q4 2025 Financial Results | Resultados y dirección AI-driven | Estado actual de la empresa |
+| Gartner Voice of Customer 2025 | VTEX destacada en satisfacción | Credibilidad del producto que vende |
+| eCommerce Institute | Directora académica de programas pharma/beauty | Rol educativo más allá de VTEX |
+| LinkedIn de Cecilia Crespi | 10+ años de trayectoria; roles actuales | Perfil profesional completo |
+| eCommerceDay Argentina 2024 | Speaker y panelista activa | Visibilidad en la industria |
+
+---
+
+## Análisis Profundo: 5 Temas Clave
+
+### 1. VTEX y el Pivote AI-First (2025-2026)
+
+VTEX anunció en Q4 2025 su transición hacia una plataforma multi-producto impulsada por IA. Esto no es un anuncio de marketing — está documentado en sus reportes financieros y representó un cambio estratégico significativo. Para Cecilia, esto significa que en 2026 está onboardeando a sus clientes no solo en una nueva versión de la plataforma, sino en una forma completamente diferente de operar el commerce. La IA de VTEX abarca personalización, búsqueda inteligente, pricing dinámico y automatización de operaciones omnichannel.
+
+### 2. El Legado CACE — Cómo se Construye un Ecosistema
+
+Pocos ejecutivos pueden decir que literalmente construyeron la industria en la que trabajan. Cecilia puede. Desde la CACE diseñó y ejecutó los eventos de ecommerce más importantes de Argentina: CyberMonday (ahora un evento de $200M+ en ventas en 24hs) y HotSale. También desarrolló el Estudio Anual de E-commerce en Argentina, que se convirtió en la referencia de datos del sector para retailers, marcas e inversores.
+
+### 3. El Caso Walmart Argentina — Referencia de Omnicanalidad
+
+VTEX documentó el caso de Walmart Argentina como uno de sus casos de éxito más relevantes en la región. La implementación omnichannel resultó en un aumento del 42% en la tasa de conversión. Este número es particularmente poderoso porque Walmart Argentina es un retailer con miles de SKUs, múltiples canales (web, app, puntos de venta físicos) y una base de clientes masiva. Un aumento del 42% en conversión en ese contexto representa cientos de millones de pesos en ventas adicionales.
+
+### 4. Brecha de Talento Digital y la Misión Educativa
+
+Uno de los temas más relevantes para Cecilia va más allá de su rol en VTEX: la formación de talento digital en Argentina y LATAM. El programa Digit.all, donde participa como docente voluntaria, ofrece 50 becas gratuitas por cohorte para formar analistas de ecommerce. Este compromiso genuino con la educación habla de sus valores y puede ser un punto de conexión muy potente en la conversación.
+
+### 5. El Ecommerce Argentino en 2026: Entre la Inflación y la Oportunidad
+
+Argentina presenta una paradoja única: un contexto macroeconómico complejo (inflación, controles cambiarios que se están relajando bajo Milei) pero un ecosistema digital maduro y con consumidores altamente digitalizados. El mercado IT argentino crece de USD 20.58B (2025) a USD 23.52B (2026) con CAGR del 14.29% hasta 2031. Los retailers que invirtieron en ecommerce durante la crisis están cosechando los beneficios de la normalización económica.
+`;
+
+const quizQuestions = [
+  { q: "¿Cuál fue el rol de Cecilia Crespi en la Cámara Argentina de Comercio Electrónico (CACE)?", opts: ["A) Presidenta","B) Directora Ejecutiva","C) Tesorera","D) Vocal"], ans: "B" },
+  { q: "¿Cuántos países maneja Cecilia Crespi como Customer Success Manager en VTEX?", opts: ["A) 2 países","B) 3 países","C) 4 países","D) 5 países"], ans: "C" },
+  { q: "¿Cuál es el evento de ecommerce que Cecilia ayudó a crear siendo Directora de CACE?", opts: ["A) eCommerceDay","B) HotSale y CyberMonday","C) Black Friday Argentina","D) Digital Commerce Week"], ans: "B" },
+  { q: "¿Cuánto aumentó la conversión de Walmart Argentina tras implementar VTEX omnichannel?", opts: ["A) 15%","B) 28%","C) 42%","D) 55%"], ans: "C" },
+  { q: "¿Cuántas becas gratuitas ofrece el programa Digit.all de VTEX por cohorte?", opts: ["A) 20 becas","B) 30 becas","C) 50 becas","D) 100 becas"], ans: "C" },
+  { q: "¿Cuál es la proyección del mercado IT de Argentina para 2026?", opts: ["A) USD 15.2 Billion","B) USD 18.5 Billion","C) USD 20.58 Billion","D) USD 23.52 Billion"], ans: "D" },
+  { q: "¿Qué anunció VTEX en Q4 2025 según sus reportes financieros?", opts: ["A) Fusión con Shopify","B) Pivote a plataforma multi-producto AI-driven","C) Salida del mercado argentino","D) Lanzamiento de marketplace propio"], ans: "B" },
+  { q: "¿A qué red de liderazgo femenino global pertenece Cecilia Crespi?", opts: ["A) Women in Tech","B) Lean In Network","C) Vital Voices Global Partnership","D) Global Women Leaders"], ans: "C" }
+];
+
+const flashcards = [
+  { q: "¿Qué evento masivo de ecommerce co-creó Cecilia en la CACE?", a: "CyberMonday y HotSale: los dos eventos de ecommerce más grandes de Argentina. CyberMonday mueve más de $200M en ventas en 24 horas. También desarrolló el Estudio Anual de E-commerce en Argentina." },
+  { q: "¿En qué países es responsable Cecilia Crespi como Customer Success Manager en VTEX?", a: "Argentina, Perú, Uruguay y Panamá. Maneja 4 mercados simultáneamente, con realidades muy diferentes entre sí." },
+  { q: "¿Qué resultado logró VTEX con Walmart Argentina?", a: "+42% de aumento en la tasa de conversión tras implementar la estrategia omnichannel de VTEX. Es uno de los casos de éxito más documentados de la plataforma en la región." },
+  { q: "¿Qué es el programa Digit.all de VTEX?", a: "Programa gratuito de formación en ecommerce con 50 becas por cohorte, financiado por VTEX. Incluye entrenamiento técnico, networking y certificación como analista de ecommerce. Cecilia es docente voluntaria." },
+  { q: "¿Qué cambio estratégico anunció VTEX en Q4 2025?", a: "VTEX pivotó hacia una plataforma multi-producto impulsada por IA (AI-driven). Esto incluye personalización, búsqueda inteligente, pricing dinámico y automatización omnichannel." },
+  { q: "¿Qué reconocimiento recibió VTEX en 2025 de Gartner?", a: "Gartner Voice of the Customer 2025: VTEX fue destacada en satisfacción de clientes dentro del mercado de Digital Commerce." },
+  { q: "¿Cuál es la trayectoria previa de Cecilia antes de VTEX?", a: "Directora Ejecutiva de CACE (co-creó CyberMonday, HotSale y el Estudio Anual), Gerente de Negocios Digitales en Droguerías del Sud, Board Member de Vital Voices Global Partnership." },
+  { q: "¿A cuánto se proyecta el mercado IT argentino para 2026?", a: "USD 23.52 billion (desde USD 20.58B en 2025), con CAGR del 14.29% hasta 2031. Cloud Services crece al 14.55% hasta 2031." },
+  { q: "¿Cuál es la certificación que obtuvo Cecilia Crespi?", a: "CAC Level 1 (Customer Advisory Council) y Commerce Management Certification Level 1, ambas relacionadas con la plataforma VTEX." },
+  { q: "¿Qué representa el e-commerce en el retail total de LATAM para 2028?", a: "15.9% (versus 12.3% actual), con ventas totales de ecommerce proyectadas en $228 mil millones para 2028 en LATAM." }
+];
+
+document.getElementById('briefing-content').innerHTML = marked.parse(briefingMd);
+document.getElementById('intel-content').innerHTML = marked.parse(intelMd);
+document.getElementById('research-content').innerHTML = marked.parse(researchMd);
+
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+let score = 0;
+let answered = new Array(quizQuestions.length).fill(false);
+document.getElementById('total').textContent = quizQuestions.length;
+const qContainer = document.getElementById('quiz-container');
+quizQuestions.forEach((q, qi) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `<div class="question-num">Pregunta ${qi+1} de ${quizQuestions.length}</div><div class="question-text">${q.q}</div><div class="options">${q.opts.map((opt,oi) => `<div class="option" onclick="selectOption(this,${qi},'${String.fromCharCode(65+oi)}','${q.ans}')"><div class="option-letter">${String.fromCharCode(65+oi)}</div><span>${opt.substring(3)}</span></div>`).join('')}</div>`;
+  qContainer.appendChild(div);
+});
+
+function selectOption(el, qi, letter, correct) {
+  if (answered[qi]) return;
+  answered[qi] = true;
+  el.parentElement.querySelectorAll('.option').forEach(o => o.classList.add('answered'));
+  if (letter === correct) { el.classList.add('correct'); score++; document.getElementById('score').textContent = score; }
+  else { el.classList.add('wrong'); el.parentElement.querySelectorAll('.option').forEach(o => { if (o.querySelector('.option-letter').textContent === correct) o.classList.add('correct'); }); }
+}
+
+let fcIndex = 0;
+document.getElementById('fc-total').textContent = flashcards.length;
+function renderDots() { document.getElementById('dots').innerHTML = flashcards.map((_,i) => `<div class="dot${i===fcIndex?' active':''}"></div>`).join(''); }
+function showCard() { document.getElementById('flashcard').classList.remove('flipped'); setTimeout(() => { document.getElementById('fc-question').textContent = flashcards[fcIndex].q; document.getElementById('fc-answer').textContent = flashcards[fcIndex].a; document.getElementById('fc-current').textContent = fcIndex + 1; renderDots(); }, 150); }
+function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
+function nextCard() { fcIndex = (fcIndex + 1) % flashcards.length; showCard(); }
+function prevCard() { fcIndex = (fcIndex - 1 + flashcards.length) % flashcards.length; showCard(); }
+showCard();
+</script>
+</body>
+</html>

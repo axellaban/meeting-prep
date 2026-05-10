@@ -1,6 +1,62 @@
 {
   "meetings": [
     {
+      "id": "2026-05-11-oscar-gonzalez-rezex",
+      "date": "2026-05-11",
+      "time": "09:00",
+      "person": "Oscar Luis Gonzalez Rezex",
+      "title": "Director General & Co-Fundador",
+      "company": "MarkeTHINK Studio",
+      "type": "Reunión de 30 min (Cal.com)",
+      "tags": ["Performance Marketing", "Ecommerce LATAM", "EFFIE Award", "Panamá"],
+      "notebooklm_url": "https://notebooklm.google.com/notebook/bec04a45-400c-4b61-91c2-aa252fb2491f",
+      "sources_count": 13,
+      "path": "meetings/2026-05-11-oscar-gonzalez-rezex/index.html",
+      "generated": "2026-05-10T14:00:00-03:00"
+    },
+    {
+      "id": "2026-05-11-cecilia-crespi",
+      "date": "2026-05-11",
+      "time": "10:00",
+      "person": "Cecilia Maria Crespi",
+      "title": "Customer Success Manager",
+      "company": "VTEX",
+      "type": "Reunión de 30 min (Cal.com)",
+      "tags": ["Ecommerce", "Customer Success", "VTEX", "CACE", "Educación Digital"],
+      "notebooklm_url": "https://notebooklm.google.com/notebook/40e9716a-bc6d-4bda-b239-6e7593dc34ba",
+      "sources_count": 12,
+      "path": "meetings/2026-05-11-cecilia-crespi/index.html",
+      "generated": "2026-05-10T14:00:00-03:00"
+    },
+    {
+      "id": "2026-05-11-cecilia-escudero",
+      "date": "2026-05-11",
+      "time": "10:30",
+      "person": "Cecilia Escudero",
+      "title": "Growth Performance Lead",
+      "company": "GIGA IT",
+      "type": "Reunión de 30 min (Cal.com)",
+      "tags": ["Growth Marketing", "IT Services", "Argentina Tech", "Ex-UBA"],
+      "notebooklm_url": "https://notebooklm.google.com/notebook/2ad9257a-52c9-43c1-b629-127e2abcb62c",
+      "sources_count": 11,
+      "path": "meetings/2026-05-11-cecilia-escudero/index.html",
+      "generated": "2026-05-10T14:00:00-03:00"
+    },
+    {
+      "id": "2026-05-11-miguel-garateguy",
+      "date": "2026-05-11",
+      "time": "11:30",
+      "person": "Miguel Garateguy",
+      "title": "Consultor B2B & Supply Chain",
+      "company": "Independiente / UTU / UDE",
+      "type": "Reunión de 30 min (Cal.com)",
+      "tags": ["Supply Chain", "Procurement", "Mercado Libre", "Uruguay", "IA en Logística"],
+      "notebooklm_url": "https://notebooklm.google.com/notebook/0973a6ea-3d94-4175-b06d-03c44890ebc4",
+      "sources_count": 11,
+      "path": "meetings/2026-05-11-miguel-garateguy/index.html",
+      "generated": "2026-05-10T14:00:00-03:00"
+    },
+    {
       "id": "2026-05-07-debora-menigali",
       "date": "2026-05-07",
       "time": "11:30",

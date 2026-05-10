@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Oscar Luis Gonzalez Rezex</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #08080c;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --gold: #f0b429;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+  /* NAVBAR */
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+  .navbar-back:hover { color:var(--text); }
+
+  /* HEADER */
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 100%); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding:24px 32px; max-width:1200px; margin:0 auto; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  /* LAYOUT */
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+
+  /* SIDEBAR */
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .notebooklm-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:14px; color:var(--gold); text-decoration:none; background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; transition:all 0.2s; }
+  .notebooklm-btn:hover { background:rgba(240,180,41,0.15); }
+
+  /* CONTENT */
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+
+  /* MARKDOWN */
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; color:var(--text); }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; color:var(--text); }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body code { background:var(--surface2); padding:2px 8px; border-radius:6px; font-size:13px; color:var(--accent); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+
+  /* QUIZ */
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+
+  /* FLASHCARDS */
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+
+  /* SECTION TITLE */
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> Cowork OS — Meeting Prep</div>
+  <div class="navbar-date">Lunes 11 de Mayo, 2026</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+</nav>
+
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">OG</div>
+    <div class="header-info">
+      <div class="header-name">Oscar Luis Gonzalez Rezex</div>
+      <div class="header-title">Director General & Co-Fundador · MarkeTHINK Studio</div>
+      <div class="header-tags">
+        <span class="tag tag-blue"><i class="fas fa-chart-line"></i> Performance Marketing</span>
+        <span class="tag tag-purple"><i class="fas fa-shopping-cart"></i> Ecommerce</span>
+        <span class="tag tag-gold"><i class="fas fa-trophy"></i> EFFIE Award</span>
+        <span class="tag tag-green"><i class="fas fa-globe-americas"></i> Panamá · LATAM</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> 09:00 hs</div>
+      <div class="meeting-date">Lunes 11/05/2026</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> Cal.com Video Call · 30 min</div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 32px;">
+  <div class="stats-row" style="padding:24px 0;">
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-dollar-sign"></i></div>
+      <div>
+        <div class="stat-value">$228B</div>
+        <div class="stat-label">E-commerce LATAM para 2028</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-rocket"></i></div>
+      <div>
+        <div class="stat-value">+30%</div>
+        <div class="stat-label">Crecimiento anual garantizado</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-store"></i></div>
+      <div>
+        <div class="stat-value">+17%</div>
+        <div class="stat-label">Crecimiento Shopify Panama Q1 2025</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="sidebar">
+    <div class="sidebar-tab active" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+    <div class="sidebar-tab" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+    <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
+    <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+    <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
+    <a href="https://notebooklm.google.com/notebook/bec04a45-400c-4b61-91c2-aa252fb2491f" target="_blank" class="notebooklm-btn">
+      <i class="fas fa-book-open"></i> Abrir en NotebookLM
+    </a>
+  </div>
+
+  <div class="content">
+
+    <!-- BRIEFING -->
+    <div id="tab-briefing" class="tab-pane active">
+      <div class="markdown-body" id="briefing-content"></div>
+    </div>
+
+    <!-- INTEL -->
+    <div id="tab-intel" class="tab-pane">
+      <div class="markdown-body" id="intel-content"></div>
+    </div>
+
+    <!-- RESEARCH -->
+    <div id="tab-research" class="tab-pane">
+      <div class="markdown-body" id="research-content"></div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+
+    <!-- FLASHCARDS -->
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Click para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-chevron-left"></i></button>
+          <div class="dots" id="dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============ CONTENT DATA ============
+
+const briefingMd = `# Documento Ejecutivo de Preparación Pre-Reunión
+## Oscar Luis Gonzalez Rezex · MarkeTHINK Studio
+---
+
+## 1) Perfil de la Persona
+
+**Oscar Luis Gonzalez Rezex** es un evangelista del marketing digital con más de 15 años de trayectoria. Inició su carrera en 2008 como Digital Planner en Starcom Mediavest Group, pasó por Performics/Zenith Optimedia (Director), SABMiller/Cervecería Nacional (Digital Manager) y Grupo Cochez (Gerente de Marketing Digital).
+
+**Educación destacada:**
+- Licenciatura en Marketing — Universidad Autónoma de Chiriquí
+- Posgrado en Search & Social Media Marketing — OBS/Universitat de Barcelona
+- Máster en Data Management e Innovación Tecnológica — EAE Business School (2014–2015)
+- Máster en Creatividad y Eficacia en Branded Content Marketing — Madrid Content School (2021–2022)
+
+**Logros clave:**
+- Ganador del **EFFIE de Bronce** en categoría Ecommerce (2021) — campaña "Mist Event" de Bath & Body Works
+- Speaker en **eCommerce Day Guatemala 2024**
+- Logra crecimientos anuales **>30%** en los e-commerce que gestiona
+- Director de la **Universidad Tecnológica OTEIMA** como asesor de marketing digital (desde 2017)
+
+**Contexto de la reunión:** Video call de 30 minutos. Timezone del invitado: America/Bogota. Experto comprobado en performance marketing y ecommerce con operación en 10+ países LATAM.
+
+---
+
+## 2) Perfil de la Empresa (MarkeTHINK Studio)
+
+**MarkeTHINK Studio** es una agencia boutique de Performance Marketing y Ecommerce fundada en 2015 en Ciudad de Panamá.
+
+- **Metodología:** Ágil (SCRUM), con 4 roles clave: Thinkers, Geeks, Content y Media
+- **Propuesta de valor:** "Pensamiento Digital Eficiente" — ROAS superior al promedio del mercado
+- **Presencia:** 10+ países en Latinoamérica
+- **Clientes destacados:** Bath & Body Works, Victoria's Secret, Prüne, Novey
+- **Métricas prometidas:** +30% crecimiento anual, >30% de ventas vía email marketing
+- **Dominio:** markethinkstudio.com
+
+---
+
+## 3) Oportunidad de Mercado
+
+| Métrica | Cifra | Fuente |
+|---|---|---|
+| E-commerce LATAM 2023 | $133 mil millones | yStats |
+| E-commerce LATAM 2028 (proyectado) | **$228 mil millones** | yStats |
+| Participación ecommerce en retail LATAM 2028 | 15.9% (desde 12.3%) | yStats |
+| Social Commerce global 2026 | **$3 billones** | Proyección industria |
+| Crecimiento Shopify Panamá Q1 2025 | **+17% YoY** (1,658 tiendas) | Datos mercado |
+
+**Tendencias clave:**
+- **IA en ecommerce:** personalización, búsqueda inteligente y precios dinámicos serán vitales para 2026
+- **Pagos alternativos:** Pix, transferencias y WhatsApp ya representan ~40% del volumen digital en LATAM
+- **Social Commerce:** canal dominante de descubrimiento para audiencias jóvenes
+
+---
+
+## 4) Puntos Clave de Conversación
+
+**1. Escalabilidad con IA Predictiva**
+Reconocer el EFFIE de BBW y el 21% de crecimiento de Novey, luego proponer cómo la IA generativa puede multiplicar la personalización.
+> *"Oscar, lograron resultados increíbles con Bath & Body Works. ¿Cómo están visualizando la integración de IA predictiva para escalar ese nivel de personalización en sus otros clientes LATAM?"*
+
+**2. Optimización del Canal Email Marketing**
+Su métrica del >30% de ventas vía email es excepcional. Explorar automatización con Machine Learning.
+> *"Lograron más de un 30% de ventas a través de email. ¿Han evaluado plataformas de automatización con ML que optimicen dinámicamente horarios de envío y líneas de asunto?"*
+
+**3. Expansión y Social Commerce LATAM**
+Conectar su experiencia en 10 países con la explosión del social commerce ($3 billones para 2026).
+> *"Con la explosión del social commerce y la dominancia de WhatsApp en LATAM, ¿cuál es su mayor cuello de botella operativo al implementar funnels para clientes en múltiples países?"*
+
+**4. Eficiencia SCRUM vs Carga Operativa**
+Validar su metodología ágil y proponer automatización de reportes y tareas manuales.
+> *"Al utilizar SCRUM en marketing, ¿qué tiempo está invirtiendo el equipo en reportes o tareas operativas que podríamos automatizar con un CRM más robusto?"*
+
+**5. Hub Panamá como Oportunidad**
+Mencionar el crecimiento del 17% en tiendas Shopify en Panamá como nicho de captación.
+> *"Panamá crece un 17% interanual en Shopify. ¿Están consolidando el mercado local o su visión 2026 está 100% enfocada en cross-border?"*
+
+---
+
+## 5) Manejo de Objeciones
+
+| Objeción | Respuesta Recomendada |
+|---|---|
+| "Nuestro stack tecnológico ya está optimizado y superamos el mercado" | Reconocer el excelente ROAS. No proponemos reemplazar sino integrar analítica avanzada (IA) sobre sus datos para predecir abandono y aumentar el LTV de forma automatizada. |
+| "LATAM es muy fragmentada, una solución general no funciona" | Validar: los métodos de pago y canales son distintos por país. La propuesta se adapta nativamente a infraestructuras locales (WhatsApp, Pix, etc.), respetando su "Pensamiento Digital Eficiente". |
+| "No tenemos tiempo para curvas de aprendizaje" | Las soluciones modernas están diseñadas para eliminar cuellos de botella desde el día uno. Oscar tiene formación técnica en Data Management, lo que facilita la adopción por parte de su equipo de "Geeks". |
+
+---
+
+## 6) Próximos Pasos Recomendados
+
+1. **Enviar caso de estudio técnico** sobre IA predictiva aumentando ROAS en marcas retail que usan SCRUM → ogonzalezrezex@markethinkstudio.com
+
+2. **Proponer Diagnóstico Gratuito** de automatización de captación de leads (WhatsApp/Shopify) para uno de sus clientes actuales
+
+3. **Agendar Deep-Dive técnico** involucrando al equipo de datos de MarkeTHINK (Data Analyst) para revisar integraciones de automatización en sus campañas de Performance
+`;
+
+const intelMd = `# Cheat Sheet — Inteligencia Competitiva
+## Oscar Gonzalez Rezex & MarkeTHINK Studio
+---
+
+## TOP 3 COSAS A SABER
+
+**🏆 1. Ganador del EFFIE — Credibilidad Comprobada**
+- Premio EFFIE de Bronce 2021 (Ecommerce) — campaña "Mist Event" de Bath & Body Works
+- 21% de crecimiento en ventas digitales para Novey (retailer panameño #1)
+- Presencia como Speaker en eCommerce Day Guatemala 2024
+- Metodología SCRUM aplicada a marketing de performance (diferenciador clave)
+> **Tu ángulo:** Hablar de casos de éxito propios que complementen su metodología ganadora
+
+**📊 2. Métricas Excepcionales que Defienden su Posición**
+- ROAS consistentemente superior al promedio del mercado
+- +30% crecimiento anual garantizado en e-commerce gestionados
+- >30% de ventas generadas vía email marketing (benchmarking superior)
+- Operación en 10+ países LATAM simultáneamente
+> **Tu ángulo:** No competir con sus números, sino mostrar cómo escalarlos con IA y automatización
+
+**🌎 3. Operador Regional con Base en Panamá — Hub Estratégico**
+- Panamá: nodo de transacciones y logística para toda Latinoamérica
+- Clientes de retail top-tier (Bath & Body Works, Victoria's Secret, Prüne)
+- Metodología propia: Thinkers + Geeks + Content + Media
+- Expanding digitalization: 17% growth in Shopify Panama Q1 2025
+> **Tu ángulo:** Posicionarte como el socio que potencia su expansión regional con tecnología
+
+---
+
+## NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
+
+| Cifra | Contexto |
+|---|---|
+| **$228 mil millones** | E-commerce LATAM proyectado para 2028 (desde $133B en 2023) |
+| **$3 billones** | Social commerce global para 2026 |
+| **+17%** | Crecimiento YoY de tiendas Shopify en Panamá (Q1 2025) |
+| **40%** | Pagos alternativos (Pix, transferencias, WhatsApp) del volumen digital LATAM |
+| **15.9%** | Participación del ecommerce en retail LATAM para 2028 (desde 12.3%) |
+| **+30%** | Crecimiento anual que MarkeTHINK garantiza en ecommerce |
+| **EFFIE 2021** | Único award de eficacia publicitaria de la industria |
+| **10+ países** | Operación actual de MarkeTHINK en LATAM |
+
+---
+
+## QUIÉN MÁS ESTÁ EN SU ÓRBITA
+
+**Ecosistema profesional de Oscar Gonzalez Rezex:**
+- **eCommerce Institute** — Participa como conferencista y mentor en programas de educación
+- **OTEIMA (Universidad Tecnológica de Panamá)** — Digital Marketing Advisor desde 2017
+- **Cámara de Comercio Digital de Panamá** — Conectado con el ecosistema local
+- **Bath & Body Works LATAM** — Cliente insignia con caso EFFIE ganador
+- **Novey** — Retailer líder en Panamá con caso de éxito documentado (+21% ventas)
+- **Victoria's Secret LATAM** — Cliente de alto perfil en su portfolio
+- **Prüne (moda argentina en Panamá)** — Cross-border case study activo
+`;
+
+const researchMd = `# Reporte de Investigación Profunda
+## Oscar Gonzalez Rezex & MarkeTHINK Studio — Contexto 2025/2026
+---
+
+## Resumen Ejecutivo
+
+Oscar Gonzalez Rezex lidera una de las agencias de performance marketing más reconocidas de Panamá. Su agencia MarkeTHINK Studio opera con una metodología ágil propia y tiene presencia comprobada en 10+ países de LATAM. El contexto de mercado para 2026 es altamente favorable: el e-commerce en LATAM proyecta alcanzar $228 mil millones para 2028, con Panamá posicionándose como hub regional. La integración de IA en commerce es la mega-tendencia que define la conversación del sector.
+
+---
+
+## Tabla de Fuentes Clave
+
+| Fuente | Insight Clave | Por Qué Importa |
+|---|---|---|
+| Torre.ai — Oscar Gonzalez Rezex | Trayectoria completa: Starcom → Performics → SABMiller → MarkeTHINK | Entender su evolución profesional y áreas de expertise |
+| MarkeTHINK Studio — Projects | Caso Novey: +21% ventas; Caso BBW: EFFIE Bronce 2021 | Sus casos de éxito más emblemáticos |
+| MarkeTHINK Studio — Customers | Portfolio: BBW, Victoria's Secret, Prüne, Novey | Tipo de clientes que maneja y sectores |
+| MarkeTHINK Studio — Thinking | Metodología: Thinkers + Geeks + Content + Media + SCRUM | Filosofía operativa de la agencia |
+| Fashion United — LATAM Ecommerce 2026 | $133B → $228B para 2028; Social commerce $3T | Cifras del mercado para contextualizar |
+| yStats — LATAM Digital Commerce & Payments | Pagos alternativos = 40% del volumen digital | Fragmentación del mercado LATAM |
+| TechBehemoths Panama 2026 | Top agencias digitales de Panamá | Competencia directa de MarkeTHINK |
+| Agency Level 5 — Best Agencies Panama | Realidades culturales y logísticas del marketing en Panamá | Contexto local del mercado |
+| OTEIMA — Universidad Tecnológica | Rol académico de Oscar: Digital Marketing Advisor | Conecta educación + industria |
+| eCommerce Day Guatemala 2024 | Speaker reconocido en el ecosistema regional | Liderazgo de pensamiento en LATAM |
+
+---
+
+## Análisis Profundo: 5 Temas Clave
+
+### 1. El E-commerce en LATAM: Ventana de Oportunidad 2026
+
+El mercado de e-commerce en Latinoamérica está en una fase de aceleración sin precedentes. Las ventas online pasarán de $133 mil millones (2023) a $228 mil millones en 2028, con la participación en el retail total subiendo de 12.3% a 15.9%. Panamá, como hub financiero y logístico regional, está experimentando un crecimiento del 17% YoY en tiendas Shopify. Para MarkeTHINK Studio, esto significa una oportunidad enorme de consolidar nuevos clientes locales mientras escala sus operaciones cross-border.
+
+### 2. IA Generativa Reshaping Performance Marketing
+
+Para 2026, la IA no es una tendencia sino una necesidad operativa en el performance marketing. Las agencias que integren IA predictiva para optimización de pujas, personalización dinámica de anuncios y scoring de audiencias tendrán una ventaja competitiva significativa. Oscar, con su Máster en Data Management (EAE Business School), está técnicamente preparado para adoptar estas herramientas. El desafío es el tiempo de implementación y la curva de aprendizaje del equipo.
+
+### 3. Social Commerce: El Canal que Redefine el Funnel
+
+WhatsApp Business, Instagram Shopping y TikTok Shop están redefiniendo el journey del consumidor en LATAM. El social commerce proyecta $3 billones globales para 2026. Para una agencia con fuerte expertise en media y content como MarkeTHINK, esta es una extensión natural de sus capacidades actuales. La clave está en construir funnels integrados que conviertan el descubrimiento social en transacciones recurrentes.
+
+### 4. Email Marketing: El Canal Subestimado que MarkeTHINK Domina
+
+Mientras la industria obsesiona con nuevas plataformas, MarkeTHINK Studio ha dominado el canal más efectivo en términos de ROI: el email marketing, generando >30% de ventas a través de este canal. La oportunidad está en potenciar esta ventaja con segmentación dinámica impulsada por ML, triggers comportamentales y personalización one-to-one a escala.
+
+### 5. Panamá como Hub Regional: Ventaja Geopolítica y Logística
+
+Panamá es el nodo estratégico de Latinoamérica. Su posición geográfica, régimen fiscal especial (Zona Libre de Colón) y infraestructura digital en crecimiento lo convierten en la base ideal para operaciones cross-border. Para MarkeTHINK, esto significa la posibilidad de gestionar campañas para marcas que quieren penetrar múltiples mercados LATAM desde un único punto de coordinación.
+`;
+
+const quizQuestions = [
+  { q: "¿En qué año fue fundada MarkeTHINK Studio por Oscar Gonzalez Rezex?", opts: ["A) 2012","B) 2013","C) 2015","D) 2017"], ans: "C" },
+  { q: "¿Qué premio ganó Oscar Gonzalez Rezex en 2021 con Bath & Body Works?", opts: ["A) Cannes Lions de Oro","B) EFFIE de Bronce en Ecommerce","C) Clio Award de Plata","D) IAB Award de Ecommerce"], ans: "B" },
+  { q: "¿Cuál es la proyección del e-commerce en LATAM para 2028?", opts: ["A) $133 mil millones","B) $180 mil millones","C) $228 mil millones","D) $300 mil millones"], ans: "C" },
+  { q: "¿Qué porcentaje de las ventas de los clientes de MarkeTHINK proviene de email marketing?", opts: ["A) Más del 10%","B) Más del 20%","C) Más del 30%","D) Más del 50%"], ans: "C" },
+  { q: "¿Cuántos países en LATAM tiene presencia operativa MarkeTHINK Studio?", opts: ["A) 3 países","B) 5 países","C) 8 países","D) Más de 10 países"], ans: "D" },
+  { q: "¿Cuál es la metodología de gestión que utiliza MarkeTHINK Studio?", opts: ["A) Kanban","B) SCRUM","C) Design Thinking","D) OKRs"], ans: "B" },
+  { q: "¿En qué universidad panameña ejerce Oscar como Digital Marketing Advisor?", opts: ["A) Universidad de Panamá","B) Universidad Tecnológica de Panamá (UTP)","C) Universidad Tecnológica OTEIMA","D) Universidad Santa María La Antigua"], ans: "C" },
+  { q: "¿Cuánto creció Shopify en Panamá en el Q1 2025 según datos de mercado?", opts: ["A) 8% interanual","B) 12% interanual","C) 17% interanual","D) 25% interanual"], ans: "C" }
+];
+
+const flashcards = [
+  { q: "¿Cuándo fue fundada MarkeTHINK Studio y quién la fundó?", a: "Fundada en enero de 2015 por Oscar Luis Gonzalez Rezex en Ciudad de Panamá como agencia boutique de Performance Marketing y Ecommerce." },
+  { q: "¿Qué metodología de trabajo diferencia a MarkeTHINK Studio?", a: "Utiliza metodología ágil SCRUM con 4 roles clave: Thinkers (estrategas), Geeks (datos/tech), Content (creativo) y Media (distribución). Esto les permite tomar decisiones eficientes." },
+  { q: "¿Cuál es el premio más importante en el CV de Oscar Gonzalez Rezex?", a: "EFFIE de Bronce 2021 en la categoría Ecommerce, ganado con la campaña 'Mist Event' de Bath & Body Works. El EFFIE es el único award que mide eficacia publicitaria real." },
+  { q: "¿Qué métricas garantiza MarkeTHINK Studio a sus clientes?", a: "+30% crecimiento anual en ventas digitales, ROAS superior al promedio del mercado, y más del 30% de ventas generadas vía email marketing." },
+  { q: "¿Cuáles son los clientes más reconocidos de MarkeTHINK Studio?", a: "Bath & Body Works, Victoria's Secret, Prüne (moda argentina) y Novey (retailer líder en Panamá con +21% en ventas digitales)." },
+  { q: "¿A cuánto se proyecta el e-commerce en LATAM para 2028?", a: "$228 mil millones (desde $133B en 2023), con participación en retail subiendo de 12.3% a 15.9%. Social commerce global proyecta $3 billones para 2026." },
+  { q: "¿Cuál es el rol de Oscar en la educación universitaria?", a: "Digital Marketing Advisor en la Universidad Tecnológica OTEIMA (Panamá) desde noviembre de 2017, donde implementa soluciones de automatización de marketing y plataformas de educación virtual." },
+  { q: "¿Qué posgrados tiene Oscar Gonzalez Rezex?", a: "Posgrado en Search & Social Media (OBS/Universitat de Barcelona), Máster en Data Management e Innovación Tecnológica (EAE Business School, 2014-2015) y Máster en Branded Content Marketing (Madrid Content School, 2021-2022)." },
+  { q: "¿Cuánto creció el ecosistema Shopify en Panamá en Q1 2025?", a: "17% interanual, con 1,658 tiendas activas. Refleja la maduración del ecosistema digital panameño y la oportunidad para captar nuevos clientes." },
+  { q: "¿Cuál es la mega-tendencia que define la conversación del sector para 2026?", a: "La integración de IA generativa en commerce: personalización dinámica, búsqueda inteligente, optimización de precios y scoring de audiencias. Las agencias que no integren IA quedarán relegadas." }
+];
+
+// ============ RENDER ============
+
+document.getElementById('briefing-content').innerHTML = marked.parse(briefingMd);
+document.getElementById('intel-content').innerHTML = marked.parse(intelMd);
+document.getElementById('research-content').innerHTML = marked.parse(researchMd);
+
+// TABS
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// QUIZ
+let score = 0;
+let answered = new Array(quizQuestions.length).fill(false);
+document.getElementById('total').textContent = quizQuestions.length;
+
+const qContainer = document.getElementById('quiz-container');
+quizQuestions.forEach((q, qi) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `
+    <div class="question-num">Pregunta ${qi+1} de ${quizQuestions.length}</div>
+    <div class="question-text">${q.q}</div>
+    <div class="options">
+      ${q.opts.map((opt,oi) => `
+        <div class="option" onclick="selectOption(this,${qi},'${String.fromCharCode(65+oi)}','${q.ans}')">
+          <div class="option-letter">${String.fromCharCode(65+oi)}</div>
+          <span>${opt.substring(3)}</span>
+        </div>`).join('')}
+    </div>`;
+  qContainer.appendChild(div);
+});
+
+function selectOption(el, qi, letter, correct) {
+  if (answered[qi]) return;
+  answered[qi] = true;
+  const opts = el.parentElement.querySelectorAll('.option');
+  opts.forEach(o => o.classList.add('answered'));
+  if (letter === correct) {
+    el.classList.add('correct');
+    score++;
+    document.getElementById('score').textContent = score;
+  } else {
+    el.classList.add('wrong');
+    opts.forEach(o => { if (o.querySelector('.option-letter').textContent === correct) o.classList.add('correct'); });
+  }
+}
+
+// FLASHCARDS
+let fcIndex = 0;
+document.getElementById('fc-total').textContent = flashcards.length;
+
+function renderDots() {
+  const dots = document.getElementById('dots');
+  dots.innerHTML = flashcards.map((_,i) => `<div class="dot${i===fcIndex?' active':''}"></div>`).join('');
+}
+
+function showCard() {
+  document.getElementById('flashcard').classList.remove('flipped');
+  setTimeout(() => {
+    document.getElementById('fc-question').textContent = flashcards[fcIndex].q;
+    document.getElementById('fc-answer').textContent = flashcards[fcIndex].a;
+    document.getElementById('fc-current').textContent = fcIndex + 1;
+    renderDots();
+  }, 150);
+}
+
+function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
+function nextCard() { fcIndex = (fcIndex + 1) % flashcards.length; showCard(); }
+function prevCard() { fcIndex = (fcIndex - 1 + flashcards.length) % flashcards.length; showCard(); }
+
+showCard();
+</script>
+</body>
+</html>
