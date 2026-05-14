@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Edna Gálvez</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #08080c;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --gold: #f0b429;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+  /* NAVBAR */
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+  .navbar-back:hover { color:var(--text); }
+
+  /* HEADER */
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 100%); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding:24px 32px; max-width:1200px; margin:0 auto; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  /* LAYOUT */
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+
+  /* SIDEBAR */
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .notebooklm-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:14px; color:var(--gold); text-decoration:none; background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; transition:all 0.2s; }
+  .notebooklm-btn:hover { background:rgba(240,180,41,0.15); }
+
+  /* CONTENT */
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+
+  /* MARKDOWN */
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; color:var(--text); }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; color:var(--text); }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body code { background:var(--surface2); padding:2px 8px; border-radius:6px; font-size:13px; color:var(--accent); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+
+  /* QUIZ */
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+
+  /* FLASHCARDS */
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+
+  /* SECTION TITLE */
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> Cowork OS — Meeting Prep</div>
+  <div class="navbar-date">Jueves 14 de Mayo, 2026</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+</nav>
+
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">EG</div>
+    <div class="header-info">
+      <div class="header-name">Edna Gálvez</div>
+      <div class="header-title">eLearning & Strategic Partnerships Coordinator · eCommerce Institute</div>
+      <div class="header-tags">
+        <span class="tag tag-blue"><i class="fas fa-graduation-cap"></i> eLearning</span>
+        <span class="tag tag-purple"><i class="fas fa-handshake"></i> Strategic Partnerships</span>
+        <span class="tag tag-gold"><i class="fas fa-shopping-cart"></i> eCommerce LATAM</span>
+        <span class="tag tag-green"><i class="fas fa-robot"></i> IA en Educación</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> 14:45 hs</div>
+      <div class="meeting-date">Jueves 14/05/2026</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> Reunión de Negocio</div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 32px;">
+  <div class="stats-row" style="padding:24px 0;">
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-dollar-sign"></i></div>
+      <div>
+        <div class="stat-value">$131B</div>
+        <div class="stat-label">eLearning LATAM proyectado para 2034</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+      <div>
+        <div class="stat-value">16.78%</div>
+        <div class="stat-label">CAGR del eLearning en LATAM 2026–2034</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-robot"></i></div>
+      <div>
+        <div class="stat-value">30–40%</div>
+        <div class="stat-label">Penetración IA en formación B2B para 2026</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="sidebar">
+    <div class="sidebar-tab active" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+    <div class="sidebar-tab" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+    <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
+    <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+    <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
+    <a href="https://notebooklm.google.com/notebook/f1943d76-dc93-4a9c-a855-96661c40c3b2" target="_blank" class="notebooklm-btn">
+      <i class="fas fa-book-open"></i> Abrir en NotebookLM
+    </a>
+  </div>
+
+  <div class="content">
+
+    <!-- TAB: EXECUTIVE BRIEFING -->
+    <div id="tab-briefing" class="tab-pane active">
+      <div class="section-title"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+      <div class="markdown-body" id="briefing-content"></div>
+    </div>
+
+    <!-- TAB: COMPETITIVE INTEL -->
+    <div id="tab-intel" class="tab-pane">
+      <div class="section-title"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+      <div class="markdown-body" id="intel-content"></div>
+    </div>
+
+    <!-- TAB: DEEP RESEARCH -->
+    <div id="tab-research" class="tab-pane">
+      <div class="section-title"><i class="fas fa-microscope"></i> Deep Research</div>
+      <div class="markdown-body" id="research-content"></div>
+    </div>
+
+    <!-- TAB: QUIZ -->
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+
+    <!-- TAB: FLASHCARDS -->
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-arrow-left"></i></button>
+          <div class="dots" id="fc-dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── TAB SWITCHING ───────────────────────────────────────────────────────────
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ─── CONTENT DATA ─────────────────────────────────────────────────────────────
+const briefingMD = `# Documento Ejecutivo de Preparación Pre-Reunión
+
+## 1) Perfil de la Persona
+
+**Nombre:** Edna Gálvez
+
+- **Background:** Más de 12 años de experiencia en eLearning, gestión de proyectos digitales y estrategias de comunicación. Es bilingüe (español/inglés) y posee una fuerte visión global. Sus áreas de especialidad incluyen el diseño instruccional, la gestión de partnerships, el marketing digital y la transformación digital empresarial.
+- **Educación:** Licenciada en Comunicación Organizacional, con una Maestría en Marketing Digital y e-Business por la Universidad de Buenos Aires.
+- **Rol actual:** eLearning & Strategic Partnerships Coordinator en el eCommerce Institute, Buenos Aires, Argentina.
+- **Logros clave:** Lidera un equipo de más de 20 profesionales enfocados en innovación; content creator activa en marketing, liderazgo y crecimiento personal.
+- **Contexto de la reunión:** Explorar sinergias educativas, desarrollo de alianzas estratégicas y la integración de nuevas tecnologías (IA) dentro de los programas de capacitación del eCommerce Institute, aprovechando la fuerte demanda de reconversión laboral en áreas digitales en Argentina.
+
+## 2) Perfil de la Empresa
+
+**Nombre:** eCommerce Institute
+
+- **Qué hace:** Organización sin fines de lucro (asociación civil) que promueve y desarrolla el comercio electrónico, la economía digital y los negocios por internet en América Latina.
+- **Posición en el mercado:** Principal referente de educación en eCommerce para LATAM, con presencia en más de 15 países a través del eCommerce Day Tour.
+- **Modelo de negocio:** Formación académica mediante programas sincronizados vía Zoom y aulas virtuales, certificaciones profesionales, organización de eventos anuales híbridos (eCommerce Day, eCommerce Award), y alianzas estratégicas empresariales.
+- **Clientes:** Startups, PyMEs, organizaciones de retail, emprendedores y profesionales del ecosistema digital. Programas B2C, B2B, Marketplace y D2C.
+- **Ventajas competitivas:** Amplia red de eventos regionales, comunidad masiva de practitioners, modelo non-profit con legitimidad académica, convenios con cámaras nacionales (CACE Argentina, CCCE Colombia) para becas y descuentos.
+
+## 3) Oportunidad de Mercado
+
+- **$200.000 millones USD:** Volumen proyectado del comercio en línea en LATAM para 2026. Argentina entre los mercados de mayor crecimiento.
+- **$32.510 millones USD:** Valoración del mercado regional de eLearning en 2025. Crece a $131.320 millones para 2034.
+- **CAGR 16,78%:** Tasa de crecimiento anual compuesta del eLearning en LATAM 2026–2034.
+- **30–40%:** Penetración proyectada de IA en programas de formación B2B para 2026.
+- **85%:** Porcentaje de transacciones de eCommerce desde móviles para 2026.
+- **25%:** Cuota de ventas online representada por social commerce en 2026.
+- **Tendencias:** IA en diseño instruccional, social commerce/live shopping, omnicanalidad, inclusión financiera digital (fintech LATAM), fuerte demanda de upskilling en Argentina.
+
+## 4) Puntos Clave de Conversación
+
+1. **Integración de IA en eLearning** — Con IA en formación B2B superando el 30% para 2026, ¿cómo está adaptando la currícula del eCommerce Institute para incluir IA, considerando la alta demanda proyectada?
+
+2. **Expansión del eLearning Corporativo y Partnerships B2B** — El sector corporativo busca activamente upskilling. ¿Qué perfil de aliados estratégicos están buscando para potenciar el Programa Ejecutivo Avanzado de Retail?
+
+3. **Inclusión, Diversidad y Brecha de Talento Digital** — ¿Cómo podemos colaborar en iniciativas conjuntas que aceleren la reconversión laboral de sectores vulnerables hacia la economía digital en Argentina?
+
+4. **Mobile Learning y Microlearning** — El eLearning móvil crece al 16,2% CAGR. ¿Qué estrategias explora tu equipo para llevar contenidos a formatos más ágiles o de microlearning?
+
+5. **eCommerce Day Tour 2026** — Mirando el calendario de eventos, ¿cuáles son los ejes temáticos donde perciben mayor necesidad de speakers o contenidos patrocinados de alto nivel?
+
+## 5) Manejo de Objeciones
+
+| Objeción | Respuesta Recomendada |
+|---|---|
+| Altos costos o incertidumbre sobre ROI en nuevas tecnologías | Enfatizar modelo SaaS/escalable; mercado de $131B recompensa inversión temprana. El momento de actuar es ahora. |
+| Resistencia a digitalización total de educación | Proponer blended learning (mayor crecimiento al 14,9% CAGR): transición gradual sin abandonar el factor humano. |
+| Preocupaciones sobre seguridad y privacidad de datos | Alineación con estándares internacionales y normativas regionales de privacidad, protegiendo el prestigio institucional. |
+| Ya tienen sus propios partnerships establecidos | Complementar, no competir: proponer co-marketing, co-creación de contenido, acceso a nuevas audiencias. |
+
+## 6) Próximos Pasos Recomendados
+
+1. **Demo técnica post-reunión:** Programar sesión con el equipo de innovación de Edna para mostrar caso de uso práctico de IA o microlearning aplicable a sus aulas virtuales.
+
+2. **Propuesta de co-marketing y patrocinio:** Enviar en los próximos 5 días documento con opciones de colaboración para el eCommerce Day Tour 2026 (Argentina, Colombia, México).
+
+3. **Piloto B2B de Upskilling:** Diseñar conjuntamente un piloto de formación corporativa en Social Commerce o IA para ofrecer a la base de empresas clientes del eCommerce Institute.
+`;
+
+const intelMD = `# Cheat Sheet — Inteligencia Competitiva
+
+---
+
+## TOP 3 COSAS A SABER
+
+**1. El auge explosivo del eLearning corporativo en LATAM**
+
+- El mercado de eLearning en LATAM: $32.510M en 2025 → $131.320M en 2034 (CAGR 16,78%)
+- El modelo self-paced acapara el 48,1% del mercado; LMS dominan con 51,9%
+- Edna lidera programas B2B y retail con fuerte demanda de reconversión laboral en Argentina
+- El eLearning corporativo es el segmento de más rápido crecimiento (CAGR 15,4%)
+
+> **Tu ángulo:** Posicioná tu propuesta alrededor de innovación en LMS, microlearning o escalabilidad. Mostrá cómo podés integrarte en sus programas "eCapacitación" o diplomaturas para acelerar el desarrollo del talento digital.
+
+---
+
+**2. El eCommerce hacia 2026: IA, Rentabilidad y Omnicanalidad**
+
+- Para 2026, eCommerce LATAM supera los $200.000M; foco en rentabilidad + eficiencia logística
+- IA central: integración en programas B2B superará el 30–40% para 2026
+- Social commerce representará el 25% de todo el eCommerce; ventas móviles al 85%
+- Omnicanalidad ineludible: D2C, marketplaces y retail integrados
+
+> **Tu ángulo:** Al hablar de sus eventos y programas, subrayá la importancia de preparar empresas para IA en hiperpersonalización y eficiencia logística — temas de vanguardia en su agenda institucional.
+
+---
+
+**3. El modelo basado en Alianzas y Expansión Regional**
+
+- El eCommerce Institute opera en 15+ países vía eCommerce Day Tour — no es solo academia, es articulador del ecosistema
+- Alianzas son su motor: convenios con CACE (Argentina) para becas del 50%, 80% y 100% a miembros
+- Edna tiene formación específica en Strategic Partnerships y lidera un equipo de 20+ personas
+- Programa E-LATAM como roadmap de expansión digital regional
+
+> **Tu ángulo:** No le vendas un servicio aislado. Ofrecele un partnership estratégico: co-marketing, patrocinios bajo el Programa eLatam, o colaboraciones que beneficien a su red masiva de asociaciones, pymes y líderes del ecosistema.
+
+---
+
+## NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
+
+- **$200.000M USD** — Volumen mínimo del eCommerce en LATAM para 2026
+- **$32.510M USD** — Valoración del mercado regional de eLearning en 2025
+- **$131.320M USD** — Valor proyectado del eLearning LATAM para 2034
+- **16,78%** — CAGR proyectada para la industria del eLearning en LATAM 2026–2034
+- **30–40%** — Penetración de IA en programas de formación B2B para 2026
+- **85%** — Transacciones de eCommerce desde móviles en 2026
+- **60%** — Cuota de mercado de eCommerce combinada de Brasil y México en LATAM
+- **25%** — Proporción de ventas online representada por social commerce en 2026
+- **50%, 80% y 100%** — Porcentajes de becas del eCommerce Institute a socios de CACE
+- **99,4%** — Porcentaje que representan las pymes en el tejido empresarial de la región (principal target formativo)
+
+---
+
+## QUIÉN MÁS ESTÁ EN SU ÓRBITA
+
+- **Marcos Pueyrredon** — Presidente del eCommerce Institute y Co-Founder & Global Executive SVP de VTEX (NYSE: VTEX). Voz principal de los eCommerce Days.
+- **Erica Libertelli** — Directora del eCommerce Institute. Lidera programas internacionales con USAID y el programa eMujeres.
+- **CACE** — Cámara Argentina de Comercio Electrónico. Socio local clave con planes de becas para sus miembros.
+- **CCCE** — Cámara Colombiana de Comercio Electrónico. Organizan el eDay Colombia conjuntamente.
+- **UNCTAD y USAID** — Aliados globales en desarrollo de capacidades, inclusión de mipymes e iniciativa eTrade for Women.
+- **Unión Europea (Erasmus+)** — Cofinanciación internacional en programas como LEAD Tourism (con la UBA).
+`;
+
+const researchMD = `# Deep Research Report — eCommerce Institute & eLearning LATAM 2026–2027
+
+---
+
+## Resumen Ejecutivo
+
+El eCommerce Institute opera en uno de los segmentos de mayor crecimiento de América Latina: la convergencia entre comercio digital y educación profesional. En 2026, el mercado de eLearning regional alcanza los $32.510 millones, con una trayectoria proyectada hacia $131.320 millones para 2034 (CAGR 16,78%). Simultáneamente, el comercio electrónico latinoamericano supera los $200.000 millones anuales, creando una demanda masiva de profesionales capacitados.
+
+La institución se posiciona estratégicamente como el articulador central del ecosistema digital regional, con presencia en más de 15 países a través del eCommerce Day Tour. Su modelo no-profit otorga legitimidad académica mientras que sus partnerships con cámaras nacionales (CACE, CCCE) y organismos internacionales (USAID, UNCTAD, UE/Erasmus+) le permiten escalar sin los costos de una empresa privada.
+
+Los próximos 24 meses presentan tres macro-tendencias que afectan directamente el mundo de Edna Gálvez y el eCommerce Institute: la integración masiva de IA en plataformas de aprendizaje, el auge del Social Commerce como vector educativo/comercial, y la creciente demanda de upskilling corporativo en Argentina y la región.
+
+---
+
+## Tabla de Fuentes Clave
+
+| Fuente | Insight Clave | Por Qué Importa |
+|---|---|---|
+| Market Data Forecast — eLearning LATAM | Mercado regional: $32.510M (2025) → $131.320M (2034), CAGR 16,78% | Contexto financiero preciso para fundamentar el valor de invertir en educación digital |
+| eCommerce Institute — E-LATAM | Roadmap de expansión digital regional con foco en 15+ países | Muestra la escala y ambición institucional de la organización |
+| Tendencias eCommerce LATAM 2026 (Marketing4eCommerce) | Social commerce al 25%, ventas móviles al 85%, IA como pilar | Permite hablar el mismo idioma que el equipo de Edna |
+| FashionUnited — E-commerce Trends LATAM 2026 | Argentina entre los 4 mercados de mayor crecimiento proyectado | Refuerza oportunidad local y relevancia geográfica de la propuesta |
+| CACE — Becas y Oferta Educativa | Becas del 50%-100% para socios; alianza estratégica confirmada | Prueba concreta del modelo de partnerships que gestiona Edna |
+| Instituto Latinoamericano de Comercio Electrónico (Wikipedia) | Historia, misión y estructura de la organización | Background institucional para contexto de la reunión |
+| eDay Colombia 2025 (Noticias Caracol) | Evento regional con miles de asistentes; networking de primer nivel | Valida el alcance real del eCommerce Day Tour |
+| ITU — WSIS Forum 2023 (Sesión 228) | Mujeres emprendedoras digitales como foco de inclusión (programa eMujeres) | Oportunidad para propuestas de impacto social/DEI |
+| World Bank — Digital Economy Ecuador | Diagnóstico de brechas digitales en LATAM y oportunidades de formación | Marco macro para justificar inversión en capacitación regional |
+| Uniqbe — Future Trends eCommerce LATAM 2026 | IA, omnicanalidad, fintech y logística como ejes de transformación | Narrativa de tendencias 2026 para conversación estratégica |
+
+---
+
+## Análisis Profundo — 5 Temas Clave
+
+### 1. La IA como disruptor del eLearning corporativo
+
+La integración de inteligencia artificial en plataformas de aprendizaje está redefiniendo el sector. Para 2026, se estima que el 30–40% de los programas de formación B2B en LATAM incorporarán herramientas de IA para personalización, evaluación adaptativa y generación de contenido. El eCommerce Institute, con su base de empresas clientes en retail y PyMEs, está en posición privilegiada para liderar esta transición — pero requiere partners tecnológicos que aceleren la curva de adopción.
+
+**Implicación para la reunión:** Explorar cómo la propuesta puede integrarse en el ecosistema tecnológico del eCommerce Institute para potenciar sus programas de "eCapacitación" con capacidades de IA.
+
+### 2. Social Commerce: la nueva frontera del eCommerce educativo
+
+El social commerce ya no es una tendencia emergente: para 2026 representará el 25% de todas las ventas online en LATAM, con plataformas como TikTok, Instagram y WhatsApp como canales principales. Esto crea una doble oportunidad para el eCommerce Institute: enseñar a sus alumnos a vender en social media, y usar el propio social commerce como canal de distribución y marketing de sus programas.
+
+**Implicación para la reunión:** Proponer un módulo o track especializado en Social Commerce para sus programas ejecutivos, diferenciador frente a competidores como Coderhouse.
+
+### 3. La demanda explosiva de upskilling en Argentina
+
+Argentina presenta una de las demandas más altas de reconversión laboral digital en la región. La incertidumbre económica, la alta inflación y la creciente brecha salarial entre roles digitales y tradicionales generan una presión estructural hacia la capacitación. El eCommerce Institute, con su modelo de precios accesibles y su red de becas via CACE, está capturando esta demanda — pero necesita escalar la oferta para mantener el ritmo.
+
+**Implicación para la reunión:** Identificar cuellos de botella en la producción de contenido o la capacidad instructiva, donde la propuesta pueda crear valor inmediato.
+
+### 4. El modelo de partnerships como ventaja competitiva
+
+A diferencia de plataformas comerciales, el eCommerce Institute construye su posición a través de una red densa de alianzas: cámaras nacionales, organismos internacionales, universidades (UBA), empresas tecnológicas (VTEX) y marcas del ecosistema. Edna Gálvez gestiona esta red desde su rol de Strategic Partnerships Coordinator — lo que significa que cualquier propuesta debe estructurarse como una alianza de valor mutuo, no como una venta.
+
+**Implicación para la reunión:** Llegar con un framework de co-creación o co-marketing, no con un pitch de producto. Pensar en qué le podés dar a ella que ella no pueda conseguir sola.
+
+### 5. La expansión regional como oportunidad de escala
+
+El eCommerce Day Tour está consolidando su presencia en 15+ países, con Argentina, Colombia, México, Perú y Chile como mercados prioritarios. Esta expansión crea una oportunidad única: cualquier partnership cerrado con el eCommerce Institute tiene potencial de replicarse en múltiples geografías. El Programa E-LATAM es el vehículo formal para esta expansión regional.
+
+**Implicación para la reunión:** Pensar la propuesta con escalabilidad regional desde el día uno. Una colaboración exitosa en Argentina puede convertirse en un modelo para toda la red del Instituto.
+`;
+
+// ─── QUIZ DATA ────────────────────────────────────────────────────────────────
+const quizData = [
+  {
+    q: "¿Cuál es el cargo actual de Edna Gálvez en el eCommerce Institute?",
+    options: ["A) Directora de Marketing Digital", "B) eLearning & Strategic Partnerships Coordinator", "C) CEO de la organización", "D) Head of Content Creation"],
+    answer: "B"
+  },
+  {
+    q: "¿Cuántos años de experiencia tiene Edna Gálvez en eLearning y gestión de proyectos digitales?",
+    options: ["A) 5 años", "B) 8 años", "C) 12 años", "D) 15 años"],
+    answer: "C"
+  },
+  {
+    q: "¿Cuál es el tipo de organización del eCommerce Institute?",
+    options: ["A) Empresa privada con fines de lucro", "B) Organización sin fines de lucro (non-profit)", "C) Organismo gubernamental", "D) Startup de EdTech"],
+    answer: "B"
+  },
+  {
+    q: "¿Cuál es el valor proyectado del mercado de eLearning en LATAM para 2034?",
+    options: ["A) $32.510 millones USD", "B) $75.000 millones USD", "C) $131.320 millones USD", "D) $200.000 millones USD"],
+    answer: "C"
+  },
+  {
+    q: "¿Qué porcentaje del mercado de eLearning en LATAM corresponde al modelo 'self-paced'?",
+    options: ["A) 25,3%", "B) 38,7%", "C) 48,1%", "D) 62,4%"],
+    answer: "C"
+  },
+  {
+    q: "¿Cuál es la CAGR proyectada para la industria del eLearning en LATAM entre 2026 y 2034?",
+    options: ["A) 8,5%", "B) 12,3%", "C) 16,78%", "D) 22,1%"],
+    answer: "C"
+  },
+  {
+    q: "¿Quién es el Presidente del eCommerce Institute y también Co-Founder de VTEX?",
+    options: ["A) Erica Libertelli", "B) Marcos Pueyrredon", "C) Axel Laban", "D) Facundo Gregorini"],
+    answer: "B"
+  },
+  {
+    q: "¿Qué porcentaje de las ventas totales online representará el social commerce en LATAM para 2026?",
+    options: ["A) 10%", "B) 15%", "C) 20%", "D) 25%"],
+    answer: "D"
+  }
+];
+
+// ─── FLASHCARD DATA ───────────────────────────────────────────────────────────
+const flashcards = [
+  { q: "¿Cuál es el cargo de Edna Gálvez?", a: "eLearning & Strategic Partnerships Coordinator en el eCommerce Institute." },
+  { q: "¿Qué maestría tiene Edna Gálvez?", a: "Maestría en Marketing Digital y e-Business por la Universidad de Buenos Aires (UBA)." },
+  { q: "¿Cuántas personas lidera Edna en su equipo?", a: "Lidera un equipo de más de 20 profesionales enfocados en innovación." },
+  { q: "¿Qué tipo de organización es el eCommerce Institute?", a: "Organización sin fines de lucro (asociación civil) que promueve el eCommerce y la economía digital en LATAM." },
+  { q: "¿A cuánto proyecta crecer el mercado de eLearning en LATAM para 2034?", a: "$131.320 millones USD, desde $32.510M en 2025 (CAGR 16,78%)." },
+  { q: "¿En cuántos países opera el eCommerce Institute a través del eCommerce Day Tour?", a: "Más de 15 países en América Latina." },
+  { q: "¿Qué penetración tendrá la IA en formación B2B para 2026?", a: "Se estima una penetración del 30-40% en programas de formación B2B en LATAM." },
+  { q: "¿Quién es Erica Libertelli?", a: "Directora del eCommerce Institute; lidera programas internacionales con USAID y el programa eMujeres." },
+  { q: "¿Cuáles son los 4 mercados de LATAM con mayor crecimiento de eCommerce proyectado?", a: "México, Perú, Colombia y Argentina." },
+  { q: "¿Cuál es la clave del modelo de partnerships del eCommerce Institute?", a: "Alianzas con cámaras nacionales (CACE, CCCE), organismos internacionales (USAID, UNCTAD, UE/Erasmus+) y empresas tecnológicas como VTEX." }
+];
+
+// ─── RENDER MARKDOWN ──────────────────────────────────────────────────────────
+document.getElementById('briefing-content').innerHTML = marked.parse(briefingMD);
+document.getElementById('intel-content').innerHTML = marked.parse(intelMD);
+document.getElementById('research-content').innerHTML = marked.parse(researchMD);
+
+// ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
+let quizScore = 0;
+const quizContainer = document.getElementById('quiz-container');
+document.getElementById('total-q').textContent = quizData.length;
+
+quizData.forEach((item, idx) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `
+    <div class="question-num">Pregunta ${idx + 1} de ${quizData.length}</div>
+    <div class="question-text">${item.q}</div>
+    <div class="options" id="opts-${idx}">
+      ${item.options.map((opt, i) => `
+        <div class="option" onclick="selectOption(${idx},'${'ABCD'[i]}','${item.answer}',this)">
+          <div class="option-letter">${'ABCD'[i]}</div>
+          <span>${opt.substring(3)}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  quizContainer.appendChild(div);
+});
+
+function selectOption(qIdx, selected, correct, el) {
+  const opts = document.querySelectorAll(`#opts-${qIdx} .option`);
+  opts.forEach(o => o.classList.add('answered'));
+  opts.forEach(o => { o.style.pointerEvents = 'none'; });
+  if (selected === correct) {
+    el.classList.add('correct');
+    quizScore++;
+    document.getElementById('score').textContent = quizScore;
+  } else {
+    el.classList.add('wrong');
+    opts.forEach((o, i) => {
+      if ('ABCD'[i] === correct) o.classList.add('correct');
+    });
+  }
+}
+
+// ─── FLASHCARD LOGIC ──────────────────────────────────────────────────────────
+let fcIdx = 0;
+const fcEl = document.getElementById('flashcard');
+document.getElementById('fc-total').textContent = flashcards.length;
+
+function renderCard() {
+  const c = flashcards[fcIdx];
+  document.getElementById('fc-question').textContent = c.q;
+  document.getElementById('fc-answer').textContent = c.a;
+  document.getElementById('fc-current').textContent = fcIdx + 1;
+  fcEl.classList.remove('flipped');
+  const dots = document.getElementById('fc-dots');
+  dots.innerHTML = '';
+  flashcards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === fcIdx ? ' active' : '');
+    dots.appendChild(d);
+  });
+}
+
+function flipCard() { fcEl.classList.toggle('flipped'); }
+function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderCard(); }
+function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderCard(); }
+
+renderCard();
+</script>
+</body>
+</html>

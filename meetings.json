@@ -1,6 +1,20 @@
 {
   "meetings": [
     {
+      "id": "2026-05-14-edna-galvez",
+      "date": "2026-05-14",
+      "time": "14:45",
+      "person": "Edna Gálvez",
+      "title": "eLearning & Strategic Partnerships Coordinator",
+      "company": "eCommerce Institute",
+      "type": "Reunión de negocio",
+      "tags": ["eLearning","Strategic Partnerships","eCommerce LATAM","IA en Educación"],
+      "notebooklm_url": "https://notebooklm.google.com/notebook/f1943d76-dc93-4a9c-a855-96661c40c3b2",
+      "sources_count": 14,
+      "path": "meetings/2026-05-14-edna-galvez/index.html",
+      "generated": "2026-05-14T16:00:00-03:00"
+    },
+    {
       "id": "2026-05-11-oscar-gonzalez-rezex",
       "date": "2026-05-11",
       "time": "09:00",
@@ -8,12 +22,7 @@
       "title": "Director General & Co-Fundador",
       "company": "MarkeTHINK Studio",
       "type": "Reunión de 30 min (Cal.com)",
-      "tags": [
-        "Performance Marketing",
-        "Ecommerce LATAM",
-        "EFFIE Award",
-        "Panamá"
-      ],
+      "tags": ["Performance Marketing","Ecommerce LATAM","EFFIE Award","Panamá"],
       "notebooklm_url": "https://notebooklm.google.com/notebook/bec04a45-400c-4b61-91c2-aa252fb2491f",
       "sources_count": 13,
       "path": "meetings/2026-05-11-oscar-gonzalez-rezex/index.html",
@@ -27,13 +36,7 @@
       "title": "Customer Success Manager",
       "company": "VTEX",
       "type": "Reunión de 30 min (Cal.com)",
-      "tags": [
-        "Ecommerce",
-        "Customer Success",
-        "VTEX",
-        "CACE",
-        "Educación Digital"
-      ],
+      "tags": ["Ecommerce","Customer Success","VTEX","CACE","Educación Digital"],
       "notebooklm_url": "https://notebooklm.google.com/notebook/40e9716a-bc6d-4bda-b239-6e7593dc34ba",
       "sources_count": 12,
       "path": "meetings/2026-05-11-cecilia-crespi/index.html",
@@ -47,12 +50,7 @@
       "title": "Growth Performance Lead",
       "company": "GIGA IT",
       "type": "Reunión de 30 min (Cal.com)",
-      "tags": [
-        "Growth Marketing",
-        "IT Services",
-        "Argentina Tech",
-        "Ex-UBA"
-      ],
+      "tags": ["Growth Marketing","IT Services","Argentina Tech","Ex-UBA"],
       "notebooklm_url": "https://notebooklm.google.com/notebook/2ad9257a-52c9-43c1-b629-127e2abcb62c",
       "sources_count": 11,
       "path": "meetings/2026-05-11-cecilia-escudero/index.html",
@@ -66,13 +64,7 @@
       "title": "Consultor B2B & Supply Chain",
       "company": "Independiente / UTU / UDE",
       "type": "Reunión de 30 min (Cal.com)",
-      "tags": [
-        "Supply Chain",
-        "Procurement",
-        "Mercado Libre",
-        "Uruguay",
-        "IA en Logística"
-      ],
+      "tags": ["Supply Chain","Procurement","Mercado Libre","Uruguay","IA en Logística"],
       "notebooklm_url": "https://notebooklm.google.com/notebook/0973a6ea-3d94-4175-b06d-03c44890ebc4",
       "sources_count": 11,
       "path": "meetings/2026-05-11-miguel-garateguy/index.html",
@@ -86,17 +78,11 @@
       "title": "Negocios Digitales / E-commerce (rol estimado)",
       "company": "Drogueria del Sud SA",
       "type": "Reunión de 30 min (Cal.com)",
-      "tags": [
-        "Pharma B2B",
-        "E-commerce farmacéutico",
-        "Logística automatizada",
-        "Macchiavello group"
-      ],
+      "tags": ["Pharma B2B","E-commerce farmacéutico","Logística automatizada","Macchiavello group"],
       "notebooklm_url": "https://notebooklm.google.com/notebook/33b084d5-9559-4578-be0f-ca6887e9ec2b",
       "sources_count": 10,
       "path": "meetings/2026-05-07-debora-menigali/index.html",
-      "generated": "2026-05-07T10:35:00-03:00",
-      "notes": "Notebook creado en NotebookLM con perfil + 4 fuentes web. Deep research lanzado en modo fast (task_id ee278970)."
+      "generated": "2026-05-07T10:35:00-03:00"
     },
     {
       "id": "2026-05-07-leandro-saravi",
@@ -106,17 +92,11 @@
       "title": "Director (hipótesis: RG Advisors SA)",
       "company": "RG Advisors SA — a confirmar",
       "type": "Reunión de 30 min (Cal.com)",
-      "tags": [
-        "Mercado de capitales",
-        "Asesoramiento financiero",
-        "IA aplicada a finanzas",
-        "Discovery moderado"
-      ],
+      "tags": ["Mercado de capitales","Asesoramiento financiero","IA aplicada a finanzas","Discovery moderado"],
       "notebooklm_url": "https://notebooklm.google.com/notebook/2b903af9-2fbb-4f87-997c-553c829ea16d",
       "sources_count": 5,
       "path": "meetings/2026-05-07-leandro-saravi/index.html",
-      "generated": "2026-05-07T10:35:00-03:00",
-      "notes": "Match probable pero no confirmado por self-identification. Notebook creado, deep research lanzado (task_id 92faa233)."
+      "generated": "2026-05-07T10:35:00-03:00"
     },
     {
       "id": "2026-05-07-agustina-vidal",
@@ -126,17 +106,11 @@
       "title": "Perfil a confirmar al inicio del call",
       "company": "—",
       "type": "Reunión de 30 min (Cal.com)",
-      "tags": [
-        "Reunión exploratoria",
-        "Discovery",
-        "IA aplicada",
-        "Productos digitales"
-      ],
+      "tags": ["Reunión exploratoria","Discovery","IA aplicada","Productos digitales"],
       "notebooklm_url": "https://notebooklm.google.com/notebook/0ae91d84-7c3d-414e-a3ed-2cfd93bf18d9",
       "sources_count": 5,
       "path": "meetings/2026-05-07-agustina-vidal/index.html",
-      "generated": "2026-05-07T10:35:00-03:00",
-      "notes": "Sin match único confirmado. Dashboard armado en modo discovery con 5 hipótesis de perfil + plan 4 W. Notebook creado, deep research lanzado (task_id de4ce3a1)."
+      "generated": "2026-05-07T10:35:00-03:00"
     },
     {
       "id": "2026-05-07-valentin-giacobino",
@@ -146,17 +120,11 @@
       "title": "Sueño Dorado · Colchones & Sommiers",
       "company": "Sueño Dorado",
       "type": "Reunión de 30 min (Cal.com)",
-      "tags": [
-        "Industria del descanso",
-        "Empresa familiar",
-        "E-commerce",
-        "Expansión productiva"
-      ],
+      "tags": ["Industria del descanso","Empresa familiar","E-commerce","Expansión productiva"],
       "notebooklm_url": null,
       "sources_count": 7,
       "path": "meetings/2026-05-07-valentin-giacobino/index.html",
-      "generated": "2026-05-07T09:55:00-03:00",
-      "notes": "Modo degradado — auth NotebookLM expirada en la corrida. Research vía WebSearch + síntesis directa."
+      "generated": "2026-05-07T09:55:00-03:00"
     },
     {
       "id": "2026-03-29-facundo-gregorini",
@@ -166,13 +134,7 @@
       "title": "Global Head of Marketing, Strategy",
       "company": "Fever (feverup.com)",
       "type": "Reunión de negocio",
-      "tags": [
-        "Fever",
-        "Live Entertainment Tech",
-        "Marketing Strategy",
-        "Tucán",
-        "LATAM"
-      ],
+      "tags": ["Fever","Live Entertainment Tech","Marketing Strategy","Tucán","LATAM"],
       "notebooklm_url": "https://notebooklm.google.com/notebook/4490032c-31b1-4c21-b581-e6a4b5aa34fb",
       "sources_count": 14,
       "path": "meetings/2026-03-29-facundo-gregorini/index.html",
@@ -186,11 +148,7 @@
       "title": "Co-Founder & Global Executive SVP",
       "company": "VTEX (NYSE: VTEX)",
       "type": "Business meeting",
-      "tags": [
-        "VTEX",
-        "eCommerce LATAM",
-        "AI Commerce"
-      ],
+      "tags": ["VTEX","eCommerce LATAM","AI Commerce"],
       "notebooklm_url": "https://notebooklm.google.com/notebook/2cb3240a-f895-466c-8dc0-8754643057e0",
       "sources_count": 16,
       "path": "meetings/2026-03-28-marcos-pueyrredon/index.html",
