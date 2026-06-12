@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Marcos Galperin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #08080c;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --gold: #f0b429;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+  /* NAVBAR */
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+  .navbar-back:hover { color:var(--text); }
+
+  /* HEADER */
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 100%); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding:24px 32px; max-width:1200px; margin:0 auto; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  /* LAYOUT */
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+
+  /* SIDEBAR */
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .firecrawl-badge { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:12px; color:var(--gold); background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; }
+
+  /* CONTENT */
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+
+  /* MARKDOWN */
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; color:var(--text); }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; color:var(--text); }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body code { background:var(--surface2); padding:2px 8px; border-radius:6px; font-size:13px; color:var(--accent); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+
+  /* QUIZ */
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+
+  /* FLASHCARDS */
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+
+  /* SOURCES */
+  .source-item { display:flex; align-items:center; gap:14px; padding:14px 18px; border-radius:12px; border:1px solid var(--border); background:var(--surface); margin-bottom:10px; text-decoration:none; transition:all 0.2s; }
+  .source-item:hover { border-color:var(--accent); background:var(--surface2); }
+  .source-icon { width:36px; height:36px; border-radius:10px; background:rgba(59,130,246,0.12); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+  .source-title { font-size:14px; font-weight:600; color:var(--text); line-height:1.4; }
+  .source-domain { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  /* SECTION TITLE */
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> Meeting Prep OS</div>
+  <div class="navbar-date">Sábado 13 de Junio, 2026</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+</nav>
+
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">MG</div>
+    <div class="header-info">
+      <div class="header-name">Marcos Galperin</div>
+      <div class="header-title">Executive Chairman & Founder · Mercado Libre (NASDAQ: MELI)</div>
+      <div class="header-tags">
+        <span class="tag tag-blue"><i class="fas fa-shopping-cart"></i> eCommerce LATAM</span>
+        <span class="tag tag-purple"><i class="fas fa-wallet"></i> Fintech</span>
+        <span class="tag tag-gold"><i class="fas fa-robot"></i> IA</span>
+        <span class="tag tag-green"><i class="fas fa-flask"></i> Demo Pipeline Firecrawl</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> 10:00 hs</div>
+      <div class="meeting-date">Sábado 13/06/2026</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> Demo — Pipeline Firecrawl</div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 32px;">
+  <div class="stats-row" style="padding:24px 0;">
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-dollar-sign"></i></div>
+      <div>
+        <div class="stat-value">$28.9B</div>
+        <div class="stat-label">Ingresos de Mercado Libre en 2025 (+39% interanual)</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+      <div>
+        <div class="stat-value">+49%</div>
+        <div class="stat-label">Crecimiento de ingresos en 1Q26 — el más rápido en casi 4 años</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-building-columns"></i></div>
+      <div>
+        <div class="stat-value">$81.6B</div>
+        <div class="stat-label">Market cap de MELI (junio 2026)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="sidebar">
+    <div class="sidebar-tab active" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+    <div class="sidebar-tab" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+    <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
+    <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+    <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
+    <div class="sidebar-tab" onclick="showTab('sources',this)"><i class="fas fa-link"></i> Fuentes</div>
+    <div class="firecrawl-badge"><i class="fas fa-fire"></i> Research: Firecrawl (search + deep research agent)</div>
+  </div>
+
+  <div class="content">
+
+    <!-- TAB: EXECUTIVE BRIEFING -->
+    <div id="tab-briefing" class="tab-pane active">
+      <div class="section-title"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+      <div class="markdown-body" id="briefing-content"></div>
+    </div>
+
+    <!-- TAB: COMPETITIVE INTEL -->
+    <div id="tab-intel" class="tab-pane">
+      <div class="section-title"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+      <div class="markdown-body" id="intel-content"></div>
+    </div>
+
+    <!-- TAB: DEEP RESEARCH -->
+    <div id="tab-research" class="tab-pane">
+      <div class="section-title"><i class="fas fa-microscope"></i> Deep Research</div>
+      <div class="markdown-body" id="research-content"></div>
+    </div>
+
+    <!-- TAB: QUIZ -->
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+
+    <!-- TAB: FLASHCARDS -->
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-arrow-left"></i></button>
+          <div class="dots" id="fc-dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: SOURCES -->
+    <div id="tab-sources" class="tab-pane">
+      <div class="section-title"><i class="fas fa-link"></i> Fuentes del Research</div>
+      <div id="sources-container"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── TAB SWITCHING ───────────────────────────────────────────────────────────
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ─── CONTENT DATA ─────────────────────────────────────────────────────────────
+const briefingMD = `# Documento Ejecutivo de Preparación Pre-Reunión
+
+## 1) Perfil de la Persona
+
+**Nombre:** Marcos Galperin (54 años)
+
+- **Background:** Fundador de Mercado Libre en 1999, mientras cursaba su MBA en Stanford. Lideró la compañía como CEO durante 26 años ininterrumpidos hasta convertirla en la empresa más valiosa de América Latina.
+- **Rol actual:** Executive Chairman del directorio de MercadoLibre Inc. desde el 1 de enero de 2026, tras ceder el cargo de CEO (anunciado el 21 de mayo de 2025).
+- **Foco actual:** Declaró públicamente que en su nuevo rol se va a dedicar "bastante" a proyectos de **inteligencia artificial** e iniciativas estratégicas.
+- **Fortuna:** USD 9.300 millones (2025) — la persona más rica de Argentina.
+- **Contexto político:** Entusiasta declarado de las políticas económicas ultraliberales del presidente Javier Milei, a quien recibió en las oficinas de Mercado Libre en Saavedra (septiembre 2025). Milei lo llamó "benefactor social" y "ejemplo de innovación argentina".
+- **Sucesor:** Ariel Szarfsztejn (43), nuevo CEO desde el 1/1/2026. Economista cum laude de la UBA con MBA de Stanford. En MELI desde 2017: lideró Mercado Envíos (2018-2021), fue EVP of Commerce (2022) y President of Commerce (2024). Antes: Despegar y Boston Consulting Group.
+- **Contexto de la reunión:** Demo del pipeline Meeting Prep OS con research 100% Firecrawl.
+
+## 2) Perfil de la Empresa
+
+**Nombre:** MercadoLibre, Inc. (NASDAQ: MELI) — market cap **USD 81.620 millones** (junio 2026)
+
+- **Qué hace:** El ecosistema líder de eCommerce y fintech de América Latina, operando en 4 unidades integradas:
+- **Marketplace:** plataforma de venta 3P + 1P. 120 millones de compradores únicos en 2025.
+- **Mercado Pago (fintech):** 78 millones de usuarios activos mensuales, USD 18.800 millones en activos bajo gestión, cartera de crédito de USD 12.500 millones (+90% interanual).
+- **Mercado Envíos (logística):** más de 50 centros de fulfillment; pasó de entregar el 8% de los paquetes in-house (2018) al 95% (2024). Abrió 16 centros nuevos en 2025.
+- **Mercado Ads (publicidad):** crecimiento del 73% interanual en 1Q26. El mercado de retail media de LATAM se duplicará a USD 6.000 millones para 2029.
+- **Ventajas competitivas:** ecosistema integrado comercio+pagos+crédito+logística, escala regional (Brasil, México, Argentina como núcleo) y 28 trimestres consecutivos creciendo arriba del 30%.
+
+## 3) Oportunidad de Mercado
+
+- **USD 28.900 millones:** ingresos totales de MELI en 2025 (+39% en USD, +52,4% FX-neutral).
+- **USD 65.000 millones:** GMV total 2025 (+26% interanual).
+- **USD 8.845 millones:** ingresos del 1Q26 (+49% interanual, el crecimiento más rápido en casi 4 años). Resultado operativo: USD 611 millones (margen 6,9%). Ganancia neta: USD 417 millones.
+- **Inversiones récord 2026:** Brasil USD 10.900M (+50%), México USD 4.600M (+35%), Argentina USD 3.400M (+30% — récord histórico en el país).
+- **Tendencias:** IA aplicada a comercio y fintech, guerra de precios con plataformas asiáticas (Temu, Shein, Shopee), retail media en explosión, posible apertura del mercado venezolano (las acciones saltaron 8,5% el 5/1/2026 ante la especulación).
+
+## 4) Puntos Clave de Conversación
+
+1. **IA como cambio de plataforma** — Galperin se dedica ahora a proyectos de IA y el nuevo CEO la define como "un cambio de plataforma y un momento único". ¿Cómo está pensando MELI los agentes de shopping con IA que están desarrollando? ¿Qué aprendizajes dejó el partnership con Anthropic (Claude vía MCP) que apunta a 20-30% de eficiencia en la fuerza laboral?
+
+2. **El asistente IA de Mercado Pago** — Lanzado en octubre 2025: más de 9 millones de conversaciones en 4Q25 y 87% de las interacciones resueltas sin humanos, lo que apoyó la emisión de casi 3 millones de tarjetas nuevas. ¿Qué sigue: IA en scoring de crédito?
+
+3. **La guerra contra las plataformas asiáticas** — Temu ya tiene 105 millones de MAU en LATAM (+143%) y Shopee ~15% del GMV de Brasil. MELI respondió bajando el envío gratis a R$19 y abriendo su primer fulfillment center en China (dic. 2025). ¿La estrategia es competir en precio o diferenciarse por servicio?
+
+4. **Margen sacrificado por crecimiento** — La rentabilidad cayó a la mitad mientras los ingresos crecen al 49%. ¿Hasta cuándo el mercado va a acompañar la tesis de "invertir ahora, cosechar después"?
+
+5. **Argentina bajo Milei** — Inversión récord de USD 3.400M en 2026 y GMV creciendo 41% FX-neutral. ¿Qué reformas faltan para que Argentina pese más en el mix regional?
+
+## 5) Manejo de Objeciones
+
+| Objeción | Respuesta Recomendada |
+|---|---|
+| "La competencia asiática va a erosionar el negocio" | MELI creció 49% en 1Q26 CON Temu y Shein ya operando; su foso es logística (95% in-house) + fintech integrado, no el precio. |
+| "La rentabilidad se desplomó a la mitad" | Es inversión deliberada: USD 18.900M comprometidos en Brasil/México/Argentina en 2026 para capturar share mientras los rivales pierden plata. |
+| "Sin Galperin como CEO la empresa pierde rumbo" | Szarfsztejn es de la casa (9 años), construyó Mercado Envíos — el mayor foso competitivo — y Galperin sigue como Executive Chairman activo en IA. |
+| "Argentina es demasiado volátil" | GMV argentino +41% FX-neutral en 1Q26 y NPS récord; la inversión de USD 3.400M indica convicción de largo plazo. |
+
+## 6) Próximos Pasos Recomendados
+
+1. **Seguimiento del earnings call del 2Q26** para validar si el margen operativo (6,9% en 1Q26) empieza a recuperarse con la madurez de los nuevos fulfillment centers.
+
+2. **Preparar un one-pager sobre agentes de IA aplicados a commerce** alineado con la agenda declarada de Galperin (proyectos de IA post-CEO) y el partnership existente con Anthropic.
+
+3. **Monitorear la situación de Venezuela** — si se confirma la apertura, es un catalizador inmediato para cualquier conversación de expansión regional.
+`;
+
+const intelMD = `# Cheat Sheet — Inteligencia Competitiva
+
+---
+
+## TOP 3 COSAS A SABER
+
+**1. Cambio de era: Galperin dejó el día a día para dedicarse a IA**
+
+- Tras 26 años como CEO, desde el 1/1/2026 es Executive Chairman; el nuevo CEO es Ariel Szarfsztejn (43, UBA + Stanford, ex President of Commerce)
+- Galperin declaró que se enfocará "bastante" en inteligencia artificial
+- Szarfsztejn define la IA como "un cambio de plataforma y un momento único en el tiempo"
+- MELI ya tiene partnership con Anthropic (Claude vía Model Context Protocol) apuntando a 20-30% de eficiencia en la fuerza laboral
+
+> **Tu ángulo:** Cualquier conversación con Galperin hoy pasa por IA aplicada, no por operación. Llegá con casos concretos de agentes de IA en commerce/fintech.
+
+---
+
+**2. Guerra de inversión total contra Amazon y las plataformas asiáticas**
+
+- Inversión 2026: Brasil USD 10.900M (+50%), México USD 4.600M (+35%), Argentina USD 3.400M (récord)
+- Amazon invirtió USD 10.000M acumulados en Brasil (USD 2.500M en los últimos 18 meses) y se alió con Nubank para crédito
+- Temu: 105M de usuarios activos mensuales en LATAM (+143% interanual); Shopee: ~15% del GMV de Brasil con tickets de USD 9-13 vs USD 27 de MELI
+- Respuesta MELI: envío gratis desde R$19, primer fulfillment center en China (dic. 2025), programa "Full China", USD 19M en cupones el Black Friday 2025 (el doble que Amazon)
+
+> **Tu ángulo:** El margen operativo bajó a 6,9% por decisión propia, no por debilidad. El framing correcto es "compra de market share" — MELI creció 49% mientras invierte.
+
+---
+
+**3. Fintech es el motor silencioso: Mercado Pago vs Nubank**
+
+- Mercado Pago: 78M de usuarios activos mensuales, AUM de USD 18.800M (+77%), cartera de crédito USD 12.500M (+87-90%), tarjetas de crédito +104%
+- Nubank: ~100-118M de clientes en Brasil, México y Colombia — el rival fintech más serio, ahora aliado de Amazon en Brasil
+- Ingresos fintech 2025: USD 12.600M (44% del total de MELI), creciendo 51% interanual
+- En Argentina, Mercado Pago denunció a 36 bancos por cartelización (caso Modo)
+
+> **Tu ángulo:** La batalla real es por la "principalidad bancaria" del usuario latinoamericano. El asistente de IA de Mercado Pago (87% de resolución sin humanos) es el caso de IA aplicada más medible del ecosistema.
+
+---
+
+## NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
+
+- **USD 28.900M** — ingresos totales de MELI en 2025 (+39% USD, +52,4% FX-neutral)
+- **USD 65.000M** — GMV 2025 (+26%)
+- **+49%** — crecimiento de ingresos en 1Q26 (USD 8.845M), el más rápido en casi 4 años
+- **USD 611M** — resultado operativo 1Q26 (margen 6,9%); ganancia neta USD 417M
+- **120M** — compradores únicos en 2025
+- **78M** — usuarios activos mensuales de Mercado Pago
+- **USD 12.500M** — cartera de crédito de Mercado Pago (+90% interanual)
+- **USD 18.900M** — inversión combinada 2026 en Brasil + México + Argentina
+- **105M** — usuarios activos mensuales de Temu en LATAM (+143%)
+- **USD 9.300M** — fortuna personal de Galperin, el hombre más rico de Argentina
+- **+8,5%** — salto de la acción el 5/1/2026 ante la especulación de apertura de Venezuela
+- **87%** — interacciones resueltas sin humanos por el asistente IA de Mercado Pago
+
+---
+
+## QUIÉN MÁS ESTÁ EN SU ÓRBITA
+
+- **Ariel Szarfsztejn** — CEO de MercadoLibre desde el 1/1/2026. El interlocutor del día a día operativo.
+- **Javier Milei** — Presidente de Argentina; relación pública y cercana con Galperin. Visitó las oficinas de MELI en septiembre 2025.
+- **Anthropic** — Partner de IA (modelos Claude vía MCP) para eficiencia interna de 20-30%.
+- **Amazon + Nubank** — La alianza rival en Brasil: Amazon pone el marketplace, Nubank el crédito.
+- **Temu, Shein y Shopee** — El frente asiático de bajo costo. Shein y MELI se denunciaron mutuamente en Argentina (caso cerrado en marzo 2026).
+- **Modo (36 bancos argentinos)** — El rival fintech local; disputa regulatoria abierta con Mercado Pago.
+`;
+
+const researchMD = `# Deep Research Report — Mercado Libre y el eCommerce LATAM 2026-2028
+
+---
+
+## Resumen Ejecutivo
+
+Mercado Libre entra en 2026 con la transición de liderazgo más importante de su historia (Galperin → Szarfsztejn) y simultáneamente con su apuesta de inversión más agresiva: USD 18.900 millones comprometidos en sus tres mercados principales. La tesis estratégica es clara — sacrificar margen hoy (operativo de 6,9% en 1Q26, rentabilidad a la mitad) para comprar participación de mercado mientras Amazon, Temu, Shein y Shopee intensifican la presión competitiva.
+
+Los números le dan la razón por ahora: +49% de ingresos en 1Q26 (el ritmo más rápido en casi 4 años), 28 trimestres consecutivos creciendo arriba del 30%, y un negocio fintech que ya aporta el 44% de los ingresos creciendo al 51%. Las dos variables a vigilar en los próximos 24 meses: si la guerra de precios con Asia erosiona el ticket promedio de forma estructural, y si la IA — el foco personal declarado de Galperin — se convierte en ventaja competitiva medible o queda en eficiencia incremental.
+
+---
+
+## Tabla de Fuentes Clave
+
+| Fuente | Insight Clave | Por Qué Importa |
+|---|---|---|
+| Bloomberg (may. 2025) | Galperin deja el cargo de CEO tras 26 años; asume como Chairman | El hecho que redefine a quién le hablás y de qué |
+| Reuters (may. 2025) | Szarfsztejn, ex President of Commerce, designado CEO desde 1/1/2026 | Perfil del nuevo decisor operativo |
+| Business Wire — Resultados 4Q25 | 2025 cerró con USD 28.9B de ingresos (+45% en 4Q) y GMV de USD 65B | La línea de base financiera de toda la conversación |
+| Resultados 1Q26 (OTC/IR) | USD 8.845M (+49%), operativo USD 611M (6,9%), neto USD 417M | El trade-off crecimiento vs margen en su punto máximo |
+| Bloomberg (jul. 2025) | Galperin se enfocará en proyectos de IA tras dejar el cargo de CEO | Define la agenda personal del chairman |
+| Reuters (mar. 2026) | MELI invierte USD 10.9B en Brasil en 2026 (+50%) | La apuesta país más grande de su historia |
+| BNamericas / Yahoo Finance | Argentina: inversión récord de USD 3.4B (+30%) en 2026 | Señal de convicción en el ciclo Milei |
+| Motley Fool (feb. 2026) | Análisis: ¿la competencia cambió permanentemente a MELI? | El bear case que hay que saber contestar |
+| Rio Times | LATAM endurece regulación a Temu/Shein; Brasil aplica 20% a importaciones | El frente regulatorio puede frenar a los asiáticos |
+| PYMNTS (2025) | Ejecutivos de MELI: IA es foco clave; partnership con Anthropic | Evidencia del giro de la compañía hacia IA aplicada |
+
+---
+
+## Análisis Profundo — 5 Temas Clave
+
+### 1. La IA como nueva plataforma del ecosistema
+
+MELI reconstruyó su motor de búsqueda alrededor de LLMs, lanzó un asistente de IA en Mercado Pago (9 millones de conversaciones en 4Q25, 87% resueltas sin intervención humana), automatiza producción de publicidad con GenAd (+25% de CTR, construido sobre Amazon Bedrock y Stability AI) y tiene herramientas de IA asesorando sobre el 20% del GMV. El partnership con Anthropic (Claude vía MCP) apunta a una mejora de eficiencia del 20-30% en la fuerza laboral, y la compañía desarrolla agentes de shopping con IA.
+
+**Implicación para la reunión:** Es EL tema de Galperin post-CEO. Cualquier propuesta que toque agentes de IA, automatización de research o flujos agénticos conversa directamente con su agenda declarada.
+
+### 2. La invasión asiática y la guerra de márgenes
+
+Temu alcanzó 105 millones de MAU en LATAM (+143% interanual) y ya captura ~5% del GMV brasileño con más del 10% del tráfico. Shopee tiene ~15% del GMV de Brasil con precios 11-12% más bajos y tickets de USD 9-13. La respuesta de MELI fue total: envío gratis desde R$19, USD 19M en cupones en Black Friday, fulfillment center propio en China y el programa "Full China" para vendedores chinos. El costo: margen operativo de 6,9% y rentabilidad a la mitad.
+
+**Implicación para la reunión:** No preguntar "si" la competencia asiática preocupa, sino "cómo" se gana: la tesis de MELI es que la logística propia (95% in-house) y el ecosistema fintech son fosos que el precio no compra.
+
+### 3. Fintech: la batalla por la principalidad bancaria
+
+Mercado Pago (78M MAU, AUM USD 18.8B, crédito USD 12.5B) compite con Nubank (~100-118M de clientes) por ser la relación financiera principal del usuario latinoamericano. La alianza Amazon-Nubank en Brasil junta a los dos rivales en un solo frente. En Argentina, la disputa con Modo (respaldado por 30+ bancos) escaló a denuncias por cartelización contra 36 bancos.
+
+**Implicación para la reunión:** El crédito creciendo al 87-90% anual es el dato que explica por qué MELI tolera márgenes bajos en commerce: el margen futuro está en fintech.
+
+### 4. Argentina bajo Milei: de mercado volátil a apuesta récord
+
+La inversión de USD 3.400M en 2026 (+30%) es la más grande de la historia de MELI en Argentina e incluye un centro logístico de USD 75M en La Matanza. El GMV argentino creció 41% FX-neutral en 1Q26 con NPS récord en commerce y fintech. La cercanía pública Galperin-Milei (visita a las oficinas de Saavedra, elogios mutuos) alinea a la empresa con el ciclo reformista.
+
+**Implicación para la reunión:** Argentina dejó de ser el riesgo del portfolio para ser la opción de mayor beta del ecosistema. Galperin tiene skin in the game personal y político en que funcione.
+
+### 5. Expansión de frontera: Venezuela y el corredor con China
+
+La especulación sobre la apertura de Venezuela hizo saltar la acción 8,5% en un día (5/1/2026) — hoy su contribución es insignificante, pero se la describe como potencial "game changer". En paralelo, el fulfillment center en China (dic. 2025) invierte la lógica defensiva: en vez de solo bloquear a los vendedores chinos, MELI se vuelve su canal de entrada a LATAM.
+
+**Implicación para la reunión:** Dos opcionalidades de crecimiento que el mercado todavía no pricea del todo; preguntar por Venezuela demuestra que hiciste los deberes.
+`;
+
+// ─── QUIZ DATA ────────────────────────────────────────────────────────────────
+const quizData = [
+  {
+    q: "¿Qué rol ocupa Marcos Galperin en MercadoLibre desde el 1 de enero de 2026?",
+    options: ["A) CEO", "B) Executive Chairman del directorio", "C) President of Commerce", "D) Asesor externo"],
+    answer: "B"
+  },
+  {
+    q: "¿Quién es el nuevo CEO de MercadoLibre desde 2026?",
+    options: ["A) Osvaldo Giménez", "B) Marcos Pueyrredon", "C) Ariel Szarfsztejn", "D) Daniel Rabinovich"],
+    answer: "C"
+  },
+  {
+    q: "¿Cuáles fueron los ingresos totales de Mercado Libre en 2025?",
+    options: ["A) USD 18.900 millones", "B) USD 28.900 millones", "C) USD 35.000 millones", "D) USD 65.000 millones"],
+    answer: "B"
+  },
+  {
+    q: "¿Cuánto crecieron los ingresos de MELI en el primer trimestre de 2026?",
+    options: ["A) 26%", "B) 34%", "C) 42%", "D) 49%"],
+    answer: "D"
+  },
+  {
+    q: "¿Cuántos usuarios activos mensuales tiene Mercado Pago?",
+    options: ["A) 45 millones", "B) 60 millones", "C) 78 millones", "D) 120 millones"],
+    answer: "C"
+  },
+  {
+    q: "¿Cuánto invierte Mercado Libre en Argentina en 2026?",
+    options: ["A) USD 1.200 millones", "B) USD 2.600 millones", "C) USD 3.400 millones", "D) USD 4.600 millones"],
+    answer: "C"
+  },
+  {
+    q: "¿Qué porcentaje de las interacciones resuelve el asistente de IA de Mercado Pago sin intervención humana?",
+    options: ["A) 50%", "B) 65%", "C) 75%", "D) 87%"],
+    answer: "D"
+  },
+  {
+    q: "¿Con qué empresa de IA tiene partnership Mercado Libre para mejorar la eficiencia de su fuerza laboral?",
+    options: ["A) OpenAI", "B) Anthropic (modelos Claude)", "C) Google DeepMind", "D) Mistral"],
+    answer: "B"
+  }
+];
+
+// ─── FLASHCARD DATA ───────────────────────────────────────────────────────────
+const flashcards = [
+  { q: "¿Cuál es el rol actual de Marcos Galperin?", a: "Executive Chairman de MercadoLibre desde el 1/1/2026, tras 26 años como CEO. Su foco declarado: proyectos de inteligencia artificial." },
+  { q: "¿Quién es Ariel Szarfsztejn?", a: "El nuevo CEO de MELI (43 años). Economista cum laude de la UBA con MBA de Stanford. En la empresa desde 2017; construyó Mercado Envíos y fue President of Commerce." },
+  { q: "¿Cuál es la fortuna personal de Galperin?", a: "USD 9.300 millones (2025) — la persona más rica de Argentina." },
+  { q: "¿Cómo cerró MELI el año 2025?", a: "Ingresos de USD 28.900M (+39% en USD), GMV de USD 65.000M (+26%) y 120 millones de compradores únicos." },
+  { q: "¿Qué pasó en el 1Q26?", a: "Ingresos de USD 8.845M (+49%, el crecimiento más rápido en casi 4 años), resultado operativo de USD 611M (margen 6,9%) y ganancia neta de USD 417M." },
+  { q: "¿Cuáles son los números clave de Mercado Pago?", a: "78M de usuarios activos mensuales, USD 18.800M en activos bajo gestión (+77%) y cartera de crédito de USD 12.500M (+90% interanual)." },
+  { q: "¿Cuánto invierte MELI en 2026 y dónde?", a: "USD 18.900M en total: Brasil USD 10.900M (+50%), México USD 4.600M (+35%) y Argentina USD 3.400M (+30%, récord histórico)." },
+  { q: "¿Cómo viene la competencia asiática en LATAM?", a: "Temu: 105M de MAU (+143%). Shopee: ~15% del GMV de Brasil con tickets de USD 9-13. Respuesta de MELI: envío gratis desde R$19 y fulfillment center propio en China." },
+  { q: "¿Cuáles son los hitos de IA de Mercado Libre?", a: "Asistente de Mercado Pago: 9M de conversaciones, 87% resueltas sin humanos. GenAd: +25% CTR. Partnership con Anthropic (Claude vía MCP): meta de 20-30% de eficiencia. Búsqueda reconstruida sobre LLMs." },
+  { q: "¿Por qué importa Venezuela en la tesis de MELI?", a: "La especulación sobre la apertura del mercado venezolano hizo saltar la acción 8,5% el 5/1/2026. Hoy su aporte es insignificante, pero se lo considera un potencial 'game changer'." }
+];
+
+// ─── SOURCES DATA ─────────────────────────────────────────────────────────────
+const sourcesData = [
+  { title: "MercadoLibre CEO Steps Aside After 25 Years to Be Chairman", url: "https://www.bloomberg.com/news/articles/2025-05-21/mercadolibre-ceo-steps-aside-after-25-years-to-be-chairman" },
+  { title: "MercadoLibre to replace founder Galperin as CEO, taps Szarfsztejn", url: "https://www.reuters.com/sustainability/boards-policy-regulation/mercadolibre-replace-founder-galperin-ceo-taps-szarfsztejn-role-2025-05-21/" },
+  { title: "Mercado Libre Caps Stellar 2025 Performance with 45% YoY Revenue Growth in Q4", url: "https://www.businesswire.com/news/home/20260224265595/en/" },
+  { title: "Mercado Libre Kicks Off 2026 with Fastest Revenue Growth in Almost Four Years", url: "https://www.otcmarkets.com/stock/MELI/news/" },
+  { title: "Galperin to Focus on AI Projects After CEO Change (Bloomberg)", url: "https://www.bloomberg.com/news/articles/2025-07-31/mercadolibre-s-meli-marcos-galperin-to-focus-on-ai-projects-after-ceo-change" },
+  { title: "MercadoLibre to invest $11 billion in Brazil this year (Reuters)", url: "https://www.reuters.com/business/finance/mercadolibre-invest-11-billion-brazil-this-year-2026-03-24/" },
+  { title: "Mercado Libre raises its bet in Argentina with a record investment of US$3.4bn", url: "https://www.bnamericas.com/en/news/mercado-libre-raises-its-bet-in-argentina-with-a-record-investment-of-us34bn" },
+  { title: "Mercado Libre founder vows US$75 million investment as he hosts Milei", url: "https://www.batimes.com.ar/news/economy/mercado-libre-founder-vows-us75-million-investment-as-he-hosts-milei.phtml" },
+  { title: "Has Competition Permanently Changed MercadoLibre? (Motley Fool)", url: "https://www.fool.com/investing/2026/02/25/has-competition-permanently-changed-mercadolibres/" },
+  { title: "MercadoLibre Just Got Ambushed by Amazon (Yahoo Finance)", url: "https://finance.yahoo.com/news/mercadolibre-just-got-ambushed-amazon-180103507.html" },
+  { title: "Latin America Cracks Down on Temu and Shein (Rio Times)", url: "https://www.riotimesonline.com/latin-america-cracks-down-on-temu-and-shein-as-cheap-imports-flood-the-market/" },
+  { title: "Mercado Libre Executives Say AI Is Key Focus (PYMNTS)", url: "https://www.pymnts.com/artificial-intelligence-2/2025/mercado-libre-executives-say-ai-is-key-focus/" },
+  { title: "Mercado Libre: The Digital Backbone of Latin America (Quartr)", url: "https://quartr.com/insights/edge/mercado-libre-the-digital-backbone-of-latin-america" },
+  { title: "Potential Venezuela Opening Could Be Game Changer (Yahoo Finance)", url: "https://finance.yahoo.com/news/potential-venezuela-opening-could-game-231033357.html" },
+  { title: "Mercado Libre reportó ingresos de US$8.845 millones en el 1Q26 (Mobile Time)", url: "https://mobiletime.la/noticias/08/05/2026/mercado-libre-ingresos-1q26/" },
+  { title: "MELI: su mejor trimestre en ventas en 4 años, rentabilidad a la mitad (Infobae)", url: "https://www.infobae.com/economia/2026/05/08/mercado-libre-tuvo-su-mejor-trimestre-en-ventas-en-cuatro-anos-pero-su-rentabilidad-se-desplomo-a-la-mitad/" },
+  { title: "La carrera silenciosa de Ariel Szarfsztejn hasta la cima de Mercado Libre (Forbes AR)", url: "https://www.forbesargentina.com/negocios/la-historia-detras-sucesor-galperin-asi-fue-carrera-silenciosa-ariel-szarfsztejn-cima-mercado-libre-n84159" },
+  { title: "Investor Relations — About MELI", url: "https://investor.mercadolibre.com/about-meli" }
+];
+
+// ─── RENDER MARKDOWN ──────────────────────────────────────────────────────────
+document.getElementById('briefing-content').innerHTML = marked.parse(briefingMD);
+document.getElementById('intel-content').innerHTML = marked.parse(intelMD);
+document.getElementById('research-content').innerHTML = marked.parse(researchMD);
+
+// ─── RENDER SOURCES ───────────────────────────────────────────────────────────
+document.getElementById('sources-container').innerHTML = sourcesData.map(s => {
+  let domain = '';
+  try { domain = new URL(s.url).hostname.replace('www.',''); } catch(e) {}
+  return '<a class="source-item" href="' + s.url + '" target="_blank" rel="noopener">' +
+    '<div class="source-icon"><i class="fas fa-globe"></i></div>' +
+    '<div><div class="source-title">' + s.title + '</div>' +
+    '<div class="source-domain">' + domain + '</div></div></a>';
+}).join('');
+
+// ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
+let quizScore = 0;
+const quizContainer = document.getElementById('quiz-container');
+document.getElementById('total-q').textContent = quizData.length;
+
+quizData.forEach((item, idx) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `
+    <div class="question-num">Pregunta ${idx + 1} de ${quizData.length}</div>
+    <div class="question-text">${item.q}</div>
+    <div class="options" id="opts-${idx}">
+      ${item.options.map((opt, i) => `
+        <div class="option" onclick="selectOption(${idx},'${'ABCD'[i]}','${item.answer}',this)">
+          <div class="option-letter">${'ABCD'[i]}</div>
+          <span>${opt.substring(3)}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  quizContainer.appendChild(div);
+});
+
+function selectOption(qIdx, selected, correct, el) {
+  const opts = document.querySelectorAll(`#opts-${qIdx} .option`);
+  opts.forEach(o => o.classList.add('answered'));
+  opts.forEach(o => { o.style.pointerEvents = 'none'; });
+  if (selected === correct) {
+    el.classList.add('correct');
+    quizScore++;
+    document.getElementById('score').textContent = quizScore;
+  } else {
+    el.classList.add('wrong');
+    opts.forEach((o, i) => {
+      if ('ABCD'[i] === correct) o.classList.add('correct');
+    });
+  }
+}
+
+// ─── FLASHCARD LOGIC ──────────────────────────────────────────────────────────
+let fcIdx = 0;
+const fcEl = document.getElementById('flashcard');
+document.getElementById('fc-total').textContent = flashcards.length;
+
+function renderCard() {
+  const c = flashcards[fcIdx];
+  document.getElementById('fc-question').textContent = c.q;
+  document.getElementById('fc-answer').textContent = c.a;
+  document.getElementById('fc-current').textContent = fcIdx + 1;
+  fcEl.classList.remove('flipped');
+  const dots = document.getElementById('fc-dots');
+  dots.innerHTML = '';
+  flashcards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === fcIdx ? ' active' : '');
+    dots.appendChild(d);
+  });
+}
+
+function flipCard() { fcEl.classList.toggle('flipped'); }
+function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderCard(); }
+function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderCard(); }
+
+renderCard();
+</script>
+</body>
+</html>

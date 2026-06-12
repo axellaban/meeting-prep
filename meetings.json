@@ -1,6 +1,39 @@
 {
   "meetings": [
     {
+      "id": "2026-06-13-demo-marcos-galperin",
+      "date": "2026-06-13",
+      "time": "10:00",
+      "person": "Marcos Galperin",
+      "title": "Executive Chairman & Founder",
+      "company": "Mercado Libre (NASDAQ: MELI)",
+      "type": "Demo — Pipeline Firecrawl",
+      "tags": ["eCommerce LATAM","Fintech","IA","Demo Firecrawl"],
+      "sources": [
+        "https://www.bloomberg.com/news/articles/2025-05-21/mercadolibre-ceo-steps-aside-after-25-years-to-be-chairman",
+        "https://www.reuters.com/sustainability/boards-policy-regulation/mercadolibre-replace-founder-galperin-ceo-taps-szarfsztejn-role-2025-05-21/",
+        "https://www.businesswire.com/news/home/20260224265595/en/",
+        "https://www.otcmarkets.com/stock/MELI/news/",
+        "https://www.bloomberg.com/news/articles/2025-07-31/mercadolibre-s-meli-marcos-galperin-to-focus-on-ai-projects-after-ceo-change",
+        "https://www.reuters.com/business/finance/mercadolibre-invest-11-billion-brazil-this-year-2026-03-24/",
+        "https://www.bnamericas.com/en/news/mercado-libre-raises-its-bet-in-argentina-with-a-record-investment-of-us34bn",
+        "https://www.batimes.com.ar/news/economy/mercado-libre-founder-vows-us75-million-investment-as-he-hosts-milei.phtml",
+        "https://www.fool.com/investing/2026/02/25/has-competition-permanently-changed-mercadolibres/",
+        "https://finance.yahoo.com/news/mercadolibre-just-got-ambushed-amazon-180103507.html",
+        "https://www.riotimesonline.com/latin-america-cracks-down-on-temu-and-shein-as-cheap-imports-flood-the-market/",
+        "https://www.pymnts.com/artificial-intelligence-2/2025/mercado-libre-executives-say-ai-is-key-focus/",
+        "https://quartr.com/insights/edge/mercado-libre-the-digital-backbone-of-latin-america",
+        "https://finance.yahoo.com/news/potential-venezuela-opening-could-game-231033357.html",
+        "https://mobiletime.la/noticias/08/05/2026/mercado-libre-ingresos-1q26/",
+        "https://www.infobae.com/economia/2026/05/08/mercado-libre-tuvo-su-mejor-trimestre-en-ventas-en-cuatro-anos-pero-su-rentabilidad-se-desplomo-a-la-mitad/",
+        "https://www.forbesargentina.com/negocios/la-historia-detras-sucesor-galperin-asi-fue-carrera-silenciosa-ariel-szarfsztejn-cima-mercado-libre-n84159",
+        "https://investor.mercadolibre.com/about-meli"
+      ],
+      "sources_count": 18,
+      "path": "meetings/2026-06-13-demo-marcos-galperin/index.html",
+      "generated": "2026-06-12T13:30:00-03:00"
+    },
+    {
       "id": "2026-05-14-edna-galvez",
       "date": "2026-05-14",
       "time": "14:45",

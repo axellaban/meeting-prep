@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────────────────────
+# Meeting Prep OS — Corrida diaria automática (Fase 2 — SCAFFOLD)
+#
+# Estado: deshabilitado por defecto (solo workflow_dispatch).
+# Para activar la corrida diaria, descomentá el bloque `schedule`.
+#
+# Secrets requeridos (Settings → Secrets and variables → Actions):
+#   - ANTHROPIC_API_KEY      → consola de Anthropic
+#   - FIRECRAWL_API_KEY      → firecrawl.dev
+#   - GCAL_MCP_CONFIG        → JSON de config del MCP de Google Calendar
+#                              (server con OAuth refresh token headless,
+#                              p.ej. nspady/google-calendar-mcp o similar)
+# ─────────────────────────────────────────────────────────────────────
+name: Daily Meeting Prep
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "0 10 * * *"   # 10:00 UTC = 07:00 ART
+
+jobs:
+  meeting-prep:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Meeting Prep pipeline
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Corré el pipeline de meeting prep definido en CLAUDE.md:
+            revisá el calendario de hoy y mañana, procesá todos los
+            eventos con #prep que no tengan carpeta en meetings/,
+            generá los dashboards, actualizá meetings.json y commiteá
+            los cambios en este branch.
+          claude_args: |
+            --mcp-config '{
+              "mcpServers": {
+                "firecrawl": {
+                  "command": "npx",
+                  "args": ["-y", "firecrawl-mcp"],
+                  "env": { "FIRECRAWL_API_KEY": "${{ secrets.FIRECRAWL_API_KEY }}" }
+                }
+              }
+            }'
+        # TODO Fase 2: agregar el server MCP de Google Calendar con
+        # refresh token (secrets.GCAL_MCP_CONFIG) al bloque mcpServers.
+
+      - name: Push changes
+        run: |
+          git push origin HEAD || echo "Nada que pushear"
