@@ -287,8 +287,8 @@
     <div class="meta-row">
       <span class="chip">Routine diaria · 06:03 ART</span>
       <span class="chip ok">Google Calendar conectado</span>
-      <span class="chip warn">Firecrawl sin adjuntar</span>
-      <span class="chip warn">Vercel sin desplegar</span>
+      <span class="chip ok">Vercel desplegando</span>
+      <span class="chip warn">Rutina vieja sin apagar</span>
     </div>
   </header>
 
@@ -570,15 +570,28 @@
         </div>
       </div>
 
-      <div class="item warn">
-        <div class="dot">Falta</div>
+      <div class="item ok">
+        <div class="dot">Listo</div>
         <div class="item-body">
-          <h3>Firecrawl no quedó adjunto a la Routine</h3>
+          <h3>Vercel despliega en cada push</h3>
           <p>
-            La rutina tiene Apollo, Gmail, Calendar, Drive, Granola y Notion — pero no Firecrawl.
-            El research no se cae: baja a <code>WebSearch</code> y <code>WebFetch</code>, que sí están
-            disponibles. Pero perdés el scraping de sitios de empresa, que es de donde salen el modelo
-            de negocio y el posicionamiento. Agregalo cuando puedas.
+            El sitio vive en <code>meeting-prep-aisuperpro.vercel.app</code> — no en la URL que decía
+            el README. Verificado: portal, dashboards y el <code>marked.js</code> vendorizado responden
+            todos 200.
+          </p>
+        </div>
+      </div>
+
+      <div class="item ok">
+        <div class="dot">Resuelto</div>
+        <div class="item-body">
+          <h3>El research ya no depende de Firecrawl</h3>
+          <p>
+            Firecrawl no quedó adjunto a la Routine, pero dejó de importar: medido sobre el mismo
+            target, <code>WebSearch</code> devolvió historial laboral y registro corporativo que
+            <code>firecrawl_search</code> no trajo, y <code>WebFetch</code> extrajo el mismo contenido
+            que <code>firecrawl_scrape</code>. Se invirtió el orden — Firecrawl queda para JS pesado,
+            extracción con schema y sitios que bloquean el fetch simple.
           </p>
         </div>
       </div>
@@ -597,13 +610,13 @@
       </div>
 
       <div class="item warn">
-        <div class="dot">Cortado</div>
+        <div class="dot">Acción tuya</div>
         <div class="item-body">
-          <h3>Vercel no está desplegando</h3>
+          <h3>Apagar la rutina vieja — sólo lo podés hacer vos</h3>
           <p>
-            <code>meeting-prep-axellaban.vercel.app</code> devuelve <code>DEPLOYMENT_NOT_FOUND</code>.
-            El push a GitHub funciona, pero la cadena termina ahí: los dashboards existen en el repo
-            y no en la web. Es el último eslabón que falta para que puedas abrirlos desde el celular.
+            Fue creada vía API, así que el sistema no deja que la modifique un agente. Andá a
+            <strong>claude.ai → Routines</strong> y desactivá <code>meeting prep agent pro cloud</code>.
+            Es el único paso pendiente del sistema.
           </p>
         </div>
       </div>
@@ -640,7 +653,12 @@
           <tr>
             <td>Deploy</td>
             <td>El commit entra pero el sitio no se actualiza.</td>
-            <td>Sin resolver todavía — es el punto abierto de arriba.</td>
+            <td>Vercel escucha <code>main</code>; <code>assets/</code> quedó incluido en los builds.</td>
+          </tr>
+          <tr>
+            <td>Briefing flaco</td>
+            <td>Sale un documento corto y genérico que no sirve antes de la call.</td>
+            <td>El skill fija un piso de 25.000 caracteres y exige un dato duro por afirmación.</td>
           </tr>
         </tbody>
       </table>
