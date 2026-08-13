@@ -1,0 +1,656 @@
+<title>Arquitectura Meeting Prep OS</title>
+<style>
+  /* ─── TOKENS: tema claro (estado base, sin estampar) ─────────────────── */
+  :root {
+    --bg:        #f4f5f7;
+    --surface:   #ffffff;
+    --surface-2: #e9ebf0;
+    --border:    #d5d9e2;
+    --border-2:  #bfc5d2;
+    --text:      #15171e;
+    --text-mid:  #3d4351;
+    --text-mut:  #5f6678;
+    --gold:      #8f6304;
+    --gold-bg:   rgba(143,99,4,0.09);
+    --blue:      #1d4ed8;
+    --blue-bg:   rgba(29,78,216,0.08);
+    --green:     #046c4e;
+    --green-bg:  rgba(4,108,78,0.09);
+    --red:       #b3261e;
+    --red-bg:    rgba(179,38,30,0.08);
+
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:        #0b0b10;
+      --surface:   #14141c;
+      --surface-2: #1d1d28;
+      --border:    #2a2a38;
+      --border-2:  #3a3a4c;
+      --text:      #e9ebf1;
+      --text-mid:  #b8bfd0;
+      --text-mut:  #8f97ab;
+      --gold:      #f0b429;
+      --gold-bg:   rgba(240,180,41,0.10);
+      --blue:      #60a5fa;
+      --blue-bg:   rgba(96,165,250,0.10);
+      --green:     #34d399;
+      --green-bg:  rgba(52,211,153,0.10);
+      --red:       #f87171;
+      --red-bg:    rgba(248,113,113,0.10);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:        #0b0b10;
+    --surface:   #14141c;
+    --surface-2: #1d1d28;
+    --border:    #2a2a38;
+    --border-2:  #3a3a4c;
+    --text:      #e9ebf1;
+    --text-mid:  #b8bfd0;
+    --text-mut:  #8f97ab;
+    --gold:      #f0b429;
+    --gold-bg:   rgba(240,180,41,0.10);
+    --blue:      #60a5fa;
+    --blue-bg:   rgba(96,165,250,0.10);
+    --green:     #34d399;
+    --green-bg:  rgba(52,211,153,0.10);
+    --red:       #f87171;
+    --red-bg:    rgba(248,113,113,0.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 52px;
+  }
+
+  /* ─── HEADER ──────────────────────────────────────────────────────────── */
+  header { display: flex; flex-direction: column; gap: 14px; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::after {
+    content: ""; flex: 1; height: 1px; background: var(--border-2);
+  }
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+    text-wrap: balance;
+    margin: 0;
+  }
+  .standfirst {
+    font-size: 17px;
+    color: var(--text-mid);
+    max-width: 62ch;
+    margin: 0;
+  }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px;
+  }
+  .chip {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-2);
+    color: var(--text-mut);
+    background: var(--surface);
+    white-space: nowrap;
+  }
+  .chip.ok   { color: var(--green); border-color: var(--green); background: var(--green-bg); }
+  .chip.warn { color: var(--red);   border-color: var(--red);   background: var(--red-bg); }
+
+  /* ─── SECTIONS ────────────────────────────────────────────────────────── */
+  section { display: flex; flex-direction: column; gap: 18px; }
+  h2 {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--text-mut);
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  p { margin: 0; max-width: 68ch; }
+  .lede { font-size: 17px; color: var(--text-mid); }
+  strong { font-weight: 600; color: var(--text); }
+  code {
+    font-family: var(--mono);
+    font-size: 0.875em;
+    padding: 1.5px 5px;
+    border-radius: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    white-space: nowrap;
+  }
+
+  /* ─── KEY CALLOUT ─────────────────────────────────────────────────────── */
+  .keystone {
+    background: var(--gold-bg);
+    border: 1px solid var(--gold);
+    border-radius: 10px;
+    padding: 22px 26px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .keystone .k-label {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold);
+  }
+  .keystone p { font-size: 17px; color: var(--text); max-width: 64ch; }
+
+  /* ─── FIGURE ──────────────────────────────────────────────────────────── */
+  figure { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+  .fig-scroll {
+    overflow-x: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 20px;
+  }
+  .fig-scroll svg { display: block; max-width: 100%; height: auto; min-width: 620px; margin: 0 auto; }
+  figcaption {
+    font-size: 13.5px;
+    color: var(--text-mut);
+    max-width: 68ch;
+  }
+
+  /* ─── STAGES ──────────────────────────────────────────────────────────── */
+  .stages { display: flex; flex-direction: column; gap: 2px; }
+  .stage {
+    display: grid;
+    grid-template-columns: 46px 1fr;
+    gap: 18px;
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+  }
+  .stage:last-child { border-bottom: 1px solid var(--border); }
+  .stage-n {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold);
+    padding-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stage-body { display: flex; flex-direction: column; gap: 7px; }
+  .stage-body p { font-size: 15px; color: var(--text-mid); }
+  .needs {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-mut);
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    margin-top: 2px;
+  }
+  .needs span.lbl { color: var(--text-mut); opacity: .8; }
+
+  /* ─── TABLE ───────────────────────────────────────────────────────────── */
+  .t-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 560px; }
+  th, td { padding: 12px 16px; text-align: left; vertical-align: top; }
+  th {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: 0.11em; text-transform: uppercase;
+    color: var(--text-mut); font-weight: 600;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  td { border-bottom: 1px solid var(--border); color: var(--text-mid); }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { font-family: var(--mono); font-size: 12.5px; color: var(--text); white-space: nowrap; }
+
+  /* ─── STATUS LIST ─────────────────────────────────────────────────────── */
+  .status { display: flex; flex-direction: column; gap: 12px; }
+  .item {
+    display: grid; grid-template-columns: auto 1fr; gap: 14px;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border-2);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .item.ok   { border-left-color: var(--green); }
+  .item.warn { border-left-color: var(--red); }
+  .item .dot {
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 4px; margin-top: 2px;
+    white-space: nowrap;
+  }
+  .item.ok .dot   { color: var(--green); background: var(--green-bg); }
+  .item.warn .dot { color: var(--red);   background: var(--red-bg); }
+  .item-body { display: flex; flex-direction: column; gap: 5px; }
+  .item-body h3 { font-size: 14.5px; }
+  .item-body p { font-size: 14.5px; color: var(--text-mid); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 22px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-mut);
+    display: flex; flex-wrap: wrap; gap: 8px 18px;
+  }
+
+  @media (max-width: 620px) {
+    .wrap { padding: 40px 18px 72px; gap: 44px; }
+    .stage { grid-template-columns: 32px 1fr; gap: 12px; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Meeting Prep OS</div>
+    <h1>Arquitectura del flujo agéntico</h1>
+    <p class="standfirst">
+      Un agente que se despierta solo cada mañana, lee tu calendario, investiga a quien vas a ver
+      y publica el dashboard antes de que te levantes. Así se conectan las piezas — y dónde se rompe.
+    </p>
+    <div class="meta-row">
+      <span class="chip">Routine diaria · 06:03 ART</span>
+      <span class="chip ok">Google Calendar conectado</span>
+      <span class="chip warn">Firecrawl sin adjuntar</span>
+      <span class="chip warn">Vercel sin desplegar</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="keystone">
+      <div class="k-label">La idea central</div>
+      <p>
+        La sesión que corre el pipeline es <strong>descartable</strong>: nace a las 6:03, no recuerda nada
+        de ayer y se destruye al terminar. Todo lo que la hace funcionar — las instrucciones, el generador,
+        el historial — vive en el repo de GitHub. <strong>El repo es a la vez el programa y la memoria.</strong>
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>El recorrido de una corrida</h2>
+    <figure>
+      <div class="fig-scroll">
+        <svg viewBox="0 0 880 706" role="img"
+             aria-label="Diagrama del flujo: una Routine dispara a las 6:03 una sesión efímera que clona el repo desde GitHub para leer sus propias instrucciones, consulta Google Calendar para detectar eventos etiquetados con #prep, investiga con Firecrawl y WebSearch, corre el generador, y hace push de vuelta al repo, desde donde Vercel despliega el sitio.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+            </marker>
+            <marker id="ah-gold" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#c8901a"/>
+            </marker>
+            <marker id="ah-blue" viewBox="0 0 10 10" refX="9" refY="5"
+                    markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+            </marker>
+          </defs>
+
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="currentColor">
+
+            <!-- ── TRIGGER ── -->
+            <rect x="330" y="16" width="220" height="46" rx="8"
+                  fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="440" y="36" text-anchor="middle" font-size="12.5" font-weight="600">Routine · cron diario</text>
+            <text x="440" y="52" text-anchor="middle" font-size="11" opacity=".65">06:03 ART — 0 9 * * * UTC</text>
+
+            <line x1="440" y1="62" x2="440" y2="104" stroke="currentColor"
+                  stroke-width="1.5" marker-end="url(#ah)"/>
+            <text x="450" y="87" font-size="10.5" opacity=".7">despierta</text>
+
+            <!-- ── EPHEMERAL SESSION ── -->
+            <rect x="176" y="108" width="528" height="392" rx="10"
+                  fill="none" stroke="currentColor" stroke-width="1.2"
+                  stroke-dasharray="5 4" opacity=".55"/>
+            <text x="192" y="128" font-size="10.5" opacity=".7">
+              SESIÓN EFÍMERA — sin memoria entre corridas
+            </text>
+
+            <!-- stage 1 -->
+            <rect x="208" y="140" width="464" height="60" rx="7"
+                  fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="226" y="164" font-size="11.5" font-weight="600" fill="#c8901a">01</text>
+            <text x="252" y="164" font-size="12.5" font-weight="600">Clona el repo y lee sus instrucciones</text>
+            <text x="252" y="183" font-size="10.5" opacity=".7">.claude/skills/meeting-prep-daily/SKILL.md</text>
+
+            <line x1="440" y1="200" x2="440" y2="222" stroke="currentColor"
+                  stroke-width="1.5" marker-end="url(#ah)"/>
+
+            <!-- stage 2 -->
+            <rect x="208" y="222" width="464" height="60" rx="7"
+                  fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="226" y="246" font-size="11.5" font-weight="600" fill="#c8901a">02</text>
+            <text x="252" y="246" font-size="12.5" font-weight="600">Detecta los eventos con #prep</text>
+            <text x="252" y="265" font-size="10.5" opacity=".7">hoy + mañana · sólo los etiquetados</text>
+
+            <line x1="440" y1="282" x2="440" y2="304" stroke="currentColor"
+                  stroke-width="1.5" marker-end="url(#ah)"/>
+
+            <!-- salida temprana -->
+            <line x1="672" y1="252" x2="792" y2="252" stroke="currentColor"
+                  stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#ah)" opacity=".75"/>
+            <text x="732" y="243" text-anchor="middle" font-size="10" opacity=".7">sin #prep</text>
+            <text x="792" y="271" text-anchor="end" font-size="10.5" opacity=".7">termina</text>
+            <text x="792" y="285" text-anchor="end" font-size="10.5" opacity=".7">sin commit</text>
+
+            <!-- stage 3 -->
+            <rect x="208" y="304" width="464" height="60" rx="7"
+                  fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="226" y="328" font-size="11.5" font-weight="600" fill="#c8901a">03</text>
+            <text x="252" y="328" font-size="12.5" font-weight="600">Investiga a cada persona</text>
+            <text x="252" y="347" font-size="10.5" opacity=".7">8–15 fuentes · arma el spec JSON</text>
+
+            <line x1="440" y1="364" x2="440" y2="386" stroke="currentColor"
+                  stroke-width="1.5" marker-end="url(#ah)"/>
+
+            <!-- stage 4 -->
+            <rect x="208" y="386" width="464" height="60" rx="7"
+                  fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="226" y="410" font-size="11.5" font-weight="600" fill="#c8901a">04</text>
+            <text x="252" y="410" font-size="12.5" font-weight="600">Genera el dashboard</text>
+            <text x="252" y="429" font-size="10.5" opacity=".7">tools/generate_dashboard.py — determinista</text>
+
+            <!-- ── INPUTS (izquierda) ── -->
+            <rect x="16" y="228" width="132" height="48" rx="7"
+                  fill="none" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="82" y="248" text-anchor="middle" font-size="11.5" font-weight="600" fill="#3b82f6">Google Calendar</text>
+            <text x="82" y="264" text-anchor="middle" font-size="10" fill="#3b82f6" opacity=".8">conector MCP</text>
+            <line x1="148" y1="252" x2="206" y2="252" stroke="#3b82f6"
+                  stroke-width="1.5" marker-end="url(#ah-blue)"/>
+
+            <rect x="16" y="310" width="132" height="48" rx="7"
+                  fill="none" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="82" y="330" text-anchor="middle" font-size="11.5" font-weight="600" fill="#3b82f6">Firecrawl</text>
+            <text x="82" y="346" text-anchor="middle" font-size="10" fill="#3b82f6" opacity=".8">+ WebSearch</text>
+            <line x1="148" y1="334" x2="206" y2="334" stroke="#3b82f6"
+                  stroke-width="1.5" marker-end="url(#ah-blue)"/>
+
+            <!-- ── PUSH ── -->
+            <line x1="440" y1="446" x2="440" y2="536" stroke="currentColor"
+                  stroke-width="1.5" marker-end="url(#ah)"/>
+            <text x="450" y="522" font-size="10.5" opacity=".7">git push origin main</text>
+
+            <!-- ── GITHUB ── -->
+            <rect x="308" y="538" width="264" height="52" rx="8"
+                  fill="none" stroke="#c8901a" stroke-width="1.8"/>
+            <text x="440" y="559" text-anchor="middle" font-size="12.5" font-weight="600" fill="#c8901a">GitHub · rama main</text>
+            <text x="440" y="576" text-anchor="middle" font-size="10.5" fill="#c8901a" opacity=".85">el programa y la memoria</text>
+
+            <!-- ── LOOP: repo alimenta la sesión ── -->
+            <path d="M 572 564 L 812 564 L 812 170 L 674 170"
+                  fill="none" stroke="#c8901a" stroke-width="1.6"
+                  stroke-dasharray="6 4" marker-end="url(#ah-gold)"/>
+            <text x="806" y="376" text-anchor="end" font-size="10.5" fill="#c8901a">se lee a sí mismo</text>
+            <text x="806" y="390" text-anchor="end" font-size="10.5" fill="#c8901a">en la corrida siguiente</text>
+
+            <!-- ── VERCEL ── -->
+            <line x1="440" y1="590" x2="440" y2="628" stroke="currentColor"
+                  stroke-width="1.5" marker-end="url(#ah)"/>
+            <text x="450" y="614" font-size="10.5" opacity=".7">deploy automático</text>
+
+            <rect x="308" y="630" width="264" height="52" rx="8"
+                  fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="440" y="651" text-anchor="middle" font-size="12.5" font-weight="600">Vercel</text>
+            <text x="440" y="668" text-anchor="middle" font-size="10.5" opacity=".7">lo abrís desde el celu</text>
+
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        La flecha dorada es lo que hace autónomo al sistema: el repo que la sesión modifica es el mismo
+        del que la sesión siguiente saca sus instrucciones. Cambiar el comportamiento del agente es hacer
+        un commit, no reconfigurar la Routine.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Las cuatro etapas</h2>
+    <div class="stages">
+
+      <div class="stage">
+        <div class="stage-n">01</div>
+        <div class="stage-body">
+          <h3>Se lee a sí mismo</h3>
+          <p>
+            La sesión arranca en blanco. Lo primero que hace es clonar <code>main</code> y leer el skill,
+            que contiene el pipeline completo: cómo detectar, cómo investigar, qué formato tiene el spec
+            y cómo publicar. El prompt de la Routine es corto a propósito — apunta al archivo en vez de
+            repetirlo, así el comportamiento se versiona con git.
+          </p>
+          <div class="needs"><span class="lbl">necesita</span> <code>Read</code> <code>Bash</code></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-n">02</div>
+        <div class="stage-body">
+          <h3>Detecta qué preparar</h3>
+          <p>
+            Busca en tu calendario los eventos de hoy y mañana cuyo título contenga <code>#prep</code>.
+            Elegiste detección manual: sin la etiqueta no se prepara nada, aunque el evento tenga invitados
+            externos. Si no hay ninguno — el caso más común — <strong>termina sin generar ni commitear</strong>.
+            El silencio es el resultado correcto, no una falla.
+          </p>
+          <div class="needs"><span class="lbl">necesita</span> <code>mcp__Google_Calendar__list_events</code></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-n">03</div>
+        <div class="stage-body">
+          <h3>Investiga</h3>
+          <p>
+            Apunta a entre 8 y 15 fuentes por persona: headline y actividad reciente vía búsqueda,
+            el sitio de la empresa vía scraping, y números de mercado para las métricas del encabezado.
+            El skill le prohíbe inventar datos y le exige separar el hecho verificado de la interpretación
+            estratégica. LinkedIn bloquea el scraping directo, así que el headline sale de los snippets
+            de búsqueda — está documentado para que no pierda intentos.
+          </p>
+          <div class="needs"><span class="lbl">necesita</span> <code>firecrawl_search</code> <code>firecrawl_scrape</code> <code>WebSearch</code></div>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-n">04</div>
+        <div class="stage-body">
+          <h3>Genera y publica</h3>
+          <p>
+            Acá el modelo deja de escribir HTML. Arma un spec JSON y se lo pasa a un script de Python
+            que rellena un template único y hace upsert en el registro. Es la parte determinista del
+            pipeline: mismo spec, mismo resultado, y falla ruidosamente si queda un placeholder sin
+            resolver. Después, commit y push — y Vercel despliega solo.
+          </p>
+          <div class="needs"><span class="lbl">necesita</span> <code>Write</code> <code>Bash</code> <code>git</code></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Qué hace cada pieza del repo</h2>
+    <div class="t-scroll">
+      <table>
+        <thead>
+          <tr><th>Archivo</th><th>Rol</th><th>Quién lo toca</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>.claude/skills/…/SKILL.md</td>
+            <td>El pipeline completo en prosa. Es el programa del agente.</td>
+            <td>Vos, cuando querés cambiar cómo trabaja</td>
+          </tr>
+          <tr>
+            <td>tools/generate_dashboard.py</td>
+            <td>Spec JSON → dashboard + registro + fallback del portal. Determinista.</td>
+            <td>Sólo si cambia la estructura de datos</td>
+          </tr>
+          <tr>
+            <td>templates/dashboard.html</td>
+            <td>El diseño de todos los dashboards, en un solo lugar.</td>
+            <td>Vos, para cambiar el look de todos a la vez</td>
+          </tr>
+          <tr>
+            <td>meetings.json</td>
+            <td>Registro central. Lo lee el portal para armar la grilla.</td>
+            <td>El generador, nunca a mano</td>
+          </tr>
+          <tr>
+            <td>meetings/&lt;id&gt;/index.html</td>
+            <td>Un dashboard por reunión. Salida, no fuente.</td>
+            <td>El generador</td>
+          </tr>
+          <tr>
+            <td>assets/marked.min.js</td>
+            <td>Renderiza el markdown. Vendorizado a propósito.</td>
+            <td>Nadie</td>
+          </tr>
+          <tr>
+            <td>runs/&lt;fecha&gt;-status.md</td>
+            <td>Bitácora de corridas con incidencias.</td>
+            <td>El agente, cuando algo falla</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Estado real, hoy</h2>
+    <div class="status">
+
+      <div class="item ok">
+        <div class="dot">Listo</div>
+        <div class="item-body">
+          <h3>La Routine está armada y tiene calendario</h3>
+          <p>
+            <code>Meeting prep daily</code> corre todos los días a las <strong>06:03 ART</strong> y
+            tiene Google Calendar adjunto. Primera corrida real: mañana, con el evento de prueba
+            que dejamos a las 10:00.
+          </p>
+        </div>
+      </div>
+
+      <div class="item warn">
+        <div class="dot">Falta</div>
+        <div class="item-body">
+          <h3>Firecrawl no quedó adjunto a la Routine</h3>
+          <p>
+            La rutina tiene Apollo, Gmail, Calendar, Drive, Granola y Notion — pero no Firecrawl.
+            El research no se cae: baja a <code>WebSearch</code> y <code>WebFetch</code>, que sí están
+            disponibles. Pero perdés el scraping de sitios de empresa, que es de donde salen el modelo
+            de negocio y el posicionamiento. Agregalo cuando puedas.
+          </p>
+        </div>
+      </div>
+
+      <div class="item warn">
+        <div class="dot">Conflicto</div>
+        <div class="item-body">
+          <h3>La rutina vieja sigue encendida</h3>
+          <p>
+            <code>meeting prep agent pro cloud</code> quedó activa y dispara <strong>el lunes 17 a las 09:00 ART</strong>.
+            Está construida entera sobre NotebookLM — que no existe — y escribe en rutas del tipo
+            <code>/sessions/[SESSION_ID]/mnt/CLAUDE CODE/</code> que ya no son válidas. Va a fallar, y
+            si llega a commitear, pisa el trabajo de la rutina nueva. Conviene apagarla.
+          </p>
+        </div>
+      </div>
+
+      <div class="item warn">
+        <div class="dot">Cortado</div>
+        <div class="item-body">
+          <h3>Vercel no está desplegando</h3>
+          <p>
+            <code>meeting-prep-axellaban.vercel.app</code> devuelve <code>DEPLOYMENT_NOT_FOUND</code>.
+            El push a GitHub funciona, pero la cadena termina ahí: los dashboards existen en el repo
+            y no en la web. Es el último eslabón que falta para que puedas abrirlos desde el celular.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Dónde se rompe</h2>
+    <p class="lede">
+      Cuatro puntos concentran casi todo el riesgo de un sistema que corre sin que nadie lo mire.
+    </p>
+    <div class="t-scroll">
+      <table>
+        <thead>
+          <tr><th>Punto</th><th>Síntoma</th><th>Mitigación</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Conectores</td>
+            <td>La sesión arranca sin Calendar y no detecta nada.</td>
+            <td>El skill le ordena escribir en <code>runs/</code> y avisar, en vez de fallar en silencio.</td>
+          </tr>
+          <tr>
+            <td>Research flojo</td>
+            <td>Persona con poca huella pública; el briefing sale vacío.</td>
+            <td>Genera igual, lo declara en la sección de fuentes y baja el contador.</td>
+          </tr>
+          <tr>
+            <td>Alucinación</td>
+            <td>Se inventa un cargo y llegás a la reunión con un dato falso.</td>
+            <td>Prohibido explícitamente; ante duda escribe «a confirmar al inicio del call».</td>
+          </tr>
+          <tr>
+            <td>Deploy</td>
+            <td>El commit entra pero el sitio no se actualiza.</td>
+            <td>Sin resolver todavía — es el punto abierto de arriba.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>Meeting Prep OS</span>
+    <span>axellaban/meeting-prep · rama main</span>
+    <span>13 de agosto de 2026</span>
+  </footer>
+
+</div>
