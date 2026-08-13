@@ -3,7 +3,8 @@
   "name": "meeting-prep",
   "builds": [
     { "src": "**/*.html", "use": "@vercel/static" },
-    { "src": "**/*.json", "use": "@vercel/static" }
+    { "src": "**/*.json", "use": "@vercel/static" },
+    { "src": "assets/**", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/(.*)", "dest": "/$1" }
