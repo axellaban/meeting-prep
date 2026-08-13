@@ -1,41 +1,57 @@
 # ⚡ Meeting Prep OS
 
-Sistema automático de preparación de reuniones. Revisa Google Calendar cada mañana, investiga a cada persona con Firecrawl + búsqueda web, y genera un dashboard HTML interactivo con briefing, intel competitiva, quiz y flashcards.
+Un agente que se despierta solo cada mañana, lee tu Google Calendar, investiga a
+las personas con las que te vas a reunir y publica un dashboard con briefing,
+inteligencia competitiva, guion de conversación, quiz y flashcards.
 
-## Cómo usar
+Vos ponés `#prep` en el título de un evento. A la mañana siguiente está listo.
 
-### 1. Marcar una reunión para prep
-Agregá `#prep` al título del evento en Google Calendar:
-```
-"Reunión con Juan García #prep"
-"Discovery call - Empresa XYZ #prep"
-"Follow up Pedro Ramirez #prep"
-```
-
-### 2. El sistema corre automáticamente
-Todos los días a las **7:00 AM** (hora Argentina), el sistema:
-1. Revisa Google Calendar buscando eventos del día con `#prep`
-2. Investiga a la persona/empresa (web scraping + NotebookLM)
-3. Genera el dashboard HTML completo
-4. Hace commit y push a este repo
-5. Vercel despliega automáticamente
-
-### 3. Ver el dashboard
-- **Vercel:** `https://meeting-prep-axellaban.vercel.app`
-- **Local:** Abrí `index.html` directamente en el browser
+**→ [Cómo ponerlo a andar](SETUP.md)** · unos 15 minutos
 
 ---
 
-## Setup inicial
+## Cómo funciona
 
-```bash
-# 1. Clonar / descargar este repo
-# 2. Correr el setup script
-chmod +x setup.sh
-./setup.sh
-
-# 3. Conectar con Vercel en https://vercel.com/new
 ```
+Routine diaria  →  sesión efímera  →  Google Calendar   →  research web
+   (tu hora)         (sin memoria)      (eventos #prep)      (8-15 fuentes)
+                            │
+                            ↓
+                  generate_dashboard.py  →  git push  →  Vercel
+```
+
+La sesión que corre el pipeline es **descartable**: nace a la hora configurada, no
+recuerda nada de ayer y se destruye al terminar. Todo lo que la hace funcionar —
+instrucciones, generador, historial — vive en este repo.
+
+**El repo es a la vez el programa y la memoria.** Cambiar el comportamiento del
+agente es hacer un commit, no reconfigurar nada.
+
+---
+
+## Qué trae cada dashboard
+
+| Pestaña | Contenido |
+|---|---|
+| **Executive Briefing** | Perfil de la persona y la empresa, oportunidad de mercado, guion de conversación, manejo de objeciones, próximos pasos |
+| **Competitive Intel** | Contra quién competís de verdad, números para soltar, quién más está en su órbita |
+| **Deep Research** | Fuentes, evidencia y **limitaciones declaradas** del research |
+| **Knowledge Test** | Quiz de opción múltiple con corrección al toque |
+| **Flashcards** | Tarjetas para repasar en los minutos previos |
+| **Brief Post-Reunión** | Se completa después, con lo que realmente pasó |
+
+Más botón de **Exportar PDF** y lectura del briefing **en voz alta**, para
+escucharlo camino a la reunión.
+
+---
+
+## Privacidad
+
+Todo corre en **tu** cuenta de Claude, con **tu** conector de Google Calendar, y
+se guarda en **tu** repo. Los datos de tus reuniones y el research sobre las
+personas no pasan por ningún servidor de terceros.
+
+Por eso conviene que el repo sea **privado**.
 
 ---
 
@@ -43,46 +59,53 @@ chmod +x setup.sh
 
 ```
 meeting-prep/
-├── index.html                          # Portal principal
-├── meetings.json                       # Registro de todas las reuniones
-├── vercel.json                         # Config Vercel
-├── assets/
-│   └── marked.min.js                   # Renderer de markdown (vendorizado)
-├── templates/
-│   └── dashboard.html                  # Template único de los dashboards
-├── tools/
-│   └── generate_dashboard.py           # Generador: spec JSON → dashboard + registro
-├── meetings/
-│   └── 2026-03-28-marcos-pueyrredon/
-│       └── index.html                  # Dashboard por reunión
-├── runs/                               # Logs de corridas con incidencias
-├── .claude/skills/meeting-prep-daily/  # Instrucciones del pipeline automático
-└── README.md
+├── config.json                         # Tu configuración — empezá por acá
+├── SETUP.md                            # Guía de instalación
+├── index.html                          # Portal
+├── meetings.json                       # Registro de reuniones
+├── frameworks/                         # Guiones de conversación enchufables
+│   ├── generic.md · kona-4w.md · spin.md · meddic.md
+├── templates/dashboard.html            # Diseño de todos los dashboards
+├── tools/generate_dashboard.py         # Spec JSON → dashboard + registro
+├── assets/marked.min.js                # Renderer de markdown (vendorizado)
+├── meetings/<id>/index.html            # Un dashboard por reunión
+├── docs/arquitectura.html              # Cómo se conectan las piezas
+├── runs/                               # Bitácora de corridas con incidencias
+└── .claude/skills/
+    ├── setup/                          # /setup — configuración inicial
+    └── meeting-prep-daily/             # El pipeline que corre cada día
 ```
+
+---
+
+## Personalizarlo
+
+| Qué | Dónde |
+|---|---|
+| Nombre, calendario, hora, etiqueta, idioma | `config.json` |
+| El guion de conversación | `pipeline.framework` + `frameworks/` |
+| Cómo investiga y cuánta densidad exige | `.claude/skills/meeting-prep-daily/SKILL.md` |
+| El diseño | `templates/dashboard.html` |
 
 ---
 
 ## Stack
 
-- **Fuente de datos:** Google Calendar MCP
-- **Research:** Firecrawl MCP + WebSearch
-- **Frontend:** HTML/CSS/JS puro (sin build step)
-- **Deploy:** Vercel (auto-deploy desde GitHub)
-- **Automatización:** Routine diaria de Claude Code (sesión nueva cada mañana)
+- **Calendario:** conector de Google Calendar de Claude — sin OAuth propio ni verificación
+- **Research:** WebSearch + WebFetch, con Firecrawl opcional para sitios pesados
+- **Generación:** Python sin dependencias, sobre un template único
+- **Frontend:** HTML/CSS/JS puro, sin build step
+- **Deploy:** Vercel, automático desde GitHub
+- **Automatización:** Routines de Claude — una sesión nueva cada mañana
 
-> **Nota sobre NotebookLM:** el diseño original preveía NotebookLM para el research,
-> pero no existe como conector — no tiene API pública ni servidor MCP. El research
-> corre con Firecrawl + búsqueda web, que sí están conectados. Los quiz y flashcards
-> los genera el modelo directamente.
-
-### Generar un dashboard a mano
-
-```bash
-python3 tools/generate_dashboard.py mi-spec.json
-```
-
-El formato del spec está documentado en `.claude/skills/meeting-prep-daily/SKILL.md`.
+> **Sobre NotebookLM:** el diseño original lo usaba para el research, pero no existe
+> como conector — no tiene API pública ni servidor MCP. El research corre con
+> búsqueda web, y el quiz y las flashcards los genera el modelo. Medido sobre el
+> mismo target, `WebSearch` devolvió historial laboral y registro corporativo que el
+> scraping especializado no trajo.
 
 ---
 
-*Generado por Cowork OS · axellaban@gmail.com*
+## Licencia
+
+MIT. Cloná, adaptá y hacelo tuyo.

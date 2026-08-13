@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Meeting Prep — Axel Laban</title>
+  <title>Meeting Prep OS</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
@@ -257,7 +257,7 @@
 <nav class="navbar">
   <div class="brand">
     <div class="brand-icon">⚡</div>
-    <span>Meeting Prep <em>OS</em></span>
+    <span id="brand-name">Meeting Prep <em>OS</em></span>
   </div>
   <div class="nav-right">
     <div class="status-dot">
@@ -269,9 +269,9 @@
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-label">Axel Laban · Dashboard Personal</div>
-  <h1>Llega preparado a cada<br><em>reunión importante.</em></h1>
-  <p>El sistema revisa tu Google Calendar cada mañana, detecta eventos con <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-size:13px">#prep</code>, y genera automáticamente inteligencia completa sobre cada persona.</p>
+  <div class="hero-label" id="hero-label">Dashboard Personal</div>
+  <h1 id="hero-title">Llegá preparado a cada<br><em>reunión importante.</em></h1>
+  <p>El sistema revisa tu Google Calendar cada mañana, detecta eventos con <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-size:13px"><span class="prep-tag">#prep</span></code>, y genera automáticamente inteligencia completa sobre cada persona.</p>
 </div>
 
 <!-- STATS -->
@@ -315,7 +315,7 @@
     <div class="how-card">
       <div class="how-num">1</div>
       <h4>Marcá la reunión</h4>
-      <p>Agregá <strong>#prep</strong> al título de cualquier evento en Google Calendar. Ej: <em>"Reunión con Juan #prep"</em></p>
+      <p>Agregá <strong><span class="prep-tag">#prep</span></strong> al título de cualquier evento en Google Calendar. Ej: <em>"Reunión con Juan #prep"</em></p>
     </div>
     <div class="how-card">
       <div class="how-num">2</div>
@@ -332,7 +332,7 @@
 
 <!-- FOOTER -->
 <footer class="footer">
-  Generado por IA · <em>Cowork OS</em> · axellaban@gmail.com
+  <span id="footer-note">Generado por IA</span>
 </footer>
 
 <script>
@@ -440,7 +440,7 @@
         <div class="empty-state">
           <div class="empty-icon">📅</div>
           <h3>Sin reuniones todavía</h3>
-          <p>Agregá <strong>#prep</strong> al título de un evento en Google Calendar y el sistema generará el dashboard automáticamente.</p>
+          <p>Agregá <strong><span class="prep-tag">#prep</span></strong> al título de un evento en Google Calendar y el sistema generará el dashboard automáticamente.</p>
         </div>
       `;
     } else {
@@ -682,6 +682,43 @@
       }
   ];
 
+  // Marca y textos desde config.json — así el repo se puede clonar sin tocar el HTML.
+  async function loadBranding() {
+    let cfg;
+    try {
+      const res = await fetch('config.json');
+      if (!res.ok) return;
+      cfg = await res.json();
+    } catch (e) { return; }   // abierto por file://: se queda con los textos por defecto
+
+    const b = cfg.branding || {}, o = cfg.owner || {};
+    if (b.productName) {
+      document.title = b.productName;
+      const parts = b.productName.trim().split(' ');
+      const last = parts.length > 1 ? parts.pop() : '';
+      document.getElementById('brand-name').innerHTML =
+        parts.join(' ') + (last ? ' <em>' + last + '</em>' : '');
+    }
+    const lang = (cfg.pipeline && cfg.pipeline.language) || 'es';
+    if (lang !== 'es') document.documentElement.lang = lang;
+    const dashLabel = lang === 'es' ? 'Dashboard Personal' : 'Personal Dashboard';
+    document.getElementById('hero-label').textContent =
+      (o.shortName ? o.shortName + ' · ' : '') + dashLabel;
+    if (b.tagline) {
+      const t = b.tagline.trim().replace(/\.$/, '');
+      const words = t.split(' ');
+      const tail = words.slice(-2).join(' ');
+      document.getElementById('hero-title').innerHTML =
+        words.slice(0, -2).join(' ') + '<br><em>' + tail + '.</em>';
+    }
+    const foot = [b.footerNote, b.productName, o.email].filter(Boolean).join(' · ');
+    if (foot) document.getElementById('footer-note').textContent = foot;
+
+    const tag = cfg.pipeline && cfg.pipeline.detection && cfg.pipeline.detection.tag;
+    if (tag) document.querySelectorAll('.prep-tag').forEach(el => el.textContent = tag);
+  }
+
+  loadBranding();
   loadMeetings();
 </script>
 </body>

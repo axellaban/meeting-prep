@@ -24,6 +24,18 @@ ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = ROOT / "templates" / "dashboard.html"
 REGISTRY = ROOT / "meetings.json"
 PORTAL = ROOT / "index.html"
+CONFIG = ROOT / "config.json"
+
+DEFAULT_BRAND = "Meeting Prep OS"
+
+
+def load_config() -> dict:
+    try:
+        return json.loads(CONFIG.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {}
+    except json.JSONDecodeError as e:
+        raise SystemExit(f"ERROR: config.json no es JSON válido ({e})")
 
 # Se muestra hasta que la reunión ocurre y alguien (o el pipeline post-reunión)
 # completa el brief con lo que realmente pasó.
@@ -75,6 +87,17 @@ def build_stats(stats) -> str:
     return "\n".join(out)
 
 
+def rendered_text_len(html: str) -> int:
+    """Caracteres de texto que realmente ve el lector, sin estilos ni etiquetas.
+
+    Es la misma medida con la que se comparan los dashboards entre sí; contar el
+    markdown fuente daría un número más chico y no comparable.
+    """
+    body = re.sub(r"<style.*?</style>", " ", html, flags=re.S)
+    body = re.sub(r"<[^>]+>", " ", body)
+    return len(" ".join(body.split()))
+
+
 def build_sidebar_link(spec: dict) -> str:
     """Botón de NotebookLM sólo si hay notebook real; si no, contador de fuentes."""
     url = spec.get("notebooklm_url")
@@ -88,12 +111,15 @@ def build_sidebar_link(spec: dict) -> str:
             f'    </div>')
 
 
-def render(spec: dict) -> str:
+def render(spec: dict, cfg: dict) -> str:
     y, m, d = (int(x) for x in spec["date"].split("-"))
     dt = date(y, m, d)
     dia, mes = DIAS[dt.weekday()], MESES[m - 1]
 
+    brand = (cfg.get("branding") or {}).get("navbarBrand") or DEFAULT_BRAND
+
     values = {
+        "BRAND": brand,
         "NAME": spec["person"],
         "INITIALS": initials(spec["person"]),
         "NAV_DATE": f"{dia} {d} de {mes}, {y}",
@@ -167,18 +193,39 @@ def sync_portal_fallback(meetings: list) -> None:
 
 
 def main() -> None:
-    if len(sys.argv) != 2:
-        raise SystemExit("uso: generate_dashboard.py <spec.json>")
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    dry_run = "--dry-run" in sys.argv
+    if len(args) != 1:
+        raise SystemExit("uso: generate_dashboard.py <spec.json> [--dry-run]")
 
-    spec = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    cfg = load_config()
+    spec = json.loads(Path(args[0]).read_text(encoding="utf-8"))
     for field in ("id", "date", "time", "person", "role_line",
                   "briefing_md", "intel_md", "research_md", "generated"):
         if not spec.get(field):
             raise SystemExit(f"ERROR: falta el campo obligatorio '{field}' en el spec")
 
+    html = render(spec, cfg)
+
+    if dry_run:
+        chars = rendered_text_len(html)
+        minimo = ((cfg.get("pipeline") or {}).get("research") or {}).get("minContentChars", 0)
+        print("🔍 DRY RUN — no se escribió ningún archivo\n")
+        print(f"   destino     meetings/{spec['id']}/index.html")
+        print(f"   persona     {spec['person']}")
+        print(f"   fecha       {spec['date']} {spec['time']}")
+        print(f"   contenido   {chars:,} chars" + (f"  (mínimo {minimo:,})" if minimo else ""))
+        print(f"   quiz        {len(spec.get('quiz', []))} preguntas")
+        print(f"   flashcards  {len(spec.get('flashcards', []))}")
+        print(f"   html        {len(html):,} bytes")
+        if minimo and chars < minimo:
+            print(f"\n⚠️  El contenido está por debajo del mínimo configurado.")
+        print("\n   Quitá --dry-run para escribir de verdad.")
+        return
+
     out_dir = ROOT / "meetings" / spec["id"]
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "index.html").write_text(render(spec), encoding="utf-8")
+    (out_dir / "index.html").write_text(html, encoding="utf-8")
 
     total = upsert_registry(spec)
     sync_portal_fallback(json.loads(REGISTRY.read_text(encoding="utf-8"))["meetings"])

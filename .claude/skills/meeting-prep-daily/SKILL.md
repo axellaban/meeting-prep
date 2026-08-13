@@ -1,13 +1,37 @@
 ---
 name: meeting-prep-daily
-description: Pipeline diario de Meeting Prep OS. Lee Google Calendar, detecta eventos con #prep, investiga a cada persona con Firecrawl + búsqueda web, genera el dashboard HTML y publica en Vercel vía git push. Se dispara automáticamente por Routine todos los días a las 7am (Argentina), o manualmente cuando el usuario pide "corré el meeting prep".
+description: Pipeline diario de Meeting Prep OS. Lee Google Calendar, detecta los eventos etiquetados para preparar, investiga a cada persona con búsqueda web, genera el dashboard HTML y publica vía git push. Se dispara por Routine a la hora configurada en config.json, o manualmente cuando el usuario pide "corré el meeting prep".
 ---
 
 # Meeting Prep OS — Pipeline diario
 
-Preparás a Axel para sus reuniones antes de que empiecen. Corrés sin supervisión:
-nadie va a contestar preguntas a mitad de la ejecución. Ante una decisión ambigua,
-tomá la opción razonable, seguí, y dejala anotada en el reporte final.
+Preparás al dueño de este repo para sus reuniones antes de que empiecen. Corrés sin
+supervisión: nadie va a contestar preguntas a mitad de la ejecución. Ante una
+decisión ambigua, tomá la opción razonable, seguí, y dejala anotada en el reporte.
+
+## Paso 0 — Leé la configuración
+
+**Antes que nada, leé `config.json`.** De ahí sale todo lo que cambia entre usuarios:
+
+| Campo | Para qué |
+|---|---|
+| `owner.calendarId` | Qué calendario consultar |
+| `owner.timezone` / `utcOffset` | Cómo interpretar «hoy» y «mañana» |
+| `owner.name` / `shortName` | A quién estás preparando |
+| `pipeline.detection.tag` | La etiqueta a buscar (default `#prep`) |
+| `pipeline.detection.lookaheadDays` | Cuántos días hacia adelante mirar |
+| `pipeline.language` | Idioma de todo el contenido generado |
+| `pipeline.research.minSources` / `maxSources` | Cuántas fuentes buscar |
+| `pipeline.research.minContentChars` | Piso de densidad del dashboard |
+| `pipeline.framework` | Qué archivo de `frameworks/` usar en la sección 4 |
+| `publish.branch` | A qué rama pushear |
+
+Si `config.json` no existe, usá los defaults (`#prep`, 1 día, español, `main`) y
+decilo en el reporte final. **No inventes un calendario**: sin `calendarId` usá el
+primario del conector.
+
+En este documento, donde diga `#prep` leé «la etiqueta configurada», y donde diga
+`main` leé «la rama configurada».
 
 ## Contexto de herramientas
 
@@ -40,12 +64,12 @@ exponen. No pierdas intentos scrapeando LinkedIn.
 
 ## Paso 1 — Detectar
 
-Buscá en el calendario `axellaban@gmail.com` los eventos de **hoy y mañana** cuyo
+Buscá en el calendario de `owner.calendarId` los eventos de **hoy y mañana** cuyo
 título contenga `#prep`:
 
 ```
 mcp__Google_Calendar__list_events(
-  calendarId="axellaban@gmail.com",
+  calendarId=<owner.calendarId>,
   startTime=<hoy 00:00 -03:00>, endTime=<mañana 23:59 -03:00>,
   fullText="#prep", orderBy="startTime")
 ```
@@ -147,33 +171,27 @@ Reglas de densidad, medidas contra el estándar del repo
 - El **contexto de la reunión** cierra siempre la sección 1 y responde: por qué
   esta conversación, por qué ahora.
 
-### La sección 4, en detalle
+### La sección 4 la define el framework
 
-Si la reunión es una **discovery call** (Cal.com, prospecto, founder, primera
-conversación), no escribas preguntas de consultor genérico. Generá el guion con la
-estructura de las 4 W, que es cómo Axel conduce el diagnóstico:
+**Leé `frameworks/<pipeline.framework>.md` y seguí lo que diga.** Ese archivo
+define la estructura de la sección 4, qué se anticipa y cómo se conecta con la
+tabla de objeciones de la sección 5.
 
-- **Hipótesis del dolor** — una sola línea: "Creo que el problema central es X".
-  Sale del research, y es lo primero que Axel necesita tener antes de entrar.
-- **La pregunta que demuestra la tarea** — una pregunta específica sobre su negocio
-  que sólo se puede hacer habiendo investigado. Va temprano en la call y es lo que
-  separa una consulta de un pitch.
-- **W1 · ¿Dónde estás ahora?** (dolor presente) — con dos preguntas de profundización
-  adaptadas al rubro de esta persona.
-- **W2 · ¿A dónde querés llegar?** (futuro deseado).
-- **W3 · ¿Qué te frenó hasta ahora?** (la brecha) — la más importante: su respuesta
-  revela la creencia limitante. Anticipá cuál de las cuatro es más probable acá
-  — falta de tiempo, escepticismo por intento previo, no saber por dónde empezar,
-  o problemas de adopción del equipo — y decí por qué, según el research.
-- **W4 · ¿Por qué es urgente ahora?** (activación) — con la presión concreta que
-  se ve desde afuera: un competidor, un ciclo de negocio, una fecha.
+Los que vienen incluidos:
 
-La objeción que anticipaste en W3 tiene que ser la primera fila de la tabla de la
-sección 5. Así el briefing cierra sobre sí mismo.
+| Framework | Cuándo |
+|---|---|
+| `generic` | Default. Cinco puntos de conversación. Sirve para cualquier reunión. |
+| `kona-4w` | Discovery consultiva: diagnosticar antes de presentar. |
+| `spin` | Venta consultiva B2B (Situación, Problema, Implicación, Necesidad). |
+| `meddic` | Enterprise con comité de compra: checklist de calificación. |
 
-Si **no** es una discovery call (partner, proveedor, institución, alguien conocido),
-usá la sección 4 como cinco puntos de conversación concretos y salteá las 4 W.
-El detalle completo del método está en el skill `kona-diagnostico`.
+Si el archivo configurado no existe, usá `generic.md` y anotalo en el reporte.
+
+**Aplicá el framework de venta sólo cuando la reunión lo amerite** — un prospecto,
+una discovery, una primera conversación comercial. Para un partner, un proveedor,
+una institución o alguien que ya conocés, usá `generic` aunque haya otro configurado:
+un guion de venta contra un socio de años queda fuera de lugar.
 
 ## Paso 4 — Generar y publicar
 

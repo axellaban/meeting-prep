@@ -1,0 +1,40 @@
+{
+  "$comment": "Configuración de Meeting Prep OS. Editá este archivo (o corré el skill /setup) y todo lo demás se adapta: portal, dashboards y pipeline diario.",
+
+  "owner": {
+    "name": "Axel Laban Arzubi",
+    "shortName": "Axel",
+    "email": "axellaban@gmail.com",
+    "calendarId": "axellaban@gmail.com",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "utcOffset": "-03:00"
+  },
+
+  "branding": {
+    "productName": "Meeting Prep OS",
+    "navbarBrand": "Meeting Prep",
+    "tagline": "Llegá preparado a cada reunión importante.",
+    "footerNote": "Generado por IA"
+  },
+
+  "pipeline": {
+    "language": "es",
+    "detection": {
+      "mode": "tag",
+      "tag": "#prep",
+      "lookaheadDays": 1
+    },
+    "research": {
+      "minSources": 8,
+      "maxSources": 15,
+      "minContentChars": 25000
+    },
+    "framework": "kona-4w",
+    "cronLocal": "06:03"
+  },
+
+  "publish": {
+    "branch": "main",
+    "siteUrl": "https://meeting-prep-aisuperpro.vercel.app"
+  }
+}
