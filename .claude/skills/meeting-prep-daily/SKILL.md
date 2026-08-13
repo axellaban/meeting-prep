@@ -13,15 +13,30 @@ tomá la opción razonable, seguí, y dejala anotada en el reporte final.
 
 | Necesidad | Herramienta | Estado |
 |---|---|---|
-| Calendario | `mcp__Google_Calendar__list_events` | ✅ conectado |
-| Research web | `mcp__Firecrawl__firecrawl_search` / `firecrawl_scrape` | ✅ conectado |
-| Research backup | `WebSearch` / `WebFetch` | ✅ disponible |
+| Calendario | `mcp__Google_Calendar__list_events` | ✅ conectado — **sin esto no hay pipeline** |
+| Research primario | `WebSearch` + `WebFetch` | ✅ siempre disponibles |
+| Research especializado | `mcp__Firecrawl__*` | ⚠️ puede no estar adjunto a la Routine |
 | NotebookLM | — | ❌ **no existe** como conector: no tiene API pública ni MCP. No lo busques ni lo esperes. |
 
-**LinkedIn bloquea el scraping directo.** `firecrawl_scrape` sobre cualquier URL de
-linkedin.com devuelve error de sitio no soportado. Los datos de LinkedIn se obtienen
-de los *snippets* de `firecrawl_search`, que sí exponen el headline y los títulos de
-publicaciones. No pierdas intentos scrapeando LinkedIn.
+**Usá `WebSearch` como herramienta principal, no como respaldo.** Medido sobre el
+mismo target, `WebSearch` devolvió historial laboral (ZoomInfo, empleadores previos,
+cofundadores) que `firecrawl_search` no trajo, y además sintetiza en prosa en vez de
+devolver links crudos. `WebFetch` extrajo el mismo contenido que `firecrawl_scrape`
+sobre la misma página.
+
+**Cuándo sí conviene Firecrawl,** si está disponible:
+- sitios que renderizan con JS y `WebFetch` devuelve vacío;
+- extracción estructurada con schema (`jsonOptions`);
+- filtrado duro por dominio (`includeDomains`);
+- páginas que bloquean el fetch simple (probá `proxy: "stealth"`).
+
+Si Firecrawl no está en tu sesión, **no es un bloqueante**: seguí con `WebSearch` +
+`WebFetch` y anotalo en el reporte final.
+
+**LinkedIn está cerrado para las dos vías.** `firecrawl_scrape` sobre linkedin.com
+devuelve error de sitio no soportado, y el fetch simple tampoco pasa. El headline y
+los títulos de publicaciones se obtienen de los *snippets* de búsqueda, que sí los
+exponen. No pierdas intentos scrapeando LinkedIn.
 
 ## Paso 1 — Detectar
 
@@ -48,10 +63,15 @@ plataforma y la descripción de Cal.com (trae nombre + email + timezone del invi
 
 Objetivo: 8–15 fuentes por persona. Buscá en este orden:
 
-1. `firecrawl_search` con `"Nombre Apellido" <empresa>` → el headline de LinkedIn sale acá.
-2. `firecrawl_search` con `"Nombre Apellido"` + término del rubro, para actividad reciente.
-3. `firecrawl_scrape` sobre el sitio de la empresa (esto sí funciona) para modelo de negocio y posicionamiento.
-4. Búsquedas de mercado: tamaño, CAGR, tendencias del sector — son los números que alimentan los `stats` y la sección de oportunidad.
+1. `WebSearch` con `"Nombre Apellido" <empresa>` → headline, cargo y empleadores previos.
+2. `WebSearch` con `"Nombre Apellido"` + término del rubro → actividad y contenido reciente.
+3. `WebFetch` sobre el sitio de la empresa → modelo de negocio y posicionamiento.
+   Si vuelve vacío y tenés Firecrawl, reintentá con `firecrawl_scrape`.
+4. `WebSearch` de mercado: tamaño, CAGR, tendencias del sector — son los números que
+   alimentan los `stats` del encabezado y la sección de oportunidad.
+
+Buscá siempre el nombre **entre comillas**: sin comillas los resultados se van a
+homónimos y a ruido genérico del rubro.
 
 Reglas de honestidad, importantes:
 - **No inventes datos.** Si no encontraste el rol, escribí "rol a confirmar al inicio del call".
