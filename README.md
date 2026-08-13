@@ -1,6 +1,6 @@
 # ⚡ Meeting Prep OS
 
-Sistema automático de preparación de reuniones. Revisa Google Calendar cada mañana, investiga a cada persona con NotebookLM + web research, y genera un dashboard HTML interactivo con briefing, intel competitiva, quiz y flashcards.
+Sistema automático de preparación de reuniones. Revisa Google Calendar cada mañana, investiga a cada persona con Firecrawl + búsqueda web, y genera un dashboard HTML interactivo con briefing, intel competitiva, quiz y flashcards.
 
 ## Cómo usar
 
@@ -46,9 +46,17 @@ meeting-prep/
 ├── index.html                          # Portal principal
 ├── meetings.json                       # Registro de todas las reuniones
 ├── vercel.json                         # Config Vercel
+├── assets/
+│   └── marked.min.js                   # Renderer de markdown (vendorizado)
+├── templates/
+│   └── dashboard.html                  # Template único de los dashboards
+├── tools/
+│   └── generate_dashboard.py           # Generador: spec JSON → dashboard + registro
 ├── meetings/
 │   └── 2026-03-28-marcos-pueyrredon/
 │       └── index.html                  # Dashboard por reunión
+├── runs/                               # Logs de corridas con incidencias
+├── .claude/skills/meeting-prep-daily/  # Instrucciones del pipeline automático
 └── README.md
 ```
 
@@ -57,10 +65,23 @@ meeting-prep/
 ## Stack
 
 - **Fuente de datos:** Google Calendar MCP
-- **Research:** NotebookLM MCP + web search
+- **Research:** Firecrawl MCP + WebSearch
 - **Frontend:** HTML/CSS/JS puro (sin build step)
 - **Deploy:** Vercel (auto-deploy desde GitHub)
-- **Automatización:** Cowork OS scheduled tasks
+- **Automatización:** Routine diaria de Claude Code (sesión nueva cada mañana)
+
+> **Nota sobre NotebookLM:** el diseño original preveía NotebookLM para el research,
+> pero no existe como conector — no tiene API pública ni servidor MCP. El research
+> corre con Firecrawl + búsqueda web, que sí están conectados. Los quiz y flashcards
+> los genera el modelo directamente.
+
+### Generar un dashboard a mano
+
+```bash
+python3 tools/generate_dashboard.py mi-spec.json
+```
+
+El formato del spec está documentado en `.claude/skills/meeting-prep-daily/SKILL.md`.
 
 ---
 

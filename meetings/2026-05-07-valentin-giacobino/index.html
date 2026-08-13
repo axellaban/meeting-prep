@@ -397,8 +397,8 @@ function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
 function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
 
 document.getElementById('briefing-md').innerHTML = marked.parse(briefingMD);
-document.getElementById('intel-md').innerHTML = marked.parse(intelMD);
-document.getElementById('research-md').innerHTML = marked.parse(researchMD);
+document.getElementById('intel-md').innerHTML = md2html(intelMD);
+document.getElementById('research-md').innerHTML = md2html(researchMD);
 buildQuiz();
 renderCard();
 </script>

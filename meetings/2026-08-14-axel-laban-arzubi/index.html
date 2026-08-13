@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Axel Laban Arzubi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="../assets/marked.min.js"></script>
+<script>window.marked||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"><\/script>');</script>
+<style>
+  :root {
+    --bg: #08080c;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --gold: #f0b429;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+  /* NAVBAR */
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+  .navbar-back:hover { color:var(--text); }
+
+  /* HEADER */
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 100%); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding:24px 32px; max-width:1200px; margin:0 auto; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  /* LAYOUT */
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+
+  /* SIDEBAR */
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .notebooklm-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:14px; color:var(--gold); text-decoration:none; background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; transition:all 0.2s; }
+  .notebooklm-btn:hover { background:rgba(240,180,41,0.15); }
+
+  /* CONTENT */
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+
+  /* MARKDOWN */
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; color:var(--text); }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; color:var(--text); }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body code { background:var(--surface2); padding:2px 8px; border-radius:6px; font-size:13px; color:var(--accent); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+
+  /* QUIZ */
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+
+  /* FLASHCARDS */
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+
+  /* SECTION TITLE */
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> Cowork OS — Meeting Prep</div>
+  <div class="navbar-date">Viernes 14 de Agosto, 2026</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+</nav>
+
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">AL</div>
+    <div class="header-info">
+      <div class="header-name">Axel Laban Arzubi</div>
+      <div class="header-title">Fractional CAIO for eCommerce Owners · HolaVeggie Founder · UBA Postgraduate Professor</div>
+      <div class="header-tags">
+        <span class="tag tag-blue"><i class="fas fa-robot"></i> Fractional CAIO</span>
+        <span class="tag tag-gold"><i class="fas fa-shopping-cart"></i> eCommerce LATAM</span>
+        <span class="tag tag-purple"><i class="fas fa-graduation-cap"></i> UBA Posgrado</span>
+        <span class="tag tag-green"><i class="fas fa-flask"></i> Test del pipeline</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> 10:00 hs</div>
+      <div class="meeting-date">Viernes 14/08/2026</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> Auto-auditoría estratégica (test del pipeline)</div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 32px;">
+  <div class="stats-row" style="padding:24px 0;">
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-calendar-day"></i></div>
+      <div>
+        <div class="stat-value">14 días</div>
+        <div class="stat-label">hasta el eCommerce Day Argentina</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+      <div>
+        <div class="stat-value">3</div>
+        <div class="stat-label">activos de autoridad · 0 casos con número</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-robot"></i></div>
+      <div>
+        <div class="stat-value">11</div>
+        <div class="stat-label">reuniones preparadas · 0 externas agendadas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="sidebar">
+    <div class="sidebar-tab active" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+    <div class="sidebar-tab" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+    <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
+    <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+    <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
+    <div class="notebooklm-btn" style="cursor:default;opacity:.75">
+      <i class="fas fa-search"></i> 9 fuentes · research web
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- TAB: EXECUTIVE BRIEFING -->
+    <div id="tab-briefing" class="tab-pane active">
+      <div class="section-title"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+      <div class="markdown-body" id="briefing-content"></div>
+    </div>
+
+    <!-- TAB: COMPETITIVE INTEL -->
+    <div id="tab-intel" class="tab-pane">
+      <div class="section-title"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+      <div class="markdown-body" id="intel-content"></div>
+    </div>
+
+    <!-- TAB: DEEP RESEARCH -->
+    <div id="tab-research" class="tab-pane">
+      <div class="section-title"><i class="fas fa-microscope"></i> Deep Research</div>
+      <div class="markdown-body" id="research-content"></div>
+    </div>
+
+    <!-- TAB: QUIZ -->
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+
+    <!-- TAB: FLASHCARDS -->
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-arrow-left"></i></button>
+          <div class="dots" id="fc-dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── TAB SWITCHING ───────────────────────────────────────────────────────────
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ─── CONTENT DATA ─────────────────────────────────────────────────────────────
+const briefingMD = `# Documento Ejecutivo de Preparación Pre-Reunión
+
+> **Reunión de control interno.** El invitado sos vos. Este documento funciona como auto-auditoría estratégica: mismo rigor que usás con un prospecto, aplicado a tu propio posicionamiento.
+
+## 1) Perfil de la Persona
+
+**Nombre:** Axel Laban Arzubi
+
+- **Posicionamiento público actual:** *"Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer | HolaVeggie Founder · UBA Postgraduate Professor"* — es el headline literal que aparece indexado en tu perfil de LinkedIn.
+- **Background:** Más de 10 años en negocios de internet, tanto en compañías nativas digitales como en industrias tradicionales. Formación en la Universidad de Buenos Aires.
+- **Rol docente:** Profesor de posgrado en UBA. Antecedente verificado: invitación junto a Gabriel Reiman a la cátedra de Medios de Pago y Fintech de Norberto Cerasale. Actualmente dictás "Tendencias Tecnológicas" y participás del "Programa Agentes de IA" del eCommerce Institute.
+- **Emprendimiento:** Founder & CEO de HolaVeggie (dominio propio, con calendario operativo activo en \`hola@holaveggie.com.ar\`).
+- **Producción de contenido:** Autor en Medium ("Entrepreneur and technologist") y publicador frecuente en LinkedIn sobre IA aplicada, video generativo y transformación digital.
+
+## 2) Contexto Inmediato (leído de tu calendario)
+
+Tres eventos de las próximas dos semanas cambian el peso de esta conversación:
+
+| Fecha | Evento | Por qué importa |
+|---|---|---|
+| 19/08 | Lucía — tesis | Compromiso de dirección académica en curso |
+| **21/08 y 25/08** | **Defensa de tesis de maestría** | Cierre de un ciclo formativo de años. Es el hito personal dominante del mes. |
+| 27/08 | eCommerce Day Argentina 2026 | Entrada confirmada. Es tu terreno natural de networking: el evento del eCommerce Institute, donde ya tenés vínculos activos. |
+
+**Implicación:** agosto es un mes de cierre académico, no de expansión comercial. La defensa de tesis consume foco. El eCommerce Day, seis días después, es la primera ventana real de generación de pipeline del trimestre.
+
+## 3) Diagnóstico de Posicionamiento
+
+Tu headline hace tres promesas simultáneas y cada una tira para un lado distinto:
+
+1. **"Fractional CAIO for eCommerce Owners"** — oferta de servicio, alto ticket, específica de nicho.
+2. **"Migrating Business Logic to the AI Layer"** — tesis técnica, diferenciadora, pero abstracta para un dueño de eCommerce que no habla ese idioma.
+3. **"HolaVeggie Founder · UBA Postgraduate Professor"** — prueba social y autoridad.
+
+El tercer bloque es el que compra la confianza. El primero es el que vende. El segundo es el que más te representa y el que menos convierte en frío.
+
+## 4) Puntos Clave de Conversación (para vos mismo)
+
+1. **¿El "Fractional CAIO" es un servicio o un título?** Si un dueño de eCommerce te pregunta qué entrega concreta recibe en los primeros 30 días, ¿tenés una respuesta de una sola frase? Si no, el posicionamiento todavía es identidad y no oferta.
+
+2. **La brecha de caso de éxito.** Tenés autoridad prestada (UBA, eCommerce Institute, VTEX en tu red) pero el activo que más te falta es un caso propio con número: "le migré X a la capa de IA y el resultado fue Y". Sin eso, cada venta se apoya en credenciales en vez de resultados.
+
+3. **El pipeline post-tesis.** Once reuniones preparadas entre marzo y mayo, cero reuniones con externos agendadas desde entonces. El sistema de prep está más maduro que el sistema de generación de demanda que lo alimenta.
+
+4. **Concentración en un solo canal.** Casi toda tu superficie de contacto es LinkedIn + eventos presenciales del circuito eCommerce Institute. Es un canal de calidad alta y volumen bajo, dependiente de tu presencia personal.
+
+5. **eCommerce Day como test.** Es en 14 días. ¿Vas con una oferta armada y un objetivo de reuniones, o vas a ver qué pasa? La diferencia entre las dos posturas es el trimestre entero.
+
+## 5) Manejo de Objeciones (las que te vas a hacer solos)
+
+| Objeción interna | Respuesta |
+|---|---|
+| "Primero termino la tesis y después vendo." | La defensa es el 21 y el 25. El eCommerce Day es el 27. No hay que elegir: hay que preparar la oferta ahora para no llegar en frío dos días después. |
+| "Necesito el caso de éxito antes de vender fuerte." | El caso se consigue vendiendo un diagnóstico pago acotado, no esperando. Un primer milestone pago genera el caso y cobra por generarlo. |
+| "Mi diferencial es técnico, el mercado no lo entiende." | Correcto, y por eso el diferencial técnico va en la entrega, no en el titular. El titular tiene que hablar del dolor del dueño de eCommerce. |
+| "Ya tengo autoridad, debería alcanzar." | La autoridad abre la reunión. El resultado concreto la cierra. Son dos activos distintos y tenés uno solo. |
+
+## 6) Próximos Pasos Recomendados
+
+1. **Antes del 21/08:** dejar escrita en una sola frase la entrega concreta de los primeros 30 días de un Fractional CAIO. Sin esa frase, el eCommerce Day es networking y no pipeline.
+2. **26/08 (víspera del evento):** definir objetivo numérico de reuniones y una lista corta de nombres a buscar. Marcarlas con \`#prep\` para que este mismo sistema las prepare.
+3. **Septiembre:** convertir el primer prospecto en un milestone pago acotado, con el objetivo explícito de producir el caso de éxito con número que hoy falta.
+`;
+
+const intelMD = `# Cheat Sheet — Inteligencia Competitiva
+
+## El mercado del "Fractional C-Level"
+
+El modelo fraccional (CTO, CMO, CFO y ahora CAIO) es una categoría ya validada: empresas medianas que necesitan criterio senior pero no pueden ni quieren un full-time. El **Fractional CAIO** es la variante más nueva y la menos estandarizada — lo que es simultáneamente la oportunidad y el problema.
+
+**La oportunidad:** casi nadie ocupa el término todavía. Sos temprano.
+
+**El problema:** categoría nueva significa que el comprador no tiene una referencia mental de qué debería costar ni qué debería recibir. Toda categoría nueva paga un impuesto de educación antes de poder cobrar.
+
+## Contra quién competís realmente
+
+No competís contra otros Fractional CAIO. Competís contra:
+
+| Competidor real | Su ventaja | Tu ángulo |
+|---|---|---|
+| **La agencia de IA / automatizaciones** | Entrega tangible, precio cerrado, "te armo el bot" | Ellos ejecutan tácticas sueltas; vos rediseñás la lógica de negocio. Pero tenés que probarlo. |
+| **El consultor de eCommerce tradicional** | Ya tiene la relación con el dueño | Ellos optimizan el canal actual; vos cambiás dónde vive la decisión |
+| **El "no hacer nada"** | Gratis, cero riesgo percibido | El competidor más fuerte de todos. Se vence con costo de inacción cuantificado. |
+| **El equipo interno con ChatGPT** | Ya está pago, ya está adentro | Herramienta ≠ arquitectura. Es exactamente tu tesis, y hay que decirla en el idioma del dueño. |
+
+## Tus activos diferenciales reales
+
+1. **Docencia en UBA de posgrado.** Prueba de autoridad difícil de falsificar y difícil de copiar. En LATAM la credencial universitaria pesa más que en otros mercados.
+2. **Red del eCommerce Institute.** Acceso al circuito donde están concentrados los dueños de eCommerce de la región. Marcos Pueyrredon (VTEX / presidente del Instituto) y Edna Gálvez ya están en tu red documentada.
+3. **Operador, no solo consultor.** HolaVeggie te da la posición de "yo también tengo un negocio", que neutraliza la objeción clásica de "vos nunca vendiste nada".
+4. **Producción de contenido sostenida.** Publicás sobre IA aplicada con criterio propio, no repitiendo novedades.
+
+## El agujero en la armadura
+
+Todo lo anterior es **autoridad**. Nada de lo anterior es **evidencia de resultado**.
+
+Un dueño de eCommerce escéptico puede aceptar que sabés del tema y aun así no comprar, porque la pregunta que no le respondiste es: *"¿a quién le hiciste esto y qué pasó?"*.
+
+Ese es el único punto donde la venta se traba, y es el que hay que resolver este trimestre.
+
+## Lectura para el eCommerce Day (27/08)
+
+- **Es el evento correcto:** ahí está exactamente tu comprador, concentrado y en modo receptivo.
+- **Tu ventaja de entrada:** no llegás como desconocido, llegás como alguien del circuito.
+- **El riesgo:** ir sin oferta concreta y volver con contactos en vez de reuniones agendadas.
+- **La jugada:** llegar con una frase de posicionamiento afilada y un próximo paso de bajo compromiso pero pago.
+`;
+
+const researchMD = `# Investigación — Fuentes y Evidencia
+
+## Método de este research
+
+Este dashboard se generó **sin NotebookLM**. NotebookLM no tiene API pública ni conector MCP disponible, así que el research corrió con **Firecrawl + búsqueda web**, que sí están conectados y operativos.
+
+## Hallazgos verificados
+
+**Headline profesional (fuente primaria, indexado):**
+> "Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer | HolaVeggie Founder · UBA Postgraduate Professor"
+
+Confirmado de forma consistente en múltiples resultados independientes (\`ar.linkedin.com/in/arzubilaban\` y menciones cruzadas en publicaciones de terceros).
+
+**Perfil de Medium** (\`medium.com/@axellaban\`) — bio: *"Entrepreneur and technologist"*. Artículos publicados:
+
+| Fecha | Artículo |
+|---|---|
+| Dic 2019 | El Futuro de la Transformación Digital y la Economía de la Atención |
+| Ago 2019 | Stanford: la transformación digital nada tiene que ver con la tecnología |
+| Jul 2019 | La carrera en el comercio electrónico: un campo dominado por perfiles expertos generalistas |
+| Jul 2019 | El secreto del storytelling |
+| May 2019 | El mayor aprendizaje de Obama y Bezos sobre la educación |
+
+*Observación:* la producción en Medium se detiene en 2019. La actividad de contenido migró a LinkedIn.
+
+**Actividad reciente en LinkedIn** (por títulos de publicaciones indexadas):
+- "La frontera irregular de la IA — por qué…"
+- "Hot take: la mayoría de las transformaciones…"
+- Publicaciones sobre \`#sora #sora2 #openai #ai #artificialintelligence #storytelling\`
+- Actividad histórica sobre tendencias tecnológicas y NFT (2022)
+
+**Red documentada:** interacciones cruzadas con Edna Gálvez (TFM UBA Marketing Digital), Patricia Jebsen, Gonzalo Waisman y Federico Rozado.
+
+**Antecedente académico:** invitación junto a Gabriel Reiman a la cátedra de Medios de Pago y Fintech dirigida por Norberto Cerasale (UBA).
+
+## Contexto del calendario (fuente: Google Calendar)
+
+- 19/08 — Lucía, tesis
+- 21/08 — Defensa tesis maestría
+- 25/08 — Defensa tesis
+- 27/08 — eCommerce Day Argentina 2026 (Centro de Convenciones Buenos Aires, entrada confirmada)
+- Recurrentes: "Tendencias Tecnológicas" (UBA), "Programa Agentes de IA" (eCommerce Institute)
+
+## Limitaciones conocidas de este research
+
+1. **LinkedIn bloquea el scraping directo.** Firecrawl devuelve error explícito de sitio no soportado. Todo lo obtenido de LinkedIn viene de *snippets de resultados de búsqueda*, que son confiables para el headline y los títulos de posts, pero no dan el detalle del perfil (experiencia completa, fechas, descripciones).
+2. **Sin acceso al historial de HolaVeggie.** No se encontró información pública sustantiva sobre métricas, tamaño o etapa del negocio.
+3. **La sección de diagnóstico es interpretación, no dato.** El apartado "Diagnóstico de Posicionamiento" y el "agujero en la armadura" son lectura estratégica construida sobre los datos verificados, no hechos reportados por una fuente.
+
+## Nota de validación
+
+Esta corrida es una **prueba del pipeline**. Como el sujeto del research sos vos mismo, tenés verificación perfecta: cada afirmación de la sección de hallazgos verificados es contrastable contra lo que sabés de tu propia trayectoria. Si algo acá está mal, el research engine necesita ajuste antes de confiarle prospectos reales.
+`;
+
+// ─── QUIZ DATA ────────────────────────────────────────────────────────────────
+const quizData = [
+  {
+    "q": "¿Cuál es el headline profesional que aparece indexado públicamente?",
+    "options": [
+      "A) AI Consultant & Founder",
+      "B) Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer",
+      "C) Head of AI en eCommerce Institute",
+      "D) Profesor UBA & Consultor Digital"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Qué motor de research usó este dashboard?",
+    "options": [
+      "A) NotebookLM",
+      "B) Solo conocimiento del modelo",
+      "C) Firecrawl + búsqueda web",
+      "D) Apollo.io"
+    ],
+    "answer": "C"
+  },
+  {
+    "q": "¿Por qué no se usó NotebookLM?",
+    "options": [
+      "A) Es muy caro",
+      "B) No tiene API pública ni conector MCP disponible",
+      "C) Estaba caído ese día",
+      "D) Da resultados peores"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Cuál es el hito personal dominante de agosto según el calendario?",
+    "options": [
+      "A) eCommerce Day Argentina",
+      "B) La clase de Tendencias Tecnológicas",
+      "C) La defensa de tesis de maestría",
+      "D) El lanzamiento de HolaVeggie"
+    ],
+    "answer": "C"
+  },
+  {
+    "q": "¿Cuántos días separan la defensa de tesis del 25/08 del eCommerce Day?",
+    "options": [
+      "A) 2 días",
+      "B) 6 días",
+      "C) 10 días",
+      "D) 14 días"
+    ],
+    "answer": "A"
+  },
+  {
+    "q": "Según el análisis competitivo, ¿cuál es el competidor más fuerte?",
+    "options": [
+      "A) Las agencias de automatización con IA",
+      "B) Los consultores de eCommerce tradicionales",
+      "C) El equipo interno usando ChatGPT",
+      "D) El 'no hacer nada'"
+    ],
+    "answer": "D"
+  },
+  {
+    "q": "¿Cuál es el 'agujero en la armadura' identificado en la inteligencia competitiva?",
+    "options": [
+      "A) Falta de autoridad académica",
+      "B) Tener autoridad pero no evidencia de resultado",
+      "C) Precio demasiado alto",
+      "D) Poca producción de contenido"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Qué limitación técnica encontró el research?",
+    "options": [
+      "A) Medium bloqueó el acceso",
+      "B) Google Calendar no devolvió eventos",
+      "C) LinkedIn bloquea el scraping directo",
+      "D) No se encontró el perfil"
+    ],
+    "answer": "C"
+  }
+];
+
+// ─── FLASHCARD DATA ───────────────────────────────────────────────────────────
+const flashcards = [
+  {
+    "q": "¿Cuál es el posicionamiento público actual?",
+    "a": "Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer | HolaVeggie Founder · UBA Postgraduate Professor."
+  },
+  {
+    "q": "¿Cuáles son los tres activos de autoridad?",
+    "a": "Docencia de posgrado en UBA, red del eCommerce Institute, y ser operador real vía HolaVeggie."
+  },
+  {
+    "q": "¿Qué activo falta y traba las ventas?",
+    "a": "Un caso de éxito propio con número: 'le migré X a la capa de IA y el resultado fue Y'. Hay autoridad, falta evidencia de resultado."
+  },
+  {
+    "q": "¿Cuál es la fecha clave del trimestre?",
+    "a": "27/08 — eCommerce Day Argentina 2026, seis días después de la defensa de tesis. Primera ventana real de pipeline."
+  },
+  {
+    "q": "¿Contra quién se compite realmente?",
+    "a": "Contra agencias de IA, consultores de eCommerce, el equipo interno con ChatGPT, y sobre todo contra el 'no hacer nada'."
+  },
+  {
+    "q": "¿Cómo se vence la objeción del 'no hacer nada'?",
+    "a": "Cuantificando el costo de la inacción. Es el competidor más fuerte porque es gratis y de riesgo percibido cero."
+  },
+  {
+    "q": "¿Cómo se resuelve la falta de caso de éxito sin esperar?",
+    "a": "Vendiendo un diagnóstico pago acotado que genera el caso y cobra por generarlo, en vez de esperar a tenerlo."
+  },
+  {
+    "q": "¿Por qué el research no usó NotebookLM?",
+    "a": "NotebookLM no tiene API pública ni conector MCP. Se reemplazó por Firecrawl + búsqueda web, ambos conectados y operativos."
+  },
+  {
+    "q": "¿Cuál es la limitación principal del research?",
+    "a": "LinkedIn bloquea el scraping directo. Los datos de LinkedIn salen de snippets de búsqueda: sirven para headline y títulos, no para el perfil completo."
+  },
+  {
+    "q": "¿Qué problema tiene el headline actual?",
+    "a": "Hace tres promesas que tiran para lados distintos. 'Migrating Business Logic to the AI Layer' es lo más diferenciador pero lo menos convertidor en frío."
+  }
+];
+
+// ─── RENDER MARKDOWN ──────────────────────────────────────────────────────────
+const md2html = (t) => (typeof marked !== 'undefined')
+  ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' +
+    t.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])) + '</pre>';
+document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
+document.getElementById('intel-content').innerHTML = md2html(intelMD);
+document.getElementById('research-content').innerHTML = md2html(researchMD);
+
+// ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
+let quizScore = 0;
+const quizContainer = document.getElementById('quiz-container');
+document.getElementById('total-q').textContent = quizData.length;
+
+quizData.forEach((item, idx) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `
+    <div class="question-num">Pregunta ${idx + 1} de ${quizData.length}</div>
+    <div class="question-text">${item.q}</div>
+    <div class="options" id="opts-${idx}">
+      ${item.options.map((opt, i) => `
+        <div class="option" onclick="selectOption(${idx},'${'ABCD'[i]}','${item.answer}',this)">
+          <div class="option-letter">${'ABCD'[i]}</div>
+          <span>${opt.substring(3)}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  quizContainer.appendChild(div);
+});
+
+function selectOption(qIdx, selected, correct, el) {
+  const opts = document.querySelectorAll(`#opts-${qIdx} .option`);
+  opts.forEach(o => o.classList.add('answered'));
+  opts.forEach(o => { o.style.pointerEvents = 'none'; });
+  if (selected === correct) {
+    el.classList.add('correct');
+    quizScore++;
+    document.getElementById('score').textContent = quizScore;
+  } else {
+    el.classList.add('wrong');
+    opts.forEach((o, i) => {
+      if ('ABCD'[i] === correct) o.classList.add('correct');
+    });
+  }
+}
+
+// ─── FLASHCARD LOGIC ──────────────────────────────────────────────────────────
+let fcIdx = 0;
+const fcEl = document.getElementById('flashcard');
+document.getElementById('fc-total').textContent = flashcards.length;
+
+function renderCard() {
+  const c = flashcards[fcIdx];
+  document.getElementById('fc-question').textContent = c.q;
+  document.getElementById('fc-answer').textContent = c.a;
+  document.getElementById('fc-current').textContent = fcIdx + 1;
+  fcEl.classList.remove('flipped');
+  const dots = document.getElementById('fc-dots');
+  dots.innerHTML = '';
+  flashcards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === fcIdx ? ' active' : '');
+    dots.appendChild(d);
+  });
+}
+
+function flipCard() { fcEl.classList.toggle('flipped'); }
+function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderCard(); }
+function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderCard(); }
+
+renderCard();
+</script>
+</body>
+</html>

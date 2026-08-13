@@ -6,7 +6,8 @@
 <title>Meeting Prep — Edna Gálvez</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="../../assets/marked.min.js"></script>
+<script>window.marked||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"><\/script>');</script>
 <style>
   :root {
     --bg: #08080c;
@@ -515,9 +516,13 @@ const flashcards = [
 ];
 
 // ─── RENDER MARKDOWN ──────────────────────────────────────────────────────────
-document.getElementById('briefing-content').innerHTML = marked.parse(briefingMD);
-document.getElementById('intel-content').innerHTML = marked.parse(intelMD);
-document.getElementById('research-content').innerHTML = marked.parse(researchMD);
+const md2html = (t) => (typeof marked !== 'undefined')
+  ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' +
+    t.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])) + '</pre>';
+document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
+document.getElementById('intel-content').innerHTML = md2html(intelMD);
+document.getElementById('research-content').innerHTML = md2html(researchMD);
 
 // ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
 let quizScore = 0;
