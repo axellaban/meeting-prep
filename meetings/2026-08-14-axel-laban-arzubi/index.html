@@ -31,6 +31,43 @@
   .navbar-date { font-size:13px; color:var(--text-muted); }
   .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
   .navbar-back:hover { color:var(--text); }
+  .btn-export { background:linear-gradient(135deg,#1d4ed8,var(--accent)); border:none; color:#fff; padding:7px 15px; border-radius:8px; font-size:12.5px; font-weight:600; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .2s; }
+  .btn-export:hover { opacity:.85; }
+
+  /* ── BRIEFING EN VOZ ALTA ── */
+  .audio-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:16px; margin:0 0 4px; }
+  .audio-btn { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .2s; box-shadow:0 0 12px rgba(59,130,246,0.4); }
+  .audio-btn:hover { transform:scale(1.08); }
+  .audio-btn:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+  .audio-info { flex:1; min-width:0; }
+  .audio-title { font-size:13px; font-weight:600; }
+  .audio-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .visualizer { display:flex; align-items:flex-end; gap:2px; height:24px; }
+  .visualizer .bar { width:3px; background:var(--accent); border-radius:2px; animation:eq 1.1s ease-in-out infinite; }
+  .visualizer.paused .bar { animation-play-state:paused; opacity:.3; }
+  .visualizer .bar:nth-child(1){height:8px;animation-delay:0s}
+  .visualizer .bar:nth-child(2){height:16px;animation-delay:.1s}
+  .visualizer .bar:nth-child(3){height:12px;animation-delay:.2s}
+  .visualizer .bar:nth-child(4){height:20px;animation-delay:.3s}
+  .visualizer .bar:nth-child(5){height:10px;animation-delay:.4s}
+  .visualizer .bar:nth-child(6){height:18px;animation-delay:.15s}
+  .visualizer .bar:nth-child(7){height:14px;animation-delay:.25s}
+  @keyframes eq { 0%,100%{transform:scaleY(.45)} 50%{transform:scaleY(1)} }
+  @media (prefers-reduced-motion: reduce) { .visualizer .bar { animation:none; } }
+
+  /* ── IMPRESIÓN / PDF ── */
+  @media print {
+    @page { margin: 14mm; }
+    .navbar, .sidebar, .audio-section, .btn-export { display:none !important; }
+    body { background:#fff; color:#000; }
+    .main-layout, .content { display:block; margin:0; padding:0; max-width:none; }
+    .tab-pane { display:block !important; page-break-after:always; }
+    .tab-pane:last-child { page-break-after:auto; }
+    .markdown-body h2 { color:#000; }
+    .markdown-body h2::before { background:#000; }
+    .stat-card, .markdown-body table, .quiz-question { break-inside:avoid; }
+    a { color:#000; text-decoration:underline; }
+  }
 
   /* HEADER */
   .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 100%); border-bottom:1px solid var(--border); }
@@ -79,7 +116,8 @@
 
   /* MARKDOWN */
   .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; color:var(--text); }
-  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); display:flex; align-items:center; gap:9px; }
+  .markdown-body h2::before { content:''; display:inline-block; width:3px; height:19px; background:linear-gradient(var(--accent),var(--gold)); border-radius:2px; flex-shrink:0; }
   .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; color:var(--text); }
   .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
   .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
@@ -138,6 +176,7 @@
   <div class="navbar-brand"><i class="fas fa-brain"></i> Cowork OS — Meeting Prep</div>
   <div class="navbar-date">Viernes 14 de Agosto, 2026</div>
   <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+  <button class="btn-export" onclick="window.print()"><i class="fas fa-download"></i> Exportar PDF</button>
 </nav>
 
 <div class="meeting-header">
@@ -145,12 +184,12 @@
     <div class="avatar">AL</div>
     <div class="header-info">
       <div class="header-name">Axel Laban Arzubi</div>
-      <div class="header-title">Fractional CAIO for eCommerce Owners · HolaVeggie Founder · UBA Postgraduate Professor</div>
+      <div class="header-title">Fractional CAIO for eCommerce Owners · Co-Founder & CEO HolaVeggie · UBA Postgraduate Professor</div>
       <div class="header-tags">
         <span class="tag tag-blue"><i class="fas fa-robot"></i> Fractional CAIO</span>
+        <span class="tag tag-green"><i class="fas fa-seedling"></i> HolaVeggie · Foodtech</span>
         <span class="tag tag-gold"><i class="fas fa-shopping-cart"></i> eCommerce LATAM</span>
         <span class="tag tag-purple"><i class="fas fa-graduation-cap"></i> UBA Posgrado</span>
-        <span class="tag tag-green"><i class="fas fa-flask"></i> Test del pipeline</span>
       </div>
     </div>
     <div class="header-meta">
@@ -164,24 +203,24 @@
 <div style="max-width:1200px;margin:0 auto;padding:0 32px;">
   <div class="stats-row" style="padding:24px 0;">
     <div class="stat-card">
-      <div class="stat-icon gold"><i class="fas fa-calendar-day"></i></div>
+      <div class="stat-icon gold"><i class="fas fa-dollar-sign"></i></div>
       <div>
-        <div class="stat-value">14 días</div>
-        <div class="stat-label">hasta el eCommerce Day Argentina</div>
+        <div class="stat-value">USD 215B</div>
+        <div class="stat-label">mercado eCommerce LATAM en 2026</div>
       </div>
     </div>
     <div class="stat-card">
       <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
       <div>
-        <div class="stat-value">3</div>
-        <div class="stat-label">activos de autoridad · 0 casos con número</div>
+        <div class="stat-value">30% → 1%</div>
+        <div class="stat-label">desperdicio reducido en HolaVeggie</div>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon green"><i class="fas fa-robot"></i></div>
+      <div class="stat-icon green"><i class="fas fa-calendar-day"></i></div>
       <div>
-        <div class="stat-value">11</div>
-        <div class="stat-label">reuniones preparadas · 0 externas agendadas</div>
+        <div class="stat-value">13 días</div>
+        <div class="stat-label">hasta el eCommerce Day Argentina</div>
       </div>
     </div>
   </div>
@@ -205,6 +244,20 @@
     <!-- TAB: EXECUTIVE BRIEFING -->
     <div id="tab-briefing" class="tab-pane active">
       <div class="section-title"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+      <div class="audio-section">
+        <button class="audio-btn" id="playBtn" onclick="toggleAudio()" aria-label="Escuchar el briefing en voz alta">
+          <i class="fas fa-play" id="playIcon"></i>
+        </button>
+        <div class="audio-info">
+          <div class="audio-title">Escuchar el briefing</div>
+          <div class="audio-sub" id="audioSub">Lectura en voz alta — sirve mientras manejás o caminás</div>
+        </div>
+        <div class="visualizer paused" id="viz">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
       <div class="markdown-body" id="briefing-content"></div>
     </div>
 
@@ -274,128 +327,198 @@ function showTab(name, el) {
 }
 
 // ─── CONTENT DATA ─────────────────────────────────────────────────────────────
-const briefingMD = `# Documento Ejecutivo de Preparación Pre-Reunión
+const briefingMD = `# Briefing Ejecutivo Pre-Reunión
 
-> **Reunión de control interno.** El invitado sos vos. Este documento funciona como auto-auditoría estratégica: mismo rigor que usás con un prospecto, aplicado a tu propio posicionamiento.
+> **Reunión de control interno.** El invitado sos vos. Mismo rigor que aplicás a un prospecto, girado hacia tu propio posicionamiento. Todo dato de la sección 1 y 2 es contrastable contra lo que sabés de tu trayectoria: si algo está mal, el motor de research necesita ajuste antes de confiarle prospectos reales.
 
 ## 1) Perfil de la Persona
 
 **Nombre:** Axel Laban Arzubi
 
-- **Posicionamiento público actual:** *"Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer | HolaVeggie Founder · UBA Postgraduate Professor"* — es el headline literal que aparece indexado en tu perfil de LinkedIn.
-- **Background:** Más de 10 años en negocios de internet, tanto en compañías nativas digitales como en industrias tradicionales. Formación en la Universidad de Buenos Aires.
-- **Rol docente:** Profesor de posgrado en UBA. Antecedente verificado: invitación junto a Gabriel Reiman a la cátedra de Medios de Pago y Fintech de Norberto Cerasale. Actualmente dictás "Tendencias Tecnológicas" y participás del "Programa Agentes de IA" del eCommerce Institute.
-- **Emprendimiento:** Founder & CEO de HolaVeggie (dominio propio, con calendario operativo activo en \`hola@holaveggie.com.ar\`).
-- **Producción de contenido:** Autor en Medium ("Entrepreneur and technologist") y publicador frecuente en LinkedIn sobre IA aplicada, video generativo y transformación digital.
+**Posicionamiento público:** *"Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer | HolaVeggie Founder · UBA Postgraduate Professor"* — headline literal, indexado y consistente en múltiples fuentes independientes.
 
-## 2) Contexto Inmediato (leído de tu calendario)
+**Background:** Más de 10 años en negocios de internet, atravesando **retail, viajes, publicidad y tecnología**. Perfil de generalista experto: opera en el cruce de eCommerce, producto digital e IA aplicada.
 
-Tres eventos de las próximas dos semanas cambian el peso de esta conversación:
+**Formación:** Universidad de Buenos Aires. **Defensa de tesis de maestría el 21 y el 25 de agosto de 2026** — cierre de ciclo formativo en curso.
 
-| Fecha | Evento | Por qué importa |
-|---|---|---|
-| 19/08 | Lucía — tesis | Compromiso de dirección académica en curso |
-| **21/08 y 25/08** | **Defensa de tesis de maestría** | Cierre de un ciclo formativo de años. Es el hito personal dominante del mes. |
-| 27/08 | eCommerce Day Argentina 2026 | Entrada confirmada. Es tu terreno natural de networking: el evento del eCommerce Institute, donde ya tenés vínculos activos. |
+**Roles actuales:**
+- **Fractional CAIO** — consultoría de IA para dueños de eCommerce
+- **Co-Founder & CEO** — **HolaVeggie** (foodtech, Buenos Aires)
+- **Profesor de posgrado** — **Universidad de Buenos Aires**, dictando *Tendencias Tecnológicas*
+- **Formador** — *Programa Agentes de IA* del **eCommerce Institute**
 
-**Implicación:** agosto es un mes de cierre académico, no de expansión comercial. La defensa de tesis consume foco. El eCommerce Day, seis días después, es la primera ventana real de generación de pipeline del trimestre.
+**Trayectoria corporativa previa:** **Grupo Marquez** (retailer argentino líder en tecnología y equipamiento del hogar), donde progresó de *eCommerce Specialist* a **Manager, eCommerce & BI**, liderando iniciativas de comercio electrónico e inteligencia de negocio.
 
-## 3) Diagnóstico de Posicionamiento
+**Antecedente académico:** Invitado junto a **Gabriel Reiman** a la cátedra de **Medios de Pago y Fintech** dirigida por **Norberto Cerasale** (UBA).
 
-Tu headline hace tres promesas simultáneas y cada una tira para un lado distinto:
+**Producción intelectual:** Autor en Medium bajo la bio *"Entrepreneur and technologist"*, con cinco ensayos publicados en 2019 sobre transformación digital, economía de la atención y carreras en comercio electrónico. La producción migró después a LinkedIn, donde publica sobre IA aplicada, video generativo (**Sora / Sora 2**) y crítica de las transformaciones digitales corporativas.
 
-1. **"Fractional CAIO for eCommerce Owners"** — oferta de servicio, alto ticket, específica de nicho.
-2. **"Migrating Business Logic to the AI Layer"** — tesis técnica, diferenciadora, pero abstracta para un dueño de eCommerce que no habla ese idioma.
-3. **"HolaVeggie Founder · UBA Postgraduate Professor"** — prueba social y autoridad.
+**Red documentada:** Interacciones cruzadas con **Edna Gálvez** (eCommerce Institute), **Patricia Jebsen**, **Gonzalo Waisman** y **Federico Rozado**. Vía eCommerce Institute, proximidad al círculo de **Marcos Pueyrredon** (VTEX / presidente del Instituto).
 
-El tercer bloque es el que compra la confianza. El primero es el que vende. El segundo es el que más te representa y el que menos convierte en frío.
+**Contexto de la reunión:** Agosto es un mes de cierre académico, no de expansión comercial. La defensa de tesis domina el foco hasta el 25. Seis días después llega el **eCommerce Day Argentina 2026** (27/08, Centro de Convenciones Buenos Aires, entrada ya confirmada) — la primera ventana real de generación de pipeline del trimestre, en el evento donde está concentrado exactamente su comprador.
 
-## 4) Puntos Clave de Conversación (para vos mismo)
+## 2) Perfil de la Empresa — HolaVeggie
 
-1. **¿El "Fractional CAIO" es un servicio o un título?** Si un dueño de eCommerce te pregunta qué entrega concreta recibe en los primeros 30 días, ¿tenés una respuesta de una sola frase? Si no, el posicionamiento todavía es identidad y no oferta.
+**Qué hace:** Foodtech argentina de suscripción. Entrega semanalmente a domicilio **recetas plant-based con instrucciones paso a paso y los ingredientes frescos** para prepararlas. Cada semana el suscriptor elige entre **6 recetas nuevas**, con variantes rápidas y altas en proteína.
 
-2. **La brecha de caso de éxito.** Tenés autoridad prestada (UBA, eCommerce Institute, VTEX en tu red) pero el activo que más te falta es un caso propio con número: "le migré X a la capa de IA y el resultado fue Y". Sin eso, cada venta se apoya en credenciales en vez de resultados.
+**Modelo de negocio:** Suscripción recurrente con **eliminación de intermediarios**. Compra los ingredientes directamente en origen en lugar de al por mayor, lo que le permite bajar el desperdicio de alimentos del **30% típico de la industria al 1%**. El desperdicio evitado es simultáneamente margen y argumento de marca.
 
-3. **El pipeline post-tesis.** Once reuniones preparadas entre marzo y mayo, cero reuniones con externos agendadas desde entonces. El sistema de prep está más maduro que el sistema de generación de demanda que lo alimenta.
+**Lanzamiento:** Fines de **2020**.
 
-4. **Concentración en un solo canal.** Casi toda tu superficie de contacto es LinkedIn + eventos presenciales del circuito eCommerce Institute. Es un canal de calidad alta y volumen bajo, dependiente de tu presencia personal.
+**Métricas de impacto acumuladas:**
+- **25.000** comidas plant-based cocinadas
+- **8.100 kg** de desperdicio de alimentos evitado
+- **694 kg** de plástico no comprado
+- **84.165 kg** de emisiones de carbono evitadas
 
-5. **eCommerce Day como test.** Es en 14 días. ¿Vas con una oferta armada y un objetivo de reuniones, o vas a ver qué pasa? La diferencia entre las dos posturas es el trimestre entero.
+**Equipo fundador:** Axel Laban Arzubi (CEO) y **Eliana Curcio** (CFO & Co-founder).
 
-## 5) Manejo de Objeciones (las que te vas a hacer solos)
+**Posición:** Cubierta por prensa especializada del sector (FoodNewsLatam, SalPimenta, Lado H) con el mismo encuadre: *"la foodtech argentina que ayuda a la gente a comer más plantas"*.
 
-| Objeción interna | Respuesta |
+**Por qué importa para el posicionamiento:** HolaVeggie no es un proyecto lateral, es la prueba de que opera un negocio real con logística, suscripción, unit economics y recompra. Neutraliza de raíz la objeción más común contra un consultor: *"vos nunca vendiste nada"*.
+
+## 3) Oportunidad de Mercado
+
+- **USD 215.000 millones** — tamaño del mercado de eCommerce de América Latina en 2026.
+- **1,5x** — velocidad de crecimiento de la economía digital de LATAM contra el promedio mundial.
+- **20–23%** — CAGR sostenida del comercio electrónico regional hacia 2026.
+- **México y Brasil** lideran en volumen; **Colombia, Chile y Argentina** avanzan con expansión sostenida.
+- **El cambio de paradigma:** el crecimiento regional ya no viene de sumar usuarios nuevos, sino de **convertir mejor, retener más y sostener la recompra**. Ese desplazamiento — de adquisición a eficiencia operativa — es exactamente el terreno donde vive la propuesta de un Fractional CAIO.
+- **Los diferenciales que definen la competencia en 2026:** IA, Retail Media, Social Commerce, checkout sin fricción y logística sostenible.
+
+## 4) Guion de Conversación
+
+**Hipótesis del dolor:** El problema central no es la falta de autoridad ni la falta de demanda del mercado — es que la oferta no está empaquetada. Hay identidad ("Fractional CAIO") pero no hay entregable con nombre, plazo y precio.
+
+**La pregunta que demuestra la tarea:** *"En HolaVeggie bajaste el desperdicio del 30% al 1% sacando intermediarios. ¿Por qué no vendés eso mismo — el rediseño de la lógica operativa — en vez de vender 'IA'?"*
+
+**W1 · ¿Dónde estás ahora?** *(dolor presente)*
+> Once reuniones preparadas entre marzo y mayo. Cero reuniones con externos agendadas desde entonces.
+- ¿Cuántas horas por semana se van en dictar clases y formar, contra vender?
+- Si tuvieras que poner en plata el costo de un trimestre sin pipeline, ¿cuánto es?
+
+**W2 · ¿A dónde querés llegar?** *(futuro deseado)*
+> Si el Fractional CAIO tuviera cuatro clientes fijos, ¿cómo cambia la semana? ¿Se deja de dar clase, o la clase pasa a ser el canal de adquisición en vez del ingreso?
+
+**W3 · ¿Qué te frenó hasta ahora?** *(la brecha)*
+> Ya tenés autoridad, red y un negocio propio andando. ¿Qué frenó que esto no estuviera vendido hace seis meses?
+
+**Objeción anticipada — «no sé por dónde empezar» disfrazada de «me falta el caso».** El research no muestra escasez de tiempo ni escepticismo sobre la IA: muestra abundancia de credenciales y ausencia de un entregable definido. Esa combinación produce postergación con excusa noble: *"primero necesito el caso de éxito"*. Es una creencia limitante sobre la secuencia, no una restricción real.
+
+**W4 · ¿Por qué es urgente ahora?** *(activación)*
+> El eCommerce Day es el 27 de agosto, seis días después de la defensa. Es la mayor concentración anual de tu comprador exacto, en tu ciudad, con entrada ya comprada. Si llegás sin oferta armada, la próxima ventana equivalente es dentro de un año.
+
+## 5) Manejo de Objeciones
+
+| Objeción | Respuesta |
 |---|---|
-| "Primero termino la tesis y después vendo." | La defensa es el 21 y el 25. El eCommerce Day es el 27. No hay que elegir: hay que preparar la oferta ahora para no llegar en frío dos días después. |
-| "Necesito el caso de éxito antes de vender fuerte." | El caso se consigue vendiendo un diagnóstico pago acotado, no esperando. Un primer milestone pago genera el caso y cobra por generarlo. |
-| "Mi diferencial es técnico, el mercado no lo entiende." | Correcto, y por eso el diferencial técnico va en la entrega, no en el titular. El titular tiene que hablar del dolor del dueño de eCommerce. |
-| "Ya tengo autoridad, debería alcanzar." | La autoridad abre la reunión. El resultado concreto la cierra. Son dos activos distintos y tenés uno solo. |
+| «Necesito el caso de éxito antes de vender fuerte.» | Es la objeción de W3 y es de secuencia invertida. El caso se produce vendiendo un diagnóstico pago acotado — que cobra por generar el caso, en vez de esperarlo gratis. |
+| «Primero termino la tesis, después vendo.» | La defensa es el 21 y el 25; el evento es el 27. No hay que elegir: hay que dejar la oferta escrita antes del 21 para no llegar en frío. |
+| «Mi diferencial es técnico y el mercado no lo entiende.» | Correcto — por eso el diferencial técnico va en la entrega, no en el titular. El titular habla del dolor del dueño: margen, recompra, horas de equipo. |
+| «Ya tengo autoridad, debería alcanzar.» | La autoridad abre la reunión; el resultado la cierra. Son dos activos distintos y hoy hay uno solo. |
+| «El mercado todavía no está maduro para IA.» | El mercado regional ya pasó de adquisición a eficiencia operativa, y crece 1,5x más rápido que el global. La madurez llegó; lo que falta es traducción. |
 
 ## 6) Próximos Pasos Recomendados
 
-1. **Antes del 21/08:** dejar escrita en una sola frase la entrega concreta de los primeros 30 días de un Fractional CAIO. Sin esa frase, el eCommerce Day es networking y no pipeline.
-2. **26/08 (víspera del evento):** definir objetivo numérico de reuniones y una lista corta de nombres a buscar. Marcarlas con \`#prep\` para que este mismo sistema las prepare.
-3. **Septiembre:** convertir el primer prospecto en un milestone pago acotado, con el objetivo explícito de producir el caso de éxito con número que hoy falta.
+1. **Antes del 21/08** — Escribir en una sola frase el entregable de los primeros 30 días de un Fractional CAIO, con nombre, plazo y precio. Sin esa frase, el eCommerce Day es networking, no pipeline.
+2. **El 26/08** — Fijar objetivo numérico de reuniones para el evento y una lista corta de nombres a buscar. Etiquetarlas con \`#prep\` para que este mismo sistema las prepare.
+3. **Septiembre** — Convertir el primer prospecto en un milestone pago acotado, con el objetivo explícito de producir el caso con número que hoy falta. El caso de HolaVeggie (30% → 1% de desperdicio) es la analogía que hace entendible la promesa.
 `;
 
 const intelMD = `# Cheat Sheet — Inteligencia Competitiva
 
-## El mercado del "Fractional C-Level"
+## TOP 3 COSAS A SABER
 
-El modelo fraccional (CTO, CMO, CFO y ahora CAIO) es una categoría ya validada: empresas medianas que necesitan criterio senior pero no pueden ni quieren un full-time. El **Fractional CAIO** es la variante más nueva y la menos estandarizada — lo que es simultáneamente la oportunidad y el problema.
+### 1. La categoría «Fractional CAIO» está vacía, y eso corta para los dos lados
 
-**La oportunidad:** casi nadie ocupa el término todavía. Sos temprano.
+- El modelo fraccional ya está validado en CTO, CMO y CFO: empresas medianas que necesitan criterio senior sin bancar un full-time.
+- El **CAIO** es la variante más nueva y la menos estandarizada de la familia.
+- **La ventaja:** casi nadie ocupa el término. Se llega temprano.
+- **El costo:** categoría nueva significa que el comprador **no tiene referencia mental** de qué debería costar ni qué debería recibir. Toda categoría nueva paga un impuesto de educación antes de poder cobrar.
 
-**El problema:** categoría nueva significa que el comprador no tiene una referencia mental de qué debería costar ni qué debería recibir. Toda categoría nueva paga un impuesto de educación antes de poder cobrar.
+**Tu ángulo:** no vender la categoría, vender el resultado. El dueño de eCommerce no compra «un CAIO fraccional»; compra menos horas de equipo en tareas repetitivas y mejor recompra.
 
-## Contra quién competís realmente
+### 2. La competencia real no son otros consultores de IA
 
-No competís contra otros Fractional CAIO. Competís contra:
-
-| Competidor real | Su ventaja | Tu ángulo |
+| Competidor | Su ventaja | Tu ángulo |
 |---|---|---|
-| **La agencia de IA / automatizaciones** | Entrega tangible, precio cerrado, "te armo el bot" | Ellos ejecutan tácticas sueltas; vos rediseñás la lógica de negocio. Pero tenés que probarlo. |
-| **El consultor de eCommerce tradicional** | Ya tiene la relación con el dueño | Ellos optimizan el canal actual; vos cambiás dónde vive la decisión |
-| **El "no hacer nada"** | Gratis, cero riesgo percibido | El competidor más fuerte de todos. Se vence con costo de inacción cuantificado. |
-| **El equipo interno con ChatGPT** | Ya está pago, ya está adentro | Herramienta ≠ arquitectura. Es exactamente tu tesis, y hay que decirla en el idioma del dueño. |
+| **Agencia de IA / automatizaciones** | Entrega tangible, precio cerrado, «te armo el bot» | Ellos ejecutan tácticas sueltas; vos rediseñás la lógica del negocio. Pero hay que probarlo con un número. |
+| **Consultor de eCommerce tradicional** | Ya tiene la relación con el dueño | Ellos optimizan el canal actual; vos cambiás dónde vive la decisión. |
+| **El equipo interno con ChatGPT** | Ya está pago y ya está adentro | Herramienta ≠ arquitectura. Es tu tesis exacta, y hay que decirla en el idioma del dueño. |
+| **El «no hacer nada»** | Gratis, riesgo percibido cero | **El competidor más fuerte.** Sólo se vence cuantificando el costo de la inacción. |
 
-## Tus activos diferenciales reales
+### 3. Tenés tres activos de autoridad y ningún caso con número
 
-1. **Docencia en UBA de posgrado.** Prueba de autoridad difícil de falsificar y difícil de copiar. En LATAM la credencial universitaria pesa más que en otros mercados.
-2. **Red del eCommerce Institute.** Acceso al circuito donde están concentrados los dueños de eCommerce de la región. Marcos Pueyrredon (VTEX / presidente del Instituto) y Edna Gálvez ya están en tu red documentada.
-3. **Operador, no solo consultor.** HolaVeggie te da la posición de "yo también tengo un negocio", que neutraliza la objeción clásica de "vos nunca vendiste nada".
-4. **Producción de contenido sostenida.** Publicás sobre IA aplicada con criterio propio, no repitiendo novedades.
+- **Docencia de posgrado en UBA** — prueba difícil de falsificar y difícil de copiar. En LATAM la credencial universitaria pesa más que en otros mercados.
+- **Red del eCommerce Institute** — acceso directo al circuito donde están concentrados los dueños de eCommerce de la región.
+- **Operador real vía HolaVeggie** — foodtech con suscripción, logística y unit economics propios. Neutraliza el «vos nunca vendiste nada».
 
-## El agujero en la armadura
+**El agujero:** los tres son **autoridad**. Ninguno es **evidencia de resultado**. Un dueño escéptico puede aceptar que sabés del tema y aun así no comprar, porque la pregunta sin responder es *«¿a quién le hiciste esto y qué pasó?»*. Es el único punto donde la venta se traba.
 
-Todo lo anterior es **autoridad**. Nada de lo anterior es **evidencia de resultado**.
+## NÚMEROS PARA SOLTAR EN LA CONVERSACIÓN
 
-Un dueño de eCommerce escéptico puede aceptar que sabés del tema y aun así no comprar, porque la pregunta que no le respondiste es: *"¿a quién le hiciste esto y qué pasó?"*.
+- **USD 215.000 M** — mercado de eCommerce LATAM en 2026
+- **1,5x** — velocidad de la economía digital LATAM vs. el promedio global
+- **20–23%** — CAGR del comercio electrónico regional hacia 2026
+- **30% → 1%** — reducción de desperdicio lograda en HolaVeggie sacando intermediarios
+- **25.000** comidas cocinadas · **84.165 kg** de CO₂ evitados
+- **2020** — año de lanzamiento de HolaVeggie
+- **10+ años** en negocios de internet, cruzando retail, viajes, publicidad y tecnología
+- **27/08** — eCommerce Day Argentina 2026, Centro de Convenciones Buenos Aires
 
-Ese es el único punto donde la venta se traba, y es el que hay que resolver este trimestre.
+## QUIÉN MÁS ESTÁ EN SU ÓRBITA
 
-## Lectura para el eCommerce Day (27/08)
+- **Eliana Curcio** — CFO & Co-founder de HolaVeggie
+- **Marcos Pueyrredon** — VTEX / Presidente del eCommerce Institute
+- **Edna Gálvez** — eLearning & Strategic Partnerships, eCommerce Institute
+- **Norberto Cerasale** — cátedra de Medios de Pago y Fintech, UBA
+- **Gabriel Reiman** — co-invitado a esa cátedra
+- **Patricia Jebsen**, **Gonzalo Waisman**, **Federico Rozado** — interacción pública sostenida
 
-- **Es el evento correcto:** ahí está exactamente tu comprador, concentrado y en modo receptivo.
-- **Tu ventaja de entrada:** no llegás como desconocido, llegás como alguien del circuito.
+## LECTURA PARA EL ECOMMERCE DAY (27/08)
+
+- **Es el evento correcto:** ahí está el comprador exacto, concentrado y receptivo.
+- **La ventaja de entrada:** no llega como desconocido, llega como alguien del circuito.
 - **El riesgo:** ir sin oferta concreta y volver con contactos en vez de reuniones agendadas.
-- **La jugada:** llegar con una frase de posicionamiento afilada y un próximo paso de bajo compromiso pero pago.
+- **La jugada:** una frase de posicionamiento afilada y un próximo paso de bajo compromiso pero pago.
 `;
 
 const researchMD = `# Investigación — Fuentes y Evidencia
 
-## Método de este research
+## Método
 
-Este dashboard se generó **sin NotebookLM**. NotebookLM no tiene API pública ni conector MCP disponible, así que el research corrió con **Firecrawl + búsqueda web**, que sí están conectados y operativos.
+Este dashboard se generó **sin NotebookLM**, que no tiene API pública ni conector MCP disponible. El research corrió con **búsqueda web + fetch directo**, complementado con lectura del calendario. Nueve fuentes independientes.
 
 ## Hallazgos verificados
 
-**Headline profesional (fuente primaria, indexado):**
-> "Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer | HolaVeggie Founder · UBA Postgraduate Professor"
+### Identidad profesional
 
-Confirmado de forma consistente en múltiples resultados independientes (\`ar.linkedin.com/in/arzubilaban\` y menciones cruzadas en publicaciones de terceros).
+**Headline (fuente primaria, indexado):**
+> *"Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer | HolaVeggie Founder · UBA Postgraduate Professor"*
 
-**Perfil de Medium** (\`medium.com/@axellaban\`) — bio: *"Entrepreneur and technologist"*. Artículos publicados:
+Confirmado de forma consistente en resultados independientes: perfil propio y menciones cruzadas en publicaciones de terceros a lo largo de varios años.
+
+**Registro corporativo (ZoomInfo):** *Co-Founder & Chief Executive Officer* en HolaVeggie. Trayectoria previa en **Grupo Marquez**, con progresión de *eCommerce Specialist* a *Manager, eCommerce & BI*. Más de una década en negocios de internet cubriendo retail, viajes, publicidad y tecnología.
+
+### HolaVeggie
+
+Cobertura de prensa especializada consistente en **FoodNewsLatam**, **SalPimenta**, **Lado H**, **Buenos Bares** y **Directorio Sustentable**, más el sitio propio \`holaveggie.com.ar\`.
+
+| Dato | Valor |
+|---|---|
+| Modelo | Suscripción semanal de recetas plant-based + ingredientes frescos |
+| Opciones | 6 recetas nuevas por semana |
+| Lanzamiento | Fines de 2020 |
+| Desperdicio | 30% de la industria → 1% |
+| Comidas cocinadas | 25.000 |
+| Desperdicio evitado | 8.100 kg |
+| Plástico evitado | 694 kg |
+| CO₂ evitado | 84.165 kg |
+| Co-fundadora | Eliana Curcio (CFO) |
+
+### Producción de contenido
+
+**Medium** (\`medium.com/@axellaban\`) — bio: *"Entrepreneur and technologist"*.
 
 | Fecha | Artículo |
 |---|---|
@@ -405,35 +528,34 @@ Confirmado de forma consistente en múltiples resultados independientes (\`ar.li
 | Jul 2019 | El secreto del storytelling |
 | May 2019 | El mayor aprendizaje de Obama y Bezos sobre la educación |
 
-*Observación:* la producción en Medium se detiene en 2019. La actividad de contenido migró a LinkedIn.
+*Observación:* la producción en Medium se detiene en 2019; la actividad migró a LinkedIn.
 
-**Actividad reciente en LinkedIn** (por títulos de publicaciones indexadas):
-- "La frontera irregular de la IA — por qué…"
-- "Hot take: la mayoría de las transformaciones…"
-- Publicaciones sobre \`#sora #sora2 #openai #ai #artificialintelligence #storytelling\`
-- Actividad histórica sobre tendencias tecnológicas y NFT (2022)
+**LinkedIn — publicaciones recientes** (por títulos indexados): *"La frontera irregular de la IA"*, *"Hot take: la mayoría de las transformaciones…"*, contenido sobre \`#sora #sora2 #openai #storytelling\`, y actividad histórica sobre tendencias tecnológicas y NFT (2022).
 
-**Red documentada:** interacciones cruzadas con Edna Gálvez (TFM UBA Marketing Digital), Patricia Jebsen, Gonzalo Waisman y Federico Rozado.
+### Mercado
 
-**Antecedente académico:** invitación junto a Gabriel Reiman a la cátedra de Medios de Pago y Fintech dirigida por Norberto Cerasale (UBA).
+Mercado de eCommerce LATAM por encima de **USD 215.000 M** en 2026, creciendo **1,5x más rápido** que el promedio global, con **CAGR de 20–23%**. El consenso de las fuentes señala un desplazamiento: el crecimiento dejó de depender de sumar usuarios y pasó a depender de conversión, retención y recompra.
 
-## Contexto del calendario (fuente: Google Calendar)
+### Agenda (Google Calendar)
 
-- 19/08 — Lucía, tesis
-- 21/08 — Defensa tesis maestría
-- 25/08 — Defensa tesis
-- 27/08 — eCommerce Day Argentina 2026 (Centro de Convenciones Buenos Aires, entrada confirmada)
-- Recurrentes: "Tendencias Tecnológicas" (UBA), "Programa Agentes de IA" (eCommerce Institute)
+| Fecha | Evento |
+|---|---|
+| 19/08 | Lucía — tesis |
+| 21/08 | Defensa tesis maestría |
+| 25/08 | Defensa tesis |
+| 27/08 | eCommerce Day Argentina 2026 — Centro de Convenciones BA |
+| Recurrente | *Tendencias Tecnológicas* (UBA) · *Programa Agentes de IA* (eCommerce Institute) |
 
-## Limitaciones conocidas de este research
+## Limitaciones de este research
 
-1. **LinkedIn bloquea el scraping directo.** Firecrawl devuelve error explícito de sitio no soportado. Todo lo obtenido de LinkedIn viene de *snippets de resultados de búsqueda*, que son confiables para el headline y los títulos de posts, pero no dan el detalle del perfil (experiencia completa, fechas, descripciones).
-2. **Sin acceso al historial de HolaVeggie.** No se encontró información pública sustantiva sobre métricas, tamaño o etapa del negocio.
-3. **La sección de diagnóstico es interpretación, no dato.** El apartado "Diagnóstico de Posicionamiento" y el "agujero en la armadura" son lectura estratégica construida sobre los datos verificados, no hechos reportados por una fuente.
+1. **LinkedIn bloquea el scraping directo.** El scraper devuelve error explícito de sitio no soportado y el fetch simple tampoco pasa. Todo lo obtenido de LinkedIn viene de *snippets de búsqueda*: confiables para headline y títulos de publicaciones, insuficientes para el detalle del perfil (fechas exactas, descripciones de cada rol).
+2. **Sin métricas de negocio de HolaVeggie.** Las cifras publicadas son de impacto ambiental acumulado, no de facturación, base de suscriptores ni etapa de financiamiento. Nada público sobre esos ejes.
+3. **Las secciones 4 y 5 son interpretación, no dato.** La hipótesis del dolor, la objeción anticipada y el «agujero en la armadura» son lectura estratégica construida sobre los hechos verificados. Ninguna fuente los reporta.
+4. **Los datos de mercado son de agregadores.** Las cifras de LATAM 2026 provienen de blogs sectoriales y agregadores de noticias, no de informes primarios de consultoras. Sirven como orden de magnitud, no como cita auditable.
 
 ## Nota de validación
 
-Esta corrida es una **prueba del pipeline**. Como el sujeto del research sos vos mismo, tenés verificación perfecta: cada afirmación de la sección de hallazgos verificados es contrastable contra lo que sabés de tu propia trayectoria. Si algo acá está mal, el research engine necesita ajuste antes de confiarle prospectos reales.
+Esta corrida es una **prueba del pipeline**. Como el sujeto sos vos, la verificación es perfecta: cada afirmación de los hallazgos es contrastable contra lo que sabés de tu propia trayectoria. Si algo acá está mal, el motor necesita ajuste antes de confiarle prospectos reales.
 `;
 const postBriefMD = `## Todavía sin completar
 
@@ -446,7 +568,7 @@ Mientras tanto, lo de acá arriba es la preparación — hipótesis, no hechos.
 // ─── QUIZ DATA ────────────────────────────────────────────────────────────────
 const quizData = [
   {
-    "q": "¿Cuál es el headline profesional que aparece indexado públicamente?",
+    "q": "¿Cuál es el headline profesional indexado públicamente?",
     "options": [
       "A) AI Consultant & Founder",
       "B) Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer",
@@ -456,44 +578,44 @@ const quizData = [
     "answer": "B"
   },
   {
-    "q": "¿Qué motor de research usó este dashboard?",
+    "q": "¿Qué modelo de negocio tiene HolaVeggie?",
     "options": [
-      "A) NotebookLM",
-      "B) Solo conocimiento del modelo",
-      "C) Firecrawl + búsqueda web",
-      "D) Apollo.io"
+      "A) Restaurante plant-based",
+      "B) Marketplace de productos veganos",
+      "C) Suscripción semanal de recetas + ingredientes frescos",
+      "D) App de delivery de comida preparada"
     ],
     "answer": "C"
   },
   {
-    "q": "¿Por qué no se usó NotebookLM?",
+    "q": "¿Cuánto desperdicio de alimentos logra HolaVeggie frente al 30% típico de la industria?",
     "options": [
-      "A) Es muy caro",
-      "B) No tiene API pública ni conector MCP disponible",
-      "C) Estaba caído ese día",
-      "D) Da resultados peores"
+      "A) 15%",
+      "B) 10%",
+      "C) 5%",
+      "D) 1%"
+    ],
+    "answer": "D"
+  },
+  {
+    "q": "¿En qué empresa progresó de eCommerce Specialist a Manager de eCommerce & BI?",
+    "options": [
+      "A) VTEX",
+      "B) Grupo Marquez",
+      "C) Mercado Libre",
+      "D) eCommerce Institute"
     ],
     "answer": "B"
   },
   {
-    "q": "¿Cuál es el hito personal dominante de agosto según el calendario?",
+    "q": "¿Cuál es el tamaño del mercado de eCommerce de LATAM en 2026?",
     "options": [
-      "A) eCommerce Day Argentina",
-      "B) La clase de Tendencias Tecnológicas",
-      "C) La defensa de tesis de maestría",
-      "D) El lanzamiento de HolaVeggie"
+      "A) USD 95.000 M",
+      "B) USD 150.000 M",
+      "C) USD 215.000 M",
+      "D) USD 400.000 M"
     ],
     "answer": "C"
-  },
-  {
-    "q": "¿Cuántos días separan la defensa de tesis del 25/08 del eCommerce Day?",
-    "options": [
-      "A) 2 días",
-      "B) 6 días",
-      "C) 10 días",
-      "D) 14 días"
-    ],
-    "answer": "A"
   },
   {
     "q": "Según el análisis competitivo, ¿cuál es el competidor más fuerte?",
@@ -506,24 +628,44 @@ const quizData = [
     "answer": "D"
   },
   {
-    "q": "¿Cuál es el 'agujero en la armadura' identificado en la inteligencia competitiva?",
+    "q": "¿Cuál es el 'agujero en la armadura' del posicionamiento?",
     "options": [
       "A) Falta de autoridad académica",
-      "B) Tener autoridad pero no evidencia de resultado",
+      "B) Tener tres activos de autoridad y ningún caso con número",
       "C) Precio demasiado alto",
       "D) Poca producción de contenido"
     ],
     "answer": "B"
   },
   {
-    "q": "¿Qué limitación técnica encontró el research?",
+    "q": "¿Qué objeción anticipa el análisis para la pregunta W3?",
     "options": [
-      "A) Medium bloqueó el acceso",
-      "B) Google Calendar no devolvió eventos",
-      "C) LinkedIn bloquea el scraping directo",
-      "D) No se encontró el perfil"
+      "A) Falta de tiempo",
+      "B) Escepticismo por un intento previo fallido",
+      "C) 'No sé por dónde empezar', disfrazada de 'me falta el caso'",
+      "D) El equipo no adopta las herramientas"
     ],
     "answer": "C"
+  },
+  {
+    "q": "¿Cuántos días separan la segunda defensa de tesis del eCommerce Day?",
+    "options": [
+      "A) 2 días",
+      "B) 6 días",
+      "C) 10 días",
+      "D) 14 días"
+    ],
+    "answer": "A"
+  },
+  {
+    "q": "¿Quién es Eliana Curcio?",
+    "options": [
+      "A) Directora del eCommerce Institute",
+      "B) CFO & Co-founder de HolaVeggie",
+      "C) Profesora de la cátedra de Fintech en UBA",
+      "D) Socia en Grupo Marquez"
+    ],
+    "answer": "B"
   }
 ];
 
@@ -534,40 +676,48 @@ const flashcards = [
     "a": "Fractional CAIO for eCommerce Owners | Migrating Business Logic to the AI Layer | HolaVeggie Founder · UBA Postgraduate Professor."
   },
   {
+    "q": "¿Qué hace HolaVeggie exactamente?",
+    "a": "Foodtech de suscripción: entrega semanal de 6 recetas plant-based con instrucciones paso a paso y los ingredientes frescos. Lanzada a fines de 2020."
+  },
+  {
+    "q": "¿Cuál es el número más potente de HolaVeggie?",
+    "a": "Bajó el desperdicio de alimentos del 30% típico de la industria al 1%, comprando directo en origen y sacando intermediarios."
+  },
+  {
+    "q": "¿Cuáles son las métricas de impacto acumuladas?",
+    "a": "25.000 comidas cocinadas, 8.100 kg de desperdicio evitado, 694 kg de plástico y 84.165 kg de CO₂."
+  },
+  {
     "q": "¿Cuáles son los tres activos de autoridad?",
     "a": "Docencia de posgrado en UBA, red del eCommerce Institute, y ser operador real vía HolaVeggie."
   },
   {
     "q": "¿Qué activo falta y traba las ventas?",
-    "a": "Un caso de éxito propio con número: 'le migré X a la capa de IA y el resultado fue Y'. Hay autoridad, falta evidencia de resultado."
+    "a": "Un caso propio con número. Hay autoridad de sobra y cero evidencia de resultado; la pregunta sin responder es '¿a quién le hiciste esto y qué pasó?'."
+  },
+  {
+    "q": "¿Cuál es la hipótesis del dolor?",
+    "a": "La oferta no está empaquetada: hay identidad (Fractional CAIO) pero no hay entregable con nombre, plazo y precio."
+  },
+  {
+    "q": "¿Qué objeción va a aparecer en W3?",
+    "a": "'No sé por dónde empezar', disfrazada de 'primero necesito el caso de éxito'. Es una creencia sobre la secuencia, no una restricción real."
+  },
+  {
+    "q": "¿Cómo se resuelve la falta de caso sin esperar?",
+    "a": "Vendiendo un diagnóstico pago acotado que cobra por generar el caso, en vez de esperarlo gratis."
   },
   {
     "q": "¿Cuál es la fecha clave del trimestre?",
-    "a": "27/08 — eCommerce Day Argentina 2026, seis días después de la defensa de tesis. Primera ventana real de pipeline."
+    "a": "27/08 — eCommerce Day Argentina, seis días después de la defensa de tesis. Mayor concentración anual del comprador exacto."
   },
   {
-    "q": "¿Contra quién se compite realmente?",
-    "a": "Contra agencias de IA, consultores de eCommerce, el equipo interno con ChatGPT, y sobre todo contra el 'no hacer nada'."
+    "q": "¿Cómo cambió el mercado de eCommerce en LATAM?",
+    "a": "El crecimiento dejó de venir de sumar usuarios y pasa por convertir mejor, retener más y sostener la recompra. USD 215.000 M en 2026, creciendo 1,5x más rápido que el global."
   },
   {
-    "q": "¿Cómo se vence la objeción del 'no hacer nada'?",
-    "a": "Cuantificando el costo de la inacción. Es el competidor más fuerte porque es gratis y de riesgo percibido cero."
-  },
-  {
-    "q": "¿Cómo se resuelve la falta de caso de éxito sin esperar?",
-    "a": "Vendiendo un diagnóstico pago acotado que genera el caso y cobra por generarlo, en vez de esperar a tenerlo."
-  },
-  {
-    "q": "¿Por qué el research no usó NotebookLM?",
-    "a": "NotebookLM no tiene API pública ni conector MCP. Se reemplazó por Firecrawl + búsqueda web, ambos conectados y operativos."
-  },
-  {
-    "q": "¿Cuál es la limitación principal del research?",
-    "a": "LinkedIn bloquea el scraping directo. Los datos de LinkedIn salen de snippets de búsqueda: sirven para headline y títulos, no para el perfil completo."
-  },
-  {
-    "q": "¿Qué problema tiene el headline actual?",
-    "a": "Hace tres promesas que tiran para lados distintos. 'Migrating Business Logic to the AI Layer' es lo más diferenciador pero lo menos convertidor en frío."
+    "q": "¿Cuál es la analogía que hace entendible la oferta?",
+    "a": "El propio caso HolaVeggie: rediseñar la lógica operativa sacando intermediarios llevó el desperdicio de 30% a 1%. Eso es lo que se vende, no 'IA'."
   }
 ];
 
@@ -580,6 +730,61 @@ document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
 document.getElementById('intel-content').innerHTML = md2html(intelMD);
 document.getElementById('research-content').innerHTML = md2html(researchMD);
 document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
+
+// ─── BRIEFING EN VOZ ALTA ─────────────────────────────────────────────────────
+// Usa la voz del navegador: no necesita archivo de audio ni conexión.
+let speaking = false;
+const synth = window.speechSynthesis;
+
+function briefingPlano() {
+  // markdown -> texto hablable: fuera marcas, tablas fila por fila
+  return briefingMD
+    .replace(/^>\s?/gm, '')
+    .replace(/\|/g, ', ')
+    .replace(/^[-*]\s+/gm, '')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/[*_`]/g, '')
+    .replace(/^\s*[-:,\s]+$/gm, '')
+    .replace(/\n{2,}/g, '. ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function pararAudio() {
+  synth.cancel();
+  speaking = false;
+  document.getElementById('playIcon').className = 'fas fa-play';
+  document.getElementById('viz').classList.add('paused');
+}
+
+function toggleAudio() {
+  const sub = document.getElementById('audioSub');
+  if (!('speechSynthesis' in window)) {
+    sub.textContent = 'Este navegador no puede leer en voz alta.';
+    return;
+  }
+  if (speaking) { pararAudio(); sub.textContent = 'Pausado — tocá para retomar desde el principio'; return; }
+
+  const u = new SpeechSynthesisUtterance(briefingPlano());
+  u.lang = 'es-AR';
+  u.rate = 1.05;
+  const esVoice = synth.getVoices().find(v => v.lang && v.lang.startsWith('es'));
+  if (esVoice) u.voice = esVoice;
+  u.onend = () => { pararAudio(); sub.textContent = 'Listo — tocá para escucharlo de nuevo'; };
+  u.onerror = () => { pararAudio(); sub.textContent = 'No se pudo reproducir el audio.'; };
+
+  synth.cancel();
+  synth.speak(u);
+  speaking = true;
+  document.getElementById('playIcon').className = 'fas fa-pause';
+  document.getElementById('viz').classList.remove('paused');
+  sub.textContent = 'Reproduciendo el briefing…';
+}
+
+// Chrome carga las voces en diferido
+if ('speechSynthesis' in window) synth.onvoiceschanged = () => {};
+window.addEventListener('beforeunload', () => synth.cancel());
 
 // ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
 let quizScore = 0;

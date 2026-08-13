@@ -109,12 +109,43 @@ lo que más valor aporta: escribilos con densidad real, no con relleno):
 
 `briefing_md` lleva seis secciones numeradas:
 
-1. **Perfil de la persona** — background, formación, rol actual, trayectoria.
-2. **Perfil de la empresa** — qué hace, modelo de negocio, posición, clientes.
+1. **Perfil de la persona**
+2. **Perfil de la empresa**
 3. **Oportunidad de mercado** — con números concretos, no adjetivos.
 4. **Guion de conversación** — ver abajo, es la sección que más importa.
 5. **Manejo de objeciones** — tabla de dos columnas.
 6. **Próximos pasos** — tres acciones concretas.
+
+### Cómo se escribe (esto define la calidad)
+
+El briefing se lee **cinco minutos antes de entrar a la reunión**, muchas veces desde
+el celular. Tiene que ser escaneable, no literario. Usá **campos etiquetados en
+negrita**, no párrafos corridos:
+
+```markdown
+**Background:** Argentino, radicado en Montevideo. 25+ años en comercio digital.
+**Formación:** MBA (USAL), MBA (SUNY), posgrado en eBusiness Management.
+**Roles actuales:**
+- Co-Founder & Global Executive SVP — **VTEX (NYSE: VTEX)**
+- Presidente & Co-Founder — **eCommerce Institute**
+**Logros clave:** Autor de 25 libros. El eCommerce Day Tour llegó a 71.400 asistentes en 13 países.
+**Contexto de la reunión:** Te reunís con un arquitecto fundacional de la economía
+digital de LATAM, justo cuando lanza la edición 200 del eCommerce Day Tour.
+```
+
+Reglas de densidad, medidas contra el estándar del repo
+(`meetings/2026-03-28-marcos-pueyrredon/`, que es la vara):
+
+- **Apuntá a 25.000+ caracteres de contenido** entre las tres secciones de texto.
+  Por debajo de ~20.000 el dashboard se siente flaco.
+- Cada afirmación lleva un dato: fecha, cifra, nombre propio o cargo. Si una línea
+  no tiene ninguno de los cuatro, sobra.
+- Negrita para el nombre de empresas, cifras y cargos — es lo que el ojo engancha.
+- Nada de relleno de consultor: «es importante destacar», «en un mundo cada vez más
+  digital», «sin duda un actor clave». Si la frase sobreviviría intacta en el
+  briefing de otra persona, borrala.
+- El **contexto de la reunión** cierra siempre la sección 1 y responde: por qué
+  esta conversación, por qué ahora.
 
 ### La sección 4, en detalle
 

@@ -31,6 +31,43 @@
   .navbar-date { font-size:13px; color:var(--text-muted); }
   .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
   .navbar-back:hover { color:var(--text); }
+  .btn-export { background:linear-gradient(135deg,#1d4ed8,var(--accent)); border:none; color:#fff; padding:7px 15px; border-radius:8px; font-size:12.5px; font-weight:600; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .2s; }
+  .btn-export:hover { opacity:.85; }
+
+  /* ── BRIEFING EN VOZ ALTA ── */
+  .audio-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:16px; margin:0 0 4px; }
+  .audio-btn { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .2s; box-shadow:0 0 12px rgba(59,130,246,0.4); }
+  .audio-btn:hover { transform:scale(1.08); }
+  .audio-btn:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+  .audio-info { flex:1; min-width:0; }
+  .audio-title { font-size:13px; font-weight:600; }
+  .audio-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .visualizer { display:flex; align-items:flex-end; gap:2px; height:24px; }
+  .visualizer .bar { width:3px; background:var(--accent); border-radius:2px; animation:eq 1.1s ease-in-out infinite; }
+  .visualizer.paused .bar { animation-play-state:paused; opacity:.3; }
+  .visualizer .bar:nth-child(1){height:8px;animation-delay:0s}
+  .visualizer .bar:nth-child(2){height:16px;animation-delay:.1s}
+  .visualizer .bar:nth-child(3){height:12px;animation-delay:.2s}
+  .visualizer .bar:nth-child(4){height:20px;animation-delay:.3s}
+  .visualizer .bar:nth-child(5){height:10px;animation-delay:.4s}
+  .visualizer .bar:nth-child(6){height:18px;animation-delay:.15s}
+  .visualizer .bar:nth-child(7){height:14px;animation-delay:.25s}
+  @keyframes eq { 0%,100%{transform:scaleY(.45)} 50%{transform:scaleY(1)} }
+  @media (prefers-reduced-motion: reduce) { .visualizer .bar { animation:none; } }
+
+  /* ── IMPRESIÓN / PDF ── */
+  @media print {
+    @page { margin: 14mm; }
+    .navbar, .sidebar, .audio-section, .btn-export { display:none !important; }
+    body { background:#fff; color:#000; }
+    .main-layout, .content { display:block; margin:0; padding:0; max-width:none; }
+    .tab-pane { display:block !important; page-break-after:always; }
+    .tab-pane:last-child { page-break-after:auto; }
+    .markdown-body h2 { color:#000; }
+    .markdown-body h2::before { background:#000; }
+    .stat-card, .markdown-body table, .quiz-question { break-inside:avoid; }
+    a { color:#000; text-decoration:underline; }
+  }
 
   /* HEADER */
   .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 100%); border-bottom:1px solid var(--border); }
@@ -79,7 +116,8 @@
 
   /* MARKDOWN */
   .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; color:var(--text); }
-  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); border-bottom:1px solid var(--border); padding-bottom:8px; }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); display:flex; align-items:center; gap:9px; }
+  .markdown-body h2::before { content:''; display:inline-block; width:3px; height:19px; background:linear-gradient(var(--accent),var(--gold)); border-radius:2px; flex-shrink:0; }
   .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; color:var(--text); }
   .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
   .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
@@ -138,6 +176,7 @@
   <div class="navbar-brand"><i class="fas fa-brain"></i> Cowork OS — Meeting Prep</div>
   <div class="navbar-date">{{NAV_DATE}}</div>
   <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+  <button class="btn-export" onclick="window.print()"><i class="fas fa-download"></i> Exportar PDF</button>
 </nav>
 
 <div class="meeting-header">
@@ -180,6 +219,20 @@
     <!-- TAB: EXECUTIVE BRIEFING -->
     <div id="tab-briefing" class="tab-pane active">
       <div class="section-title"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+      <div class="audio-section">
+        <button class="audio-btn" id="playBtn" onclick="toggleAudio()" aria-label="Escuchar el briefing en voz alta">
+          <i class="fas fa-play" id="playIcon"></i>
+        </button>
+        <div class="audio-info">
+          <div class="audio-title">Escuchar el briefing</div>
+          <div class="audio-sub" id="audioSub">Lectura en voz alta — sirve mientras manejás o caminás</div>
+        </div>
+        <div class="visualizer paused" id="viz">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
       <div class="markdown-body" id="briefing-content"></div>
     </div>
 
@@ -271,6 +324,61 @@ document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
 document.getElementById('intel-content').innerHTML = md2html(intelMD);
 document.getElementById('research-content').innerHTML = md2html(researchMD);
 document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
+
+// ─── BRIEFING EN VOZ ALTA ─────────────────────────────────────────────────────
+// Usa la voz del navegador: no necesita archivo de audio ni conexión.
+let speaking = false;
+const synth = window.speechSynthesis;
+
+function briefingPlano() {
+  // markdown -> texto hablable: fuera marcas, tablas fila por fila
+  return briefingMD
+    .replace(/^>\s?/gm, '')
+    .replace(/\|/g, ', ')
+    .replace(/^[-*]\s+/gm, '')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/[*_`]/g, '')
+    .replace(/^\s*[-:,\s]+$/gm, '')
+    .replace(/\n{2,}/g, '. ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function pararAudio() {
+  synth.cancel();
+  speaking = false;
+  document.getElementById('playIcon').className = 'fas fa-play';
+  document.getElementById('viz').classList.add('paused');
+}
+
+function toggleAudio() {
+  const sub = document.getElementById('audioSub');
+  if (!('speechSynthesis' in window)) {
+    sub.textContent = 'Este navegador no puede leer en voz alta.';
+    return;
+  }
+  if (speaking) { pararAudio(); sub.textContent = 'Pausado — tocá para retomar desde el principio'; return; }
+
+  const u = new SpeechSynthesisUtterance(briefingPlano());
+  u.lang = 'es-AR';
+  u.rate = 1.05;
+  const esVoice = synth.getVoices().find(v => v.lang && v.lang.startsWith('es'));
+  if (esVoice) u.voice = esVoice;
+  u.onend = () => { pararAudio(); sub.textContent = 'Listo — tocá para escucharlo de nuevo'; };
+  u.onerror = () => { pararAudio(); sub.textContent = 'No se pudo reproducir el audio.'; };
+
+  synth.cancel();
+  synth.speak(u);
+  speaking = true;
+  document.getElementById('playIcon').className = 'fas fa-pause';
+  document.getElementById('viz').classList.remove('paused');
+  sub.textContent = 'Reproduciendo el briefing…';
+}
+
+// Chrome carga las voces en diferido
+if ('speechSynthesis' in window) synth.onvoiceschanged = () => {};
+window.addEventListener('beforeunload', () => synth.cancel());
 
 // ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
 let quizScore = 0;
