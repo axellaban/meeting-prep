@@ -190,6 +190,8 @@
   </div>
 </div>
 <script>
+const md2html = (t) => (typeof marked !== "undefined") ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' + t.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + '</pre>';
 const briefingMd = `# Documento Ejecutivo de Preparación Pre-Reunión
 ## Miguel Garateguy · Consultor B2B & Supply Chain
 ---
@@ -420,9 +422,9 @@ const flashcards = [
   { q: "¿Cuáles son las áreas de expertise B2B de Miguel Garateguy?", a: "Procurement y compras estratégicas, Supply Chain Management, logística, operaciones cross-border e internacionalización, Marketing Digital B2B, y IA generativa en procurement. Más de 20 años de experiencia acumulada." }
 ];
 
-document.getElementById('briefing-content').innerHTML = marked.parse(briefingMd);
-document.getElementById('intel-content').innerHTML = marked.parse(intelMd);
-document.getElementById('research-content').innerHTML = marked.parse(researchMd);
+document.getElementById('briefing-content').innerHTML = md2html(briefingMd);
+document.getElementById('intel-content').innerHTML = md2html(intelMd);
+document.getElementById('research-content').innerHTML = md2html(researchMd);
 
 function showTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));

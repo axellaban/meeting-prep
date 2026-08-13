@@ -6,7 +6,8 @@
 <title>Meeting Prep — Valentin Giacobino · Sueño Dorado</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="../../assets/marked.min.js"></script>
+<script>window.marked||document.write('<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"><\/script>');</script>
 <style>
   :root{
     --bg:#08080c; --panel:rgba(255,255,255,.04); --panel-border:rgba(255,255,255,.08);
@@ -177,6 +178,8 @@
 </div>
 
 <script>
+const md2html = (t) => (typeof marked !== "undefined") ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' + t.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + '</pre>';
 const briefingMD = `
 # Briefing Ejecutivo — Valentin Giacobino · Sueño Dorado
 
@@ -396,7 +399,7 @@ function renderCard(){
 function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
 function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
 
-document.getElementById('briefing-md').innerHTML = marked.parse(briefingMD);
+document.getElementById('briefing-md').innerHTML = md2html(briefingMD);
 document.getElementById('intel-md').innerHTML = md2html(intelMD);
 document.getElementById('research-md').innerHTML = md2html(researchMD);
 buildQuiz();

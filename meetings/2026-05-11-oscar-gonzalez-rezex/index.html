@@ -255,6 +255,8 @@
 </div>
 
 <script>
+const md2html = (t) => (typeof marked !== "undefined") ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' + t.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + '</pre>';
 // ============ CONTENT DATA ============
 
 const briefingMd = `# Documento Ejecutivo de Preparación Pre-Reunión
@@ -486,9 +488,9 @@ const flashcards = [
 
 // ============ RENDER ============
 
-document.getElementById('briefing-content').innerHTML = marked.parse(briefingMd);
-document.getElementById('intel-content').innerHTML = marked.parse(intelMd);
-document.getElementById('research-content').innerHTML = marked.parse(researchMd);
+document.getElementById('briefing-content').innerHTML = md2html(briefingMd);
+document.getElementById('intel-content').innerHTML = md2html(intelMd);
+document.getElementById('research-content').innerHTML = md2html(researchMd);
 
 // TABS
 function showTab(name, el) {

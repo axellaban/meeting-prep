@@ -831,6 +831,8 @@ The eCommerce Institute champions that **collaboration is the ultimate survival 
 </script>
 
 <script>
+const md2html = (t) => (typeof marked !== "undefined") ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' + t.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + '</pre>';
 // ── QUIZ DATA ──
 const quizData = [
   {
@@ -896,7 +898,7 @@ function initMarkdown() {
     const src = document.getElementById(`md-${id}-src`);
     const target = document.getElementById(`md-${id}`);
     if (src && target) {
-      target.innerHTML = marked.parse(src.textContent);
+      target.innerHTML = md2html(src.textContent);
     }
   });
 }

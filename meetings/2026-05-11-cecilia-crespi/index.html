@@ -195,6 +195,8 @@
 </div>
 
 <script>
+const md2html = (t) => (typeof marked !== "undefined") ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' + t.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + '</pre>';
 const briefingMd = `# Documento Ejecutivo de Preparación Pre-Reunión
 ## Cecilia Maria Crespi · VTEX
 ---
@@ -422,9 +424,9 @@ const flashcards = [
   { q: "¿Qué representa el e-commerce en el retail total de LATAM para 2028?", a: "15.9% (versus 12.3% actual), con ventas totales de ecommerce proyectadas en $228 mil millones para 2028 en LATAM." }
 ];
 
-document.getElementById('briefing-content').innerHTML = marked.parse(briefingMd);
-document.getElementById('intel-content').innerHTML = marked.parse(intelMd);
-document.getElementById('research-content').innerHTML = marked.parse(researchMd);
+document.getElementById('briefing-content').innerHTML = md2html(briefingMd);
+document.getElementById('intel-content').innerHTML = md2html(intelMd);
+document.getElementById('research-content').innerHTML = md2html(researchMd);
 
 function showTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));

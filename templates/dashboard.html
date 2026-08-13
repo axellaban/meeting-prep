@@ -6,7 +6,7 @@
 <title>Meeting Prep — {{NAME}}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="../assets/marked.min.js"></script>
+<script src="../../assets/marked.min.js"></script>
 <script>window.marked||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"><\/script>');</script>
 <style>
   :root {
@@ -171,6 +171,7 @@
     <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
     <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
     <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
+    <div class="sidebar-tab" onclick="showTab('postbrief',this)"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</div>
 {{SIDEBAR_LINK}}
   </div>
 
@@ -229,6 +230,12 @@
       </div>
     </div>
 
+    <!-- TAB: BRIEF POST-REUNIÓN -->
+    <div id="tab-postbrief" class="tab-pane">
+      <div class="section-title"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</div>
+      <div class="markdown-body" id="postbrief-content"></div>
+    </div>
+
   </div>
 </div>
 
@@ -247,6 +254,7 @@ const briefingMD = `{{BRIEFING_MD}}`;
 const intelMD = `{{INTEL_MD}}`;
 
 const researchMD = `{{RESEARCH_MD}}`;
+const postBriefMD = `{{POSTBRIEF_MD}}`;
 
 // ─── QUIZ DATA ────────────────────────────────────────────────────────────────
 const quizData = {{QUIZ_JSON}};
@@ -262,6 +270,7 @@ const md2html = (t) => (typeof marked !== 'undefined')
 document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
 document.getElementById('intel-content').innerHTML = md2html(intelMD);
 document.getElementById('research-content').innerHTML = md2html(researchMD);
+document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
 
 // ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
 let quizScore = 0;

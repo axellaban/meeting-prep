@@ -491,6 +491,8 @@
 </div>
 
 <script>
+const md2html = (t) => (typeof marked !== "undefined") ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' + t.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + '</pre>';
 // ============================================================
 // PANEL NAVIGATION
 // ============================================================
@@ -691,9 +693,9 @@ El mercado global de SaaS para gastronomía supera los USD 9B. En Argentina, Ped
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof marked !== 'undefined') {
-    document.getElementById('briefing-content').innerHTML = marked.parse(BRIEFING_MD);
-    document.getElementById('intel-content').innerHTML = marked.parse(INTEL_MD);
-    document.getElementById('research-content').innerHTML = marked.parse(RESEARCH_MD);
+    document.getElementById('briefing-content').innerHTML = md2html(BRIEFING_MD);
+    document.getElementById('intel-content').innerHTML = md2html(INTEL_MD);
+    document.getElementById('research-content').innerHTML = md2html(RESEARCH_MD);
   }
   initQuiz();
   initFlashcards();

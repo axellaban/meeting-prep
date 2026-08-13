@@ -6,7 +6,7 @@
 <title>Meeting Prep — Axel Laban Arzubi</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="../assets/marked.min.js"></script>
+<script src="../../assets/marked.min.js"></script>
 <script>window.marked||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"><\/script>');</script>
 <style>
   :root {
@@ -194,6 +194,7 @@
     <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
     <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
     <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
+    <div class="sidebar-tab" onclick="showTab('postbrief',this)"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</div>
     <div class="notebooklm-btn" style="cursor:default;opacity:.75">
       <i class="fas fa-search"></i> 9 fuentes · research web
     </div>
@@ -252,6 +253,12 @@
           <button class="fc-btn" onclick="nextCard()"><i class="fas fa-arrow-right"></i></button>
         </div>
       </div>
+    </div>
+
+    <!-- TAB: BRIEF POST-REUNIÓN -->
+    <div id="tab-postbrief" class="tab-pane">
+      <div class="section-title"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</div>
+      <div class="markdown-body" id="postbrief-content"></div>
     </div>
 
   </div>
@@ -428,6 +435,13 @@ Confirmado de forma consistente en múltiples resultados independientes (\`ar.li
 
 Esta corrida es una **prueba del pipeline**. Como el sujeto del research sos vos mismo, tenés verificación perfecta: cada afirmación de la sección de hallazgos verificados es contrastable contra lo que sabés de tu propia trayectoria. Si algo acá está mal, el research engine necesita ajuste antes de confiarle prospectos reales.
 `;
+const postBriefMD = `## Todavía sin completar
+
+Esta sección se llena **después** de la reunión, con lo que realmente pasó:
+decisiones tomadas, compromisos asumidos y próximos pasos concretos.
+
+Mientras tanto, lo de acá arriba es la preparación — hipótesis, no hechos.
+`;
 
 // ─── QUIZ DATA ────────────────────────────────────────────────────────────────
 const quizData = [
@@ -565,6 +579,7 @@ const md2html = (t) => (typeof marked !== 'undefined')
 document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
 document.getElementById('intel-content').innerHTML = md2html(intelMD);
 document.getElementById('research-content').innerHTML = md2html(researchMD);
+document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
 
 // ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
 let quizScore = 0;

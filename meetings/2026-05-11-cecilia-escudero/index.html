@@ -191,6 +191,8 @@
   </div>
 </div>
 <script>
+const md2html = (t) => (typeof marked !== "undefined") ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' + t.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + '</pre>';
 const briefingMd = `# Documento Ejecutivo de Preparación Pre-Reunión
 ## Cecilia Escudero · GIGA IT
 ---
@@ -422,9 +424,9 @@ const flashcards = [
   { q: "¿Qué herramientas de IA están redefiniendo el growth B2B en IT Services?", a: "Intent data (Bombora, G2), ABM automatizado (6sense, Demandbase), outreach con IA (Clay, Apollo), y personalización de contenido. Están transformando la adquisición de clientes enterprise en el sector tech." }
 ];
 
-document.getElementById('briefing-content').innerHTML = marked.parse(briefingMd);
-document.getElementById('intel-content').innerHTML = marked.parse(intelMd);
-document.getElementById('research-content').innerHTML = marked.parse(researchMd);
+document.getElementById('briefing-content').innerHTML = md2html(briefingMd);
+document.getElementById('intel-content').innerHTML = md2html(intelMd);
+document.getElementById('research-content').innerHTML = md2html(researchMd);
 
 function showTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));

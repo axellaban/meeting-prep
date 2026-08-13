@@ -6,7 +6,8 @@
 <title>Meeting Prep — Leandro Saraví · RG Advisors</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="../../assets/marked.min.js"></script>
+<script>window.marked||document.write('<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"><\/script>');</script>
 <style>
   :root{--bg:#08080c;--panel:rgba(255,255,255,.04);--panel-border:rgba(255,255,255,.08);--text:#e6e6ec;--muted:#8a8a99;--accent:#3b82f6;--gold:#f0b429;--green:#22c55e;--red:#ef4444;--purple:#a855f7;}
   *{margin:0;padding:0;box-sizing:border-box}
@@ -133,6 +134,8 @@
   </div>
 </div>
 <script>
+const md2html = (t) => (typeof marked !== "undefined") ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' + t.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) + '</pre>';
 const postBriefMD = `
 # Brief Post-Reunión — Leandro Saraví
 *Reunión del 7 de mayo 2026, 11:02 ART · transcript automático tldv*
@@ -362,10 +365,10 @@ let cur=0;
 function renderCard(){document.getElementById('card-front').textContent=flashData[cur].q;document.getElementById('card-back').textContent=flashData[cur].a;document.getElementById('card').classList.remove('flipped');document.getElementById('counter').textContent=`${cur+1} / ${flashData.length}`;document.getElementById('dots').innerHTML=flashData.map((_,i)=>`<div class="flash-dot ${i===cur?'active':''}"></div>`).join('');}
 function nextCard(){cur=(cur+1)%flashData.length;renderCard();}
 function prevCard(){cur=(cur-1+flashData.length)%flashData.length;renderCard();}
-document.getElementById('briefing-md').innerHTML=marked.parse(briefingMD);
-document.getElementById('postbrief-md').innerHTML=marked.parse(postBriefMD);
-document.getElementById('intel-md').innerHTML=marked.parse(intelMD);
-document.getElementById('research-md').innerHTML=marked.parse(researchMD);
+document.getElementById('briefing-md').innerHTML=md2html(briefingMD);
+document.getElementById('postbrief-md').innerHTML=md2html(postBriefMD);
+document.getElementById('intel-md').innerHTML=md2html(intelMD);
+document.getElementById('research-md').innerHTML=md2html(researchMD);
 buildQuiz();renderCard();
 </script>
 </body></html>

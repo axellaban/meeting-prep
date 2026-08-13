@@ -107,9 +107,42 @@ lo que más valor aporta: escribilos con densidad real, no con relleno):
 }
 ```
 
-`briefing_md` lleva seis secciones numeradas: perfil de la persona, perfil de la
-empresa, oportunidad de mercado (con números), puntos clave de conversación
-(preguntas concretas, no genéricas), manejo de objeciones (tabla), próximos pasos.
+`briefing_md` lleva seis secciones numeradas:
+
+1. **Perfil de la persona** — background, formación, rol actual, trayectoria.
+2. **Perfil de la empresa** — qué hace, modelo de negocio, posición, clientes.
+3. **Oportunidad de mercado** — con números concretos, no adjetivos.
+4. **Guion de conversación** — ver abajo, es la sección que más importa.
+5. **Manejo de objeciones** — tabla de dos columnas.
+6. **Próximos pasos** — tres acciones concretas.
+
+### La sección 4, en detalle
+
+Si la reunión es una **discovery call** (Cal.com, prospecto, founder, primera
+conversación), no escribas preguntas de consultor genérico. Generá el guion con la
+estructura de las 4 W, que es cómo Axel conduce el diagnóstico:
+
+- **Hipótesis del dolor** — una sola línea: "Creo que el problema central es X".
+  Sale del research, y es lo primero que Axel necesita tener antes de entrar.
+- **La pregunta que demuestra la tarea** — una pregunta específica sobre su negocio
+  que sólo se puede hacer habiendo investigado. Va temprano en la call y es lo que
+  separa una consulta de un pitch.
+- **W1 · ¿Dónde estás ahora?** (dolor presente) — con dos preguntas de profundización
+  adaptadas al rubro de esta persona.
+- **W2 · ¿A dónde querés llegar?** (futuro deseado).
+- **W3 · ¿Qué te frenó hasta ahora?** (la brecha) — la más importante: su respuesta
+  revela la creencia limitante. Anticipá cuál de las cuatro es más probable acá
+  — falta de tiempo, escepticismo por intento previo, no saber por dónde empezar,
+  o problemas de adopción del equipo — y decí por qué, según el research.
+- **W4 · ¿Por qué es urgente ahora?** (activación) — con la presión concreta que
+  se ve desde afuera: un competidor, un ciclo de negocio, una fecha.
+
+La objeción que anticipaste en W3 tiene que ser la primera fila de la tabla de la
+sección 5. Así el briefing cierra sobre sí mismo.
+
+Si **no** es una discovery call (partner, proveedor, institución, alguien conocido),
+usá la sección 4 como cinco puntos de conversación concretos y salteá las 4 W.
+El detalle completo del método está en el skill `kona-diagnostico`.
 
 ## Paso 4 — Generar y publicar
 

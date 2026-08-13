@@ -25,6 +25,16 @@ TEMPLATE = ROOT / "templates" / "dashboard.html"
 REGISTRY = ROOT / "meetings.json"
 PORTAL = ROOT / "index.html"
 
+# Se muestra hasta que la reunión ocurre y alguien (o el pipeline post-reunión)
+# completa el brief con lo que realmente pasó.
+PLACEHOLDER_POSTBRIEF = """## Todavía sin completar
+
+Esta sección se llena **después** de la reunión, con lo que realmente pasó:
+decisiones tomadas, compromisos asumidos y próximos pasos concretos.
+
+Mientras tanto, lo de acá arriba es la preparación — hipótesis, no hechos.
+"""
+
 DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
 MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
          "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
@@ -97,6 +107,7 @@ def render(spec: dict) -> str:
         "BRIEFING_MD": js_template_escape(spec["briefing_md"]),
         "INTEL_MD": js_template_escape(spec["intel_md"]),
         "RESEARCH_MD": js_template_escape(spec["research_md"]),
+        "POSTBRIEF_MD": js_template_escape(spec.get("postbrief_md") or PLACEHOLDER_POSTBRIEF),
         "QUIZ_JSON": json.dumps(spec.get("quiz", []), ensure_ascii=False, indent=2),
         "FLASHCARDS_JSON": json.dumps(spec.get("flashcards", []), ensure_ascii=False, indent=2),
     }
