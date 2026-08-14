@@ -37,40 +37,34 @@ En este documento, donde diga `#prep` leé «la etiqueta configurada», y donde 
 
 | Necesidad | Herramienta | Estado |
 |---|---|---|
-| Calendario | `mcp__Google_Calendar__list_events` | ✅ conectado — **sin esto no hay pipeline** |
-| Research profundo | `mcp__notebooklm__*` | ⚙️ activo si hay credencial — ver abajo |
-| Research base | `WebSearch` + `WebFetch` | ✅ siempre disponibles, y el fallback |
-| Research especializado | `mcp__Firecrawl__*` | ⚠️ opcional |
+| Calendario | `mcp__Google_Calendar__list_events` | ✅ **sin esto no hay pipeline** |
+| Research primario | `WebSearch` + `WebFetch` | ✅ siempre disponibles |
+| Páginas difíciles | `mcp__Firecrawl__*` | ⚙️ opcional, sólo cuando hace falta |
 
-**NotebookLM corre por `.mcp.json` del repo**, vía la librería no oficial
-`notebooklm-py`. No hay API pública de Google para la versión gratuita: la librería
-usa endpoints internos y **puede romperse sin aviso**. Autentica con la variable de
-entorno `NOTEBOOKLM_AUTH_JSON`.
+**`WebSearch` es el motor, no el respaldo.** Medido sobre un mismo target devolvió
+historial laboral y registro corporativo que el scraping especializado no trajo, y
+sintetiza en prosa en vez de devolver links crudos. `WebFetch` extrajo el mismo
+contenido que un scraper dedicado sobre la misma página, incluidos precios.
 
-**Chequeá al arrancar si las herramientas `notebook_*` responden.** Probá
-`notebook_list`. Si contesta, seguís el camino A. Si falla por autenticación o las
-herramientas no están, **pasás al camino B sin drama y lo anotás en el reporte** —
-el pipeline nunca se cae por esto.
+**Firecrawl entra sólo cuando `WebFetch` falla o vuelve vacío:** sitios que renderizan
+todo con JS, extracción estructurada con schema (`jsonOptions`), o páginas que
+bloquean el fetch simple (probá `proxy: "stealth"`). Si no está disponible, no es un
+bloqueante: seguí y anotalo en el reporte.
 
-**Usá `WebSearch` como herramienta principal, no como respaldo.** Medido sobre el
-mismo target, `WebSearch` devolvió historial laboral (ZoomInfo, empleadores previos,
-cofundadores) que `firecrawl_search` no trajo, y además sintetiza en prosa en vez de
-devolver links crudos. `WebFetch` extrajo el mismo contenido que `firecrawl_scrape`
-sobre la misma página.
+**LinkedIn está cerrado y así se queda.** Ni el scraper dedicado ni el fetch simple
+pasan. El headline y los títulos de publicaciones salen de los *snippets* de búsqueda,
+que sí los exponen. No pierdas intentos, y no intentes saltear su protección
+anti-bot: va contra sus términos y expone la cuenta.
 
-**Cuándo sí conviene Firecrawl,** si está disponible:
-- sitios que renderizan con JS y `WebFetch` devuelve vacío;
-- extracción estructurada con schema (`jsonOptions`);
-- filtrado duro por dominio (`includeDomains`);
-- páginas que bloquean el fetch simple (probá `proxy: "stealth"`).
-
-Si Firecrawl no está en tu sesión, **no es un bloqueante**: seguí con `WebSearch` +
-`WebFetch` y anotalo en el reporte final.
-
-**LinkedIn está cerrado para las dos vías.** `firecrawl_scrape` sobre linkedin.com
-devuelve error de sitio no soportado, y el fetch simple tampoco pasa. El headline y
-los títulos de publicaciones se obtienen de los *snippets* de búsqueda, que sí los
-exponen. No pierdas intentos scrapeando LinkedIn.
+**Descartados a propósito**, para que nadie los vuelva a proponer:
+- **NotebookLM** — no tiene API pública; la librería no oficial autentica con un volcado
+  de las cookies de Google del usuario, que da acceso a Gmail, Drive y Cloud Console.
+  El costo de seguridad no justifica lo que aporta.
+- **Apollo** — sirve para prospectar, no para preparar: cuando la reunión ya está
+  agendada, ya sabés quién es. Además sus endpoints de personas están fuera del plan
+  Free y cada llamada exige confirmación humana, que en una corrida desatendida no existe.
+- **Scrapling** — su vía rápida falsifica la huella TLS y es incompatible con proxies
+  que terminan TLS; su vía con navegador necesita descargar ~600 MB por corrida.
 
 ## Paso 1 — Detectar
 
@@ -98,63 +92,14 @@ plataforma y la descripción de Cal.com (trae nombre + email + timezone del invi
 Objetivo: 8–15 fuentes por persona. Buscá siempre el nombre **entre comillas**: sin
 comillas los resultados se van a homónimos y a ruido genérico del rubro.
 
-### Camino A — con NotebookLM (preferido)
-
-Cada reunión tiene su propio cuaderno. El flujo completo:
-
-**1. Semilla web.** Antes de tocar NotebookLM, hacé dos o tres `WebSearch` para
-tener el headline, la empresa y 3–5 URLs buenas. Sin semilla, el research arranca
-a ciegas.
-
-**2. Crear el cuaderno.**
-```
-notebook_create(title="Meeting Prep — <Nombre Apellido>")
-```
-Guardá el id que devuelve: la URL es `https://notebooklm.google.com/notebook/<id>`
-y va al campo `notebooklm_url` del spec.
-
-**3. Cargar las fuentes.** El perfil que ya sintetizaste como texto, más cada URL:
-```
-source_add(notebook=<id>, source_type="text", title="<Nombre> — perfil", text="<síntesis>")
-source_add(notebook=<id>, source_type="url", url="<cada URL de la semilla>")
-```
-
-**4. Lanzar el deep research.**
-```
-research_start(notebook=<id>, query="<Nombre> <Empresa> <rubro> 2026", source="web", mode="deep")
-```
-Poleá con `research_status` hasta que termine, después `research_import` para
-incorporar lo que encontró.
-
-**5. Redactar desde las fuentes.** Usá `chat_ask` contra el cuaderno para las tres
-secciones de texto. Una pregunta por sección, pidiendo explícitamente markdown y
-la estructura de campos etiquetados que se describe más abajo. La ventaja sobre
-escribirlo de memoria: las respuestas salen de las fuentes cargadas.
-
-**6. Audio.** Es lo que más se extraña del pipeline original:
-```
-studio_generate(notebook=<id>, artifact_type="audio")
-```
-No esperes a que termine — poleá `studio_status` una o dos veces y seguí. El audio
-queda en el cuaderno, accesible desde el botón del dashboard.
-
-**No generes quiz ni flashcards con `studio_generate`.** Escribilos vos en el spec:
-tenés que controlar el formato exacto que espera el generador, y salen mejor
-apuntados a la reunión concreta.
-
-### Camino B — sin NotebookLM (fallback)
-
 1. `WebSearch` con `"Nombre Apellido" <empresa>` → headline, cargo y empleadores previos.
 2. `WebSearch` con `"Nombre Apellido"` + término del rubro → actividad y contenido reciente.
-3. `WebFetch` sobre el sitio de la empresa → modelo de negocio y posicionamiento.
+3. `WebFetch` sobre el sitio de la empresa → modelo de negocio, precios y posicionamiento.
    Si vuelve vacío y tenés Firecrawl, reintentá con `firecrawl_scrape`.
-4. `WebSearch` de mercado: tamaño, CAGR, tendencias del sector.
+4. `WebSearch` de mercado: tamaño, CAGR, tendencias del sector — son los números que
+   alimentan los `stats` del encabezado y la sección de oportunidad.
 
-Dejá `notebooklm_url` en `null` y anotá en el reporte que corriste sin NotebookLM.
-
-> Medido sobre un mismo target, `WebSearch` trajo historial laboral y registro
-> corporativo que el scraping especializado no encontró. El camino B no es un
-> castigo: da resultados sólidos.
+Cargá cada URL usada en el campo `sources` del spec: es lo que hace auditable el research.
 
 Reglas de honestidad, importantes:
 - **No inventes datos.** Si no encontraste el rol, escribí "rol a confirmar al inicio del call".
@@ -187,7 +132,7 @@ lo que más valor aporta: escribilos con densidad real, no con relleno):
   "sources": [                             // pobla la pestaña Fuentes — ver abajo
     {"group":"Identidad profesional", "title":"...", "url":"https://...", "note":"qué aportó"}
   ],
-  "notebooklm_url": "https://notebooklm.google.com/notebook/<id>",  // null si corriste por el camino B
+  "notebooklm_url": null,                  // NotebookLM está descartado, ver arriba
   "generated": "<ISO 8601 con el offset de owner.utcOffset>"
 }
 ```
@@ -298,7 +243,7 @@ Si el push falla por red, reintentá hasta 4 veces con backoff de 2s, 4s, 8s, 16
 
 - **Cuándo:** 2026-08-14 06:03 (America/Argentina/Buenos_Aires)
 - **Resultado:** sin reuniones para preparar | 2 preps generados | error
-- **Research:** NotebookLM | web (NotebookLM no disponible)
+- **Research:** web
 - **Detectados:** 1 evento con #prep
 - **Preparados:** 0 — «Nombre Apellido» ya existía en meetings.json
 - **Notas:** cualquier decisión ambigua que hayas tomado

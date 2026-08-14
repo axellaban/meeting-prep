@@ -95,18 +95,19 @@ meeting-prep/
 ## Stack
 
 - **Calendario:** conector de Google Calendar de Claude — sin OAuth propio ni verificación
-- **Research:** NotebookLM cuando está configurado; si no, WebSearch + WebFetch
+- **Research:** WebSearch + WebFetch, con Firecrawl para páginas que no rinden
 - **Generación:** Python sin dependencias, sobre un template único
 - **Frontend:** HTML/CSS/JS puro, sin build step
 - **Deploy:** Vercel, automático desde GitHub
 - **Automatización:** Routines de Claude — una sesión nueva cada mañana
 
-> **Sobre NotebookLM:** Google no ofrece API pública para la versión gratuita, así
-> que esto anda con [`notebooklm-py`](https://github.com/teng-lin/notebooklm-py), una
-> librería no oficial que usa endpoints internos y puede romperse sin aviso. Es
-> **opcional**: si está configurada, cada reunión genera su cuaderno con deep research
-> y audio overview; si no, el pipeline usa research web y sigue igual. Ver
-> [SETUP.md](SETUP.md#4-notebooklm-opcional-pero-es-lo-que-sube-el-nivel).
+> **Motores de research descartados, y por qué.** *NotebookLM*: no tiene API pública, y
+> la librería no oficial autentica con un volcado de las cookies de Google del usuario —
+> las mismas que abren Gmail, Drive y Cloud Console. *Apollo*: sirve para prospectar, no
+> para preparar; cuando la reunión ya está agendada, ya sabés quién es. *Scrapling*: su
+> vía rápida falsifica la huella TLS y no atraviesa proxies corporativos; su vía con
+> navegador descarga ~600 MB por corrida. `WebSearch` + `WebFetch` resolvieron cada caso
+> que probamos, sin secretos y sin instalar nada.
 
 ---
 
