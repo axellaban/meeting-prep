@@ -22,11 +22,11 @@ Necesitás plan pago de Claude — el que incluye **Routines**.
    horario y método de venta, y deja todo configurado.
 4. **Creá la Routine** en claude.ai → Routines, **adjuntando el conector de Google
    Calendar** y pegando el prompt que te da el `/setup`.
-5. **Importá el repo en [vercel.com/new](https://vercel.com/new)** → Deploy, sin tocar
+5. **Conectá Firecrawl** en claude.ai → Connectors, y adjuntalo también a la rutina.
+   Es el motor de research; si se cae, el sistema sigue solo con búsqueda web.
+6. **Importá el repo en [vercel.com/new](https://vercel.com/new)** → Deploy, sin tocar
    nada. Sin esto los dashboards existen como archivos pero no podés abrirlos del
    celular, que es cuando los vas a querer.
-
-*Opcional:* conectá **Firecrawl** — mejora el research, y si falla el sistema sigue igual.
 
 > **Dos cosas que se confunden seguido.** Conectar un conector en tu cuenta **no** lo
 > adjunta a la rutina: son dos pasos distintos, el 2 y el 4. Y el repo tiene que ser
