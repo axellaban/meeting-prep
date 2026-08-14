@@ -103,6 +103,15 @@ Para ver qué generaría sin escribir archivos:
 python3 tools/generate_dashboard.py <spec.json> --dry-run
 ```
 
+Y para chequear que el repo esté sano — configuración válida, registro coherente,
+dashboards sin placeholders, assets en su lugar:
+
+```bash
+python3 tools/verify.py
+```
+
+Sale con código 1 si encuentra algún error, así que sirve para un hook o para CI.
+
 ---
 
 ## Adaptarlo

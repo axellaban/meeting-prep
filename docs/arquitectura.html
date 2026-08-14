@@ -288,6 +288,7 @@
       <span class="chip">Routine diaria · 06:03 ART</span>
       <span class="chip ok">Google Calendar conectado</span>
       <span class="chip ok">Vercel desplegando</span>
+      <span class="chip ok">Configurable por config.json</span>
       <span class="chip warn">Rutina vieja sin apagar</span>
     </div>
   </header>
@@ -451,10 +452,11 @@
         <div class="stage-body">
           <h3>Se lee a sí mismo</h3>
           <p>
-            La sesión arranca en blanco. Lo primero que hace es clonar <code>main</code> y leer el skill,
-            que contiene el pipeline completo: cómo detectar, cómo investigar, qué formato tiene el spec
-            y cómo publicar. El prompt de la Routine es corto a propósito — apunta al archivo en vez de
-            repetirlo, así el comportamiento se versiona con git.
+            La sesión arranca en blanco. Lo primero que hace es clonar <code>main</code> y leer dos
+            archivos: <code>config.json</code> — quién sos, qué calendario, qué etiqueta, qué idioma —
+            y el skill, que contiene el pipeline completo. El prompt de la Routine es corto a propósito:
+            apunta a los archivos en vez de repetirlos, así el comportamiento se versiona con git y
+            el mismo repo sirve para cualquier persona con sólo cambiar la configuración.
           </p>
           <div class="needs"><span class="lbl">necesita</span> <code>Read</code> <code>Bash</code></div>
         </div>
@@ -480,10 +482,12 @@
           <h3>Investiga</h3>
           <p>
             Apunta a entre 8 y 15 fuentes por persona: headline y actividad reciente vía búsqueda,
-            el sitio de la empresa vía scraping, y números de mercado para las métricas del encabezado.
+            el sitio de la empresa, y números de mercado para las métricas del encabezado.
             El skill le prohíbe inventar datos y le exige separar el hecho verificado de la interpretación
-            estratégica. LinkedIn bloquea el scraping directo, así que el headline sale de los snippets
-            de búsqueda — está documentado para que no pierda intentos.
+            estratégica. Cada URL usada queda registrada y sale publicada en la pestaña de Fuentes, así
+            cualquier afirmación del briefing se puede rastrear. LinkedIn bloquea el scraping directo,
+            así que el headline sale de los snippets de búsqueda — está documentado para que no pierda
+            intentos.
           </p>
           <div class="needs"><span class="lbl">necesita</span> <code>firecrawl_search</code> <code>firecrawl_scrape</code> <code>WebSearch</code></div>
         </div>
@@ -515,9 +519,24 @@
         </thead>
         <tbody>
           <tr>
+            <td>config.json</td>
+            <td>Quién sos, qué calendario, qué hora, qué etiqueta, qué idioma, qué marca.</td>
+            <td>Vos — o el skill <code>/setup</code></td>
+          </tr>
+          <tr>
+            <td>frameworks/*.md</td>
+            <td>El guion de conversación del briefing. Enchufable: generic, kona-4w, spin, meddic.</td>
+            <td>Vos, para cambiar cómo conducís la reunión</td>
+          </tr>
+          <tr>
             <td>.claude/skills/…/SKILL.md</td>
             <td>El pipeline completo en prosa. Es el programa del agente.</td>
             <td>Vos, cuando querés cambiar cómo trabaja</td>
+          </tr>
+          <tr>
+            <td>tools/verify.py</td>
+            <td>Chequea que el repo esté sano: config, registro, dashboards, assets.</td>
+            <td>Corrélo antes de publicar</td>
           </tr>
           <tr>
             <td>tools/generate_dashboard.py</td>
@@ -578,6 +597,19 @@
             El sitio vive en <code>meeting-prep-aisuperpro.vercel.app</code> — no en la URL que decía
             el README. Verificado: portal, dashboards y el <code>marked.js</code> vendorizado responden
             todos 200.
+          </p>
+        </div>
+      </div>
+
+      <div class="item ok">
+        <div class="dot">Listo</div>
+        <div class="item-body">
+          <h3>El repo se puede clonar y adaptar</h3>
+          <p>
+            Nada específico de una persona quedó en el código: nombre, calendario, hora, etiqueta,
+            idioma y marca salen de <code>config.json</code>, y el guion de conversación de
+            <code>frameworks/</code>. El skill <code>/setup</code> configura todo conversando.
+            Verificado con una configuración de prueba distinta: se adapta sin tocar una línea de HTML.
           </p>
         </div>
       </div>

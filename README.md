@@ -36,6 +36,7 @@ agente es hacer un commit, no reconfigurar nada.
 | **Executive Briefing** | Perfil de la persona y la empresa, oportunidad de mercado, guion de conversación, manejo de objeciones, próximos pasos |
 | **Competitive Intel** | Contra quién competís de verdad, números para soltar, quién más está en su órbita |
 | **Deep Research** | Fuentes, evidencia y **limitaciones declaradas** del research |
+| **Fuentes** | Cada URL usada, agrupada y con qué aportó — el research es auditable |
 | **Knowledge Test** | Quiz de opción múltiple con corrección al toque |
 | **Flashcards** | Tarjetas para repasar en los minutos previos |
 | **Brief Post-Reunión** | Se completa después, con lo que realmente pasó |
@@ -66,7 +67,9 @@ meeting-prep/
 ├── frameworks/                         # Guiones de conversación enchufables
 │   ├── generic.md · kona-4w.md · spin.md · meddic.md
 ├── templates/dashboard.html            # Diseño de todos los dashboards
-├── tools/generate_dashboard.py         # Spec JSON → dashboard + registro
+├── tools/
+│   ├── generate_dashboard.py           # Spec JSON → dashboard + registro
+│   └── verify.py                       # Chequea que el repo esté sano
 ├── assets/marked.min.js                # Renderer de markdown (vendorizado)
 ├── meetings/<id>/index.html            # Un dashboard por reunión
 ├── docs/arquitectura.html              # Cómo se conectan las piezas
