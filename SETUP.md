@@ -9,8 +9,8 @@ De repo clonado a sistema corriendo solo: unos 15 minutos.
 | Cuenta de **Claude con Routines** (Claude Code en la web) | Es lo que despierta al agente cada mañana | **Sí** — sin esto no hay automatización |
 | **Google Calendar** conectado en claude.ai | De ahí salen las reuniones | **Sí** |
 | Cuenta de **GitHub** | Guarda los dashboards y las instrucciones del agente | **Sí** |
-| **Vercel** (gratis) | Publica el sitio para abrirlo del celular | Opcional |
-| **Firecrawl** conectado | Sólo para sitios que no rinden con el fetch simple | Opcional |
+| **Vercel** (gratis) | Publica el sitio. Sin esto no podés abrir los dashboards del celular | **Sí, en la práctica** |
+| **Firecrawl** conectado | Motor de research. Si falla, el sistema sigue con búsqueda web | Recomendado |
 
 > **El punto importante:** el calendario se conecta a través del conector de Claude,
 > que ya está verificado por Google. No tenés que crear ninguna app, ni pedir
@@ -43,7 +43,7 @@ Esto **hay que hacerlo desde la interfaz**: los conectores solo se adjuntan ahí
 
 1. Andá a **claude.ai → Routines → nueva rutina**
 2. Elegí la hora (la misma que pusiste en `config.json`)
-3. Adjuntá los conectores: **Google Calendar** (obligatorio) y **Firecrawl** (opcional)
+3. Adjuntá los conectores: **Google Calendar** (obligatorio) y **Firecrawl** (recomendado)
 4. Pegá este prompt:
 
 ```

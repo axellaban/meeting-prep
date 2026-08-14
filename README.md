@@ -10,6 +10,33 @@ Vos ponés `#prep` en el título de un evento. A la mañana siguiente está list
 
 ---
 
+## Ponerlo a andar
+
+Necesitás plan pago de Claude — el que incluye **Routines**.
+
+1. **Creá tu repo desde el template** ([meeting-prep-OS](https://github.com/axellaban/meeting-prep-OS),
+   botón «Use this template»). **Marcalo privado**: los briefings van a tener research
+   sobre personas reales, con nombre y apellido.
+2. **Conectá Google Calendar** en claude.ai → Connectors.
+3. **Abrí tu repo en Claude Code** y escribí `/setup`. Te pregunta nombre, calendario,
+   horario y método de venta, y deja todo configurado.
+4. **Creá la Routine** en claude.ai → Routines, **adjuntando el conector de Google
+   Calendar** y pegando el prompt que te da el `/setup`.
+5. **Importá el repo en [vercel.com/new](https://vercel.com/new)** → Deploy, sin tocar
+   nada. Sin esto los dashboards existen como archivos pero no podés abrirlos del
+   celular, que es cuando los vas a querer.
+
+*Opcional:* conectá **Firecrawl** — mejora el research, y si falla el sistema sigue igual.
+
+> **Dos cosas que se confunden seguido.** Conectar un conector en tu cuenta **no** lo
+> adjunta a la rutina: son dos pasos distintos, el 2 y el 4. Y el repo tiene que ser
+> **tuyo** — si clonás este directamente no vas a poder pushear, y el agente va a fallar
+> todas las mañanas al publicar.
+
+Detalle completo en **[SETUP.md](SETUP.md)**.
+
+---
+
 ## Cómo funciona
 
 ```
@@ -95,19 +122,22 @@ meeting-prep/
 ## Stack
 
 - **Calendario:** conector de Google Calendar de Claude — sin OAuth propio ni verificación
-- **Research:** WebSearch + WebFetch, con Firecrawl para páginas que no rinden
+- **Research:** Firecrawl con fallback automático a WebSearch + WebFetch
 - **Generación:** Python sin dependencias, sobre un template único
 - **Frontend:** HTML/CSS/JS puro, sin build step
 - **Deploy:** Vercel, automático desde GitHub
 - **Automatización:** Routines de Claude — una sesión nueva cada mañana
 
-> **Motores de research descartados, y por qué.** *NotebookLM*: no tiene API pública, y
-> la librería no oficial autentica con un volcado de las cookies de Google del usuario —
-> las mismas que abren Gmail, Drive y Cloud Console. *Apollo*: sirve para prospectar, no
-> para preparar; cuando la reunión ya está agendada, ya sabés quién es. *Scrapling*: su
-> vía rápida falsifica la huella TLS y no atraviesa proxies corporativos; su vía con
-> navegador descarga ~600 MB por corrida. `WebSearch` + `WebFetch` resolvieron cada caso
-> que probamos, sin secretos y sin instalar nada.
+> **Sobre el research.** Firecrawl corre en cada preparación, pero **nunca es un punto
+> único de falla**: cada llamada tiene su reemplazo con `WebSearch` / `WebFetch`, así que
+> si el conector se cae o no lo configuraste, el pipeline sigue igual y lo anota en el
+> reporte.
+>
+> **Descartados a propósito:** *NotebookLM* (sin API pública; la librería no oficial pide
+> un volcado de tus cookies de Google, las mismas que abren Gmail y Drive), *Apollo*
+> (sirve para prospectar, no para preparar una reunión ya agendada) y *Scrapling*
+> (incompatible con proxies que terminan TLS). El motivo de cada uno está escrito en el
+> skill del pipeline.
 
 ---
 

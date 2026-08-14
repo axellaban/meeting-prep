@@ -38,23 +38,30 @@ En este documento, donde diga `#prep` leé «la etiqueta configurada», y donde 
 | Necesidad | Herramienta | Estado |
 |---|---|---|
 | Calendario | `mcp__Google_Calendar__list_events` | ✅ **sin esto no hay pipeline** |
-| Research primario | `WebSearch` + `WebFetch` | ✅ siempre disponibles |
-| Páginas difíciles | `mcp__Firecrawl__*` | ⚙️ opcional, sólo cuando hace falta |
+| Research | `mcp__Firecrawl__*` | ✅ **se usa siempre**, con fallback automático |
+| Research y fallback | `WebSearch` + `WebFetch` | ✅ siempre disponibles |
 
-**`WebSearch` es el motor, no el respaldo.** Medido sobre un mismo target devolvió
-historial laboral y registro corporativo que el scraping especializado no trajo, y
-sintetiza en prosa en vez de devolver links crudos. `WebFetch` extrajo el mismo
-contenido que un scraper dedicado sobre la misma página, incluidos precios.
+**Firecrawl corre en cada research, pero nunca es un punto único de falla.** Cada
+llamada tiene su reemplazo directo, y si falla, devuelve vacío o el conector no está,
+seguís con el equivalente de la derecha **sin frenarte y sin avisar dos veces**:
 
-**Firecrawl entra sólo cuando `WebFetch` falla o vuelve vacío:** sitios que renderizan
-todo con JS, extracción estructurada con schema (`jsonOptions`), o páginas que
-bloquean el fetch simple (probá `proxy: "stealth"`). Si no está disponible, no es un
-bloqueante: seguí y anotalo en el reporte.
+| Firecrawl | Si falla, usás |
+|---|---|
+| `firecrawl_search` | `WebSearch` |
+| `firecrawl_scrape` | `WebFetch` |
+| `firecrawl_map` | nada — salteás el paso |
 
-**LinkedIn está cerrado y así se queda.** Ni el scraper dedicado ni el fetch simple
-pasan. El headline y los títulos de publicaciones salen de los *snippets* de búsqueda,
-que sí los exponen. No pierdas intentos, y no intentes saltear su protección
-anti-bot: va contra sus términos y expone la cuenta.
+Anotá en el reporte final si tuviste que caer al fallback y en qué paso. Es la señal
+de que el conector está inestable, no un error.
+
+**`WebSearch` no es opcional aunque Firecrawl funcione.** Medido sobre un mismo
+target, devolvió historial laboral y registro corporativo que `firecrawl_search` no
+trajo. Los dos índices son distintos y se complementan: corré ambos.
+
+**LinkedIn está cerrado para todas las vías.** Ni Firecrawl ni el fetch simple pasan.
+El headline y los títulos de publicaciones salen de los *snippets* de búsqueda, que sí
+los exponen. No pierdas intentos, y no intentes saltear su protección anti-bot: va
+contra sus términos y expone la cuenta.
 
 **Descartados a propósito**, para que nadie los vuelva a proponer:
 - **NotebookLM** — no tiene API pública; la librería no oficial autentica con un volcado
@@ -92,12 +99,25 @@ plataforma y la descripción de Cal.com (trae nombre + email + timezone del invi
 Objetivo: 8–15 fuentes por persona. Buscá siempre el nombre **entre comillas**: sin
 comillas los resultados se van a homónimos y a ruido genérico del rubro.
 
-1. `WebSearch` con `"Nombre Apellido" <empresa>` → headline, cargo y empleadores previos.
-2. `WebSearch` con `"Nombre Apellido"` + término del rubro → actividad y contenido reciente.
-3. `WebFetch` sobre el sitio de la empresa → modelo de negocio, precios y posicionamiento.
-   Si vuelve vacío y tenés Firecrawl, reintentá con `firecrawl_scrape`.
-4. `WebSearch` de mercado: tamaño, CAGR, tendencias del sector — son los números que
-   alimentan los `stats` del encabezado y la sección de oportunidad.
+**1. Identidad y cargo** — corré las dos búsquedas, no elijas:
+```
+firecrawl_search("\"Nombre Apellido\" <empresa>")     → si falla: WebSearch
+WebSearch("\"Nombre Apellido\" <empresa>")            → siempre
+```
+
+**2. Actividad reciente** — `firecrawl_search` con el nombre entre comillas más un
+término del rubro. Si falla, la misma consulta con `WebSearch`.
+
+**3. La empresa** — descubrí sus páginas y leelas:
+```
+firecrawl_map(url=<sitio>, search="about equipo nosotros team")   → si falla: salteá
+firecrawl_scrape(<home y las páginas que encontraste>)            → si falla: WebFetch
+```
+Buscás modelo de negocio, precios, clientes y posicionamiento.
+
+**4. Mercado** — tamaño, CAGR y tendencias del sector, con cualquiera de los dos
+buscadores. Son los números que alimentan los `stats` del encabezado y la sección de
+oportunidad.
 
 Cargá cada URL usada en el campo `sources` del spec: es lo que hace auditable el research.
 

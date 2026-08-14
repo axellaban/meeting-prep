@@ -80,7 +80,7 @@ Dale el paso a paso exacto, con la hora ya convertida a UTC:
 
 > 1. Andá a **claude.ai → Routines → nueva rutina**
 > 2. Horario: `<la hora que eligió>` en su zona
-> 3. Conectores: **Google Calendar** (obligatorio) y **Firecrawl** (opcional)
+> 3. Conectores: **Google Calendar** (obligatorio) y **Firecrawl** (recomendado)
 > 4. Pegá este prompt:
 
 ```
