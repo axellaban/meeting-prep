@@ -86,15 +86,16 @@ Dale el paso a paso exacto, con la hora ya convertida a UTC:
 ```
 Corré el pipeline diario de Meeting Prep OS.
 
-Leé las instrucciones completas en `.claude/skills/meeting-prep-daily/SKILL.md`
-y ejecutá los 5 pasos. La configuración del usuario está en `config.json`.
-
-Si no hay ningún evento con la etiqueta configurada hoy o mañana: no generes nada,
-no hagas commit. Reportá "sin reuniones para preparar" y terminá.
-
-Corrés sin supervisión: ante una decisión ambigua elegí la opción razonable y
-anotala en el reporte. Nunca inventes datos sobre una persona. No reportes éxito
-si el push falló.
+1. Leé primero las instrucciones completas en `.claude/skills/meeting-prep-daily/SKILL.md`
+   y la configuración del usuario en `config.json`.
+2. Ejecutá todos los pasos que documenta ese archivo, del 0 al 5.
+3. Si no hay eventos con la etiqueta configurada hoy ni mañana: no generes ningún
+   dashboard, pero **escribí igual `runs/last-run.md` y commiteálo**. Es lo que hace
+   demostrable que el sistema corrió. Reportá "sin reuniones para preparar" y terminá.
+4. Corrés sin supervisión: ante una decisión ambigua elegí la opción razonable, seguí,
+   y anotala en el reporte final.
+5. Nunca inventes datos sobre una persona. Si no encontraste el rol, escribí
+   "a confirmar al inicio del call". No reportes éxito si el push falló.
 ```
 
 Recordale que **el cron de la interfaz se define en su hora local**, y que si quiere
