@@ -1,0 +1,11 @@
+.DS_Store
+*.log
+node_modules/
+.env
+.vercel
+__pycache__/
+*.pyc
+
+# Credenciales — nunca al repo
+storage_state.json
+.notebooklm/

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — {{NAME}}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="../../assets/marked.min.js"></script>
+<script>window.marked||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"><\/script>');</script>
+<style>
+  :root {
+    --bg: #08080c;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --gold: #f0b429;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+  /* NAVBAR */
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+  .navbar-back:hover { color:var(--text); }
+  .btn-export { background:linear-gradient(135deg,#1d4ed8,var(--accent)); border:none; color:#fff; padding:7px 15px; border-radius:8px; font-size:12.5px; font-weight:600; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .2s; }
+  .btn-export:hover { opacity:.85; }
+
+  /* ── BRIEFING EN VOZ ALTA ── */
+  .audio-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:16px; margin:0 0 4px; }
+  .audio-btn { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .2s; box-shadow:0 0 12px rgba(59,130,246,0.4); }
+  .audio-btn:hover { transform:scale(1.08); }
+  .audio-btn:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+  .audio-info { flex:1; min-width:0; }
+  .audio-title { font-size:13px; font-weight:600; }
+  .audio-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .visualizer { display:flex; align-items:flex-end; gap:2px; height:24px; }
+  .visualizer .bar { width:3px; background:var(--accent); border-radius:2px; animation:eq 1.1s ease-in-out infinite; }
+  .visualizer.paused .bar { animation-play-state:paused; opacity:.3; }
+  .visualizer .bar:nth-child(1){height:8px;animation-delay:0s}
+  .visualizer .bar:nth-child(2){height:16px;animation-delay:.1s}
+  .visualizer .bar:nth-child(3){height:12px;animation-delay:.2s}
+  .visualizer .bar:nth-child(4){height:20px;animation-delay:.3s}
+  .visualizer .bar:nth-child(5){height:10px;animation-delay:.4s}
+  .visualizer .bar:nth-child(6){height:18px;animation-delay:.15s}
+  .visualizer .bar:nth-child(7){height:14px;animation-delay:.25s}
+  @keyframes eq { 0%,100%{transform:scaleY(.45)} 50%{transform:scaleY(1)} }
+  @media (prefers-reduced-motion: reduce) { .visualizer .bar { animation:none; } }
+
+  /* ── IMPRESIÓN / PDF ── */
+  @media print {
+    @page { margin: 14mm; }
+    .navbar, .sidebar, .audio-section, .btn-export { display:none !important; }
+    body { background:#fff; color:#000; }
+    .main-layout, .content { display:block; margin:0; padding:0; max-width:none; }
+    .tab-pane { display:block !important; page-break-after:always; }
+    .tab-pane:last-child { page-break-after:auto; }
+    .markdown-body h2 { color:#000; }
+    .markdown-body h2::before { background:#000; }
+    .stat-card, .markdown-body table, .quiz-question { break-inside:avoid; }
+    a { color:#000; text-decoration:underline; }
+  }
+
+  /* HEADER */
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 100%); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding:24px 32px; max-width:1200px; margin:0 auto; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  /* LAYOUT */
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+
+  /* SIDEBAR */
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; width:100%; text-align:left; background:none; font-family:inherit; }
+  .sidebar-tab:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .notebooklm-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:14px; color:var(--gold); text-decoration:none; background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; transition:all 0.2s; }
+  .notebooklm-btn:hover { background:rgba(240,180,41,0.15); }
+
+  /* CONTENT */
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+
+  /* MARKDOWN */
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; color:var(--text); }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); display:flex; align-items:center; gap:9px; }
+  .markdown-body h2::before { content:''; display:inline-block; width:3px; height:19px; background:linear-gradient(var(--accent),var(--gold)); border-radius:2px; flex-shrink:0; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; color:var(--text); }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body code { background:var(--surface2); padding:2px 8px; border-radius:6px; font-size:13px; color:var(--accent); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+
+  /* QUIZ */
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+
+  /* FLASHCARDS */
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+
+  /* SECTION TITLE */
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> {{BRAND}}</div>
+  <div class="navbar-date">{{NAV_DATE}}</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+  <button class="btn-export" onclick="window.print()"><i class="fas fa-download"></i> Exportar PDF</button>
+</nav>
+
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">{{INITIALS}}</div>
+    <div class="header-info">
+      <div class="header-name">{{NAME}}</div>
+      <div class="header-title">{{ROLE_LINE}}</div>
+      <div class="header-tags">
+{{TAGS_HTML}}
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> {{TIME}}</div>
+      <div class="meeting-date">{{DATE_LONG}}</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> {{MEETING_TYPE}}</div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 32px;">
+  <div class="stats-row" style="padding:24px 0;">
+{{STATS_HTML}}
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="sidebar" role="tablist" aria-label="Secciones del dashboard">
+    <button type="button" class="sidebar-tab active" role="tab" aria-selected="true" aria-controls="tab-briefing" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-intel" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-research" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-sources" onclick="showTab('sources',this)"><i class="fas fa-link"></i> Fuentes</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-quiz" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-flashcards" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-postbrief" onclick="showTab('postbrief',this)"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</button>
+{{SIDEBAR_LINK}}
+  </div>
+
+  <div class="content">
+
+    <!-- TAB: EXECUTIVE BRIEFING -->
+    <div id="tab-briefing" class="tab-pane active">
+      <div class="section-title"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+      <div class="audio-section">
+        <button class="audio-btn" id="playBtn" onclick="toggleAudio()" aria-label="Escuchar el briefing en voz alta">
+          <i class="fas fa-play" id="playIcon"></i>
+        </button>
+        <div class="audio-info">
+          <div class="audio-title">Escuchar el briefing</div>
+          <div class="audio-sub" id="audioSub">Lectura en voz alta — sirve mientras manejás o caminás</div>
+        </div>
+        <div class="visualizer paused" id="viz">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+      <div class="markdown-body" id="briefing-content"></div>
+    </div>
+
+    <!-- TAB: COMPETITIVE INTEL -->
+    <div id="tab-intel" class="tab-pane">
+      <div class="section-title"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+      <div class="markdown-body" id="intel-content"></div>
+    </div>
+
+    <!-- TAB: DEEP RESEARCH -->
+    <div id="tab-research" class="tab-pane">
+      <div class="section-title"><i class="fas fa-microscope"></i> Deep Research</div>
+      <div class="markdown-body" id="research-content"></div>
+    </div>
+
+    <!-- TAB: QUIZ -->
+    <!-- TAB: FUENTES -->
+    <div id="tab-sources" class="tab-pane">
+      <div class="section-title"><i class="fas fa-link"></i> Fuentes</div>
+      <div class="markdown-body" id="sources-content"></div>
+    </div>
+
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+
+    <!-- TAB: FLASHCARDS -->
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-arrow-left"></i></button>
+          <div class="dots" id="fc-dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: BRIEF POST-REUNIÓN -->
+    <div id="tab-postbrief" class="tab-pane">
+      <div class="section-title"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</div>
+      <div class="markdown-body" id="postbrief-content"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── TAB SWITCHING ───────────────────────────────────────────────────────────
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+  el.setAttribute('aria-selected', 'true');
+}
+
+// Flechas para moverse entre solapas con el teclado
+document.querySelectorAll('.sidebar-tab').forEach((tab, i, all) => {
+  tab.addEventListener('keydown', e => {
+    const step = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+    if (!step) return;
+    e.preventDefault();
+    const next = all[(i + step + all.length) % all.length];
+    next.focus();
+    next.click();
+  });
+});
+
+// ─── CONTENT DATA ─────────────────────────────────────────────────────────────
+const briefingMD = `{{BRIEFING_MD}}`;
+
+const intelMD = `{{INTEL_MD}}`;
+
+const researchMD = `{{RESEARCH_MD}}`;
+const postBriefMD = `{{POSTBRIEF_MD}}`;
+const sourcesMD = `{{SOURCES_MD}}`;
+
+// ─── QUIZ DATA ────────────────────────────────────────────────────────────────
+const quizData = {{QUIZ_JSON}};
+
+// ─── FLASHCARD DATA ───────────────────────────────────────────────────────────
+const flashcards = {{FLASHCARDS_JSON}};
+
+// ─── RENDER MARKDOWN ──────────────────────────────────────────────────────────
+const md2html = (t) => (typeof marked !== 'undefined')
+  ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' +
+    t.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])) + '</pre>';
+document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
+document.getElementById('intel-content').innerHTML = md2html(intelMD);
+document.getElementById('research-content').innerHTML = md2html(researchMD);
+document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
+document.getElementById('sources-content').innerHTML = md2html(sourcesMD);
+
+// ─── BRIEFING EN VOZ ALTA ─────────────────────────────────────────────────────
+// Usa la voz del navegador: no necesita archivo de audio ni conexión.
+let speaking = false;
+const synth = window.speechSynthesis;
+
+function briefingPlano() {
+  // markdown -> texto hablable: fuera marcas, tablas fila por fila
+  return briefingMD
+    .replace(/^>\s?/gm, '')
+    .replace(/\|/g, ', ')
+    .replace(/^[-*]\s+/gm, '')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/[*_`]/g, '')
+    .replace(/^\s*[-:,\s]+$/gm, '')
+    .replace(/\n{2,}/g, '. ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function pararAudio() {
+  synth.cancel();
+  speaking = false;
+  document.getElementById('playIcon').className = 'fas fa-play';
+  document.getElementById('viz').classList.add('paused');
+}
+
+function toggleAudio() {
+  const sub = document.getElementById('audioSub');
+  if (!('speechSynthesis' in window)) {
+    sub.textContent = 'Este navegador no puede leer en voz alta.';
+    return;
+  }
+  if (speaking) { pararAudio(); sub.textContent = 'Pausado — tocá para retomar desde el principio'; return; }
+
+  const u = new SpeechSynthesisUtterance(briefingPlano());
+  u.lang = 'es-AR';
+  u.rate = 1.05;
+  const esVoice = synth.getVoices().find(v => v.lang && v.lang.startsWith('es'));
+  if (esVoice) u.voice = esVoice;
+  u.onend = () => { pararAudio(); sub.textContent = 'Listo — tocá para escucharlo de nuevo'; };
+  u.onerror = () => { pararAudio(); sub.textContent = 'No se pudo reproducir el audio.'; };
+
+  synth.cancel();
+  synth.speak(u);
+  speaking = true;
+  document.getElementById('playIcon').className = 'fas fa-pause';
+  document.getElementById('viz').classList.remove('paused');
+  sub.textContent = 'Reproduciendo el briefing…';
+}
+
+// Chrome carga las voces en diferido
+if ('speechSynthesis' in window) synth.onvoiceschanged = () => {};
+window.addEventListener('beforeunload', () => synth.cancel());
+
+// ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
+let quizScore = 0;
+const quizContainer = document.getElementById('quiz-container');
+document.getElementById('total-q').textContent = quizData.length;
+
+quizData.forEach((item, idx) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `
+    <div class="question-num">Pregunta ${idx + 1} de ${quizData.length}</div>
+    <div class="question-text">${item.q}</div>
+    <div class="options" id="opts-${idx}">
+      ${item.options.map((opt, i) => `
+        <div class="option" onclick="selectOption(${idx},'${'ABCD'[i]}','${item.answer}',this)">
+          <div class="option-letter">${'ABCD'[i]}</div>
+          <span>${opt.substring(3)}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  quizContainer.appendChild(div);
+});
+
+function selectOption(qIdx, selected, correct, el) {
+  const opts = document.querySelectorAll(`#opts-${qIdx} .option`);
+  opts.forEach(o => o.classList.add('answered'));
+  opts.forEach(o => { o.style.pointerEvents = 'none'; });
+  if (selected === correct) {
+    el.classList.add('correct');
+    quizScore++;
+    document.getElementById('score').textContent = quizScore;
+  } else {
+    el.classList.add('wrong');
+    opts.forEach((o, i) => {
+      if ('ABCD'[i] === correct) o.classList.add('correct');
+    });
+  }
+}
+
+// ─── FLASHCARD LOGIC ──────────────────────────────────────────────────────────
+let fcIdx = 0;
+const fcEl = document.getElementById('flashcard');
+document.getElementById('fc-total').textContent = flashcards.length;
+
+function renderCard() {
+  const c = flashcards[fcIdx];
+  document.getElementById('fc-question').textContent = c.q;
+  document.getElementById('fc-answer').textContent = c.a;
+  document.getElementById('fc-current').textContent = fcIdx + 1;
+  fcEl.classList.remove('flipped');
+  const dots = document.getElementById('fc-dots');
+  dots.innerHTML = '';
+  flashcards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === fcIdx ? ' active' : '');
+    dots.appendChild(d);
+  });
+}
+
+function flipCard() { fcEl.classList.toggle('flipped'); }
+function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderCard(); }
+function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderCard(); }
+
+renderCard();
+</script>
+</body>
+</html>
