@@ -140,7 +140,7 @@ def build_sidebar_link(spec: dict) -> str:
         return (f'    <a href="{url}" target="_blank" class="notebooklm-btn">\n'
                 f'      <i class="fas fa-book-open"></i> Abrir en NotebookLM\n'
                 f'    </a>')
-    n = spec.get("sources_count", 0)
+    n = spec.get("sources_count") or len(spec.get("sources") or [])
     return (f'    <div class="notebooklm-btn" style="cursor:default;opacity:.75">\n'
             f'      <i class="fas fa-search"></i> {n} fuentes · research web\n'
             f'    </div>')

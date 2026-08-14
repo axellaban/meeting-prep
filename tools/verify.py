@@ -135,6 +135,13 @@ def check_assets() -> None:
         if not any("assets" in s or s == "**" for s in srcs):
             error("vercel.json no despliega assets/ — marked.min.js daría 404 en producción")
 
+    mcp = ROOT / ".mcp.json"
+    if mcp.exists():
+        try:
+            json.loads(mcp.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            error(f".mcp.json no es JSON válido: {e}")
+
     for req in ("templates/dashboard.html", "tools/generate_dashboard.py",
                 ".claude/skills/meeting-prep-daily/SKILL.md"):
         if not (ROOT / req).exists():
@@ -160,12 +167,42 @@ def check_personal_leaks(cfg: dict) -> None:
                 error(f"{f.relative_to(ROOT)} tiene datos personales hardcodeados ('{marca}')")
 
 
+def check_secrets() -> None:
+    """Ninguna credencial debería vivir en el repo."""
+    sospechosos = [
+        "storage_state.json",
+        ".notebooklm",
+        "credentials.json",
+        "token.json",
+        "service-account.json",
+    ]
+    for nombre in sospechosos:
+        for hit in ROOT.rglob(nombre):
+            if ".git/" in str(hit):
+                continue
+            error(f"credencial en el repo: {hit.relative_to(ROOT)} — sacala y rotala")
+
+    # cookies de Google pegadas dentro de algún archivo versionado
+    patrones = re.compile(r"__Secure-\d?PSID|SAPISID|oauth2\.googleapis\.com/token")
+    for f in ROOT.rglob("*"):
+        if not f.is_file() or ".git/" in str(f) or f.suffix in {".png", ".jpg", ".ico"}:
+            continue
+        if f.name in {"verify.py", "SETUP.md"}:   # acá se nombran a propósito
+            continue
+        try:
+            if patrones.search(f.read_text(encoding="utf-8", errors="ignore")):
+                error(f"{f.relative_to(ROOT)} parece contener cookies de sesión de Google")
+        except (OSError, UnicodeDecodeError):
+            continue
+
+
 def main() -> None:
     cfg = check_config()
     meetings = check_registry()
     n = check_dashboards()
     check_assets()
     check_personal_leaks(cfg)
+    check_secrets()
 
     print(f"config.json      {'ok' if cfg else 'ausente'}")
     print(f"meetings.json    {len(meetings)} reuniones")

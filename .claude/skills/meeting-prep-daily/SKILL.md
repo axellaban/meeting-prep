@@ -38,9 +38,19 @@ En este documento, donde diga `#prep` leé «la etiqueta configurada», y donde 
 | Necesidad | Herramienta | Estado |
 |---|---|---|
 | Calendario | `mcp__Google_Calendar__list_events` | ✅ conectado — **sin esto no hay pipeline** |
-| Research primario | `WebSearch` + `WebFetch` | ✅ siempre disponibles |
-| Research especializado | `mcp__Firecrawl__*` | ⚠️ puede no estar adjunto a la Routine |
-| NotebookLM | — | ❌ **no existe** como conector: no tiene API pública ni MCP. No lo busques ni lo esperes. |
+| Research profundo | `mcp__notebooklm__*` | ⚙️ activo si hay credencial — ver abajo |
+| Research base | `WebSearch` + `WebFetch` | ✅ siempre disponibles, y el fallback |
+| Research especializado | `mcp__Firecrawl__*` | ⚠️ opcional |
+
+**NotebookLM corre por `.mcp.json` del repo**, vía la librería no oficial
+`notebooklm-py`. No hay API pública de Google para la versión gratuita: la librería
+usa endpoints internos y **puede romperse sin aviso**. Autentica con la variable de
+entorno `NOTEBOOKLM_AUTH_JSON`.
+
+**Chequeá al arrancar si las herramientas `notebook_*` responden.** Probá
+`notebook_list`. Si contesta, seguís el camino A. Si falla por autenticación o las
+herramientas no están, **pasás al camino B sin drama y lo anotás en el reporte** —
+el pipeline nunca se cae por esto.
 
 **Usá `WebSearch` como herramienta principal, no como respaldo.** Medido sobre el
 mismo target, `WebSearch` devolvió historial laboral (ZoomInfo, empleadores previos,
@@ -85,17 +95,66 @@ plataforma y la descripción de Cal.com (trae nombre + email + timezone del invi
 
 ## Paso 2 — Investigar
 
-Objetivo: 8–15 fuentes por persona. Buscá en este orden:
+Objetivo: 8–15 fuentes por persona. Buscá siempre el nombre **entre comillas**: sin
+comillas los resultados se van a homónimos y a ruido genérico del rubro.
+
+### Camino A — con NotebookLM (preferido)
+
+Cada reunión tiene su propio cuaderno. El flujo completo:
+
+**1. Semilla web.** Antes de tocar NotebookLM, hacé dos o tres `WebSearch` para
+tener el headline, la empresa y 3–5 URLs buenas. Sin semilla, el research arranca
+a ciegas.
+
+**2. Crear el cuaderno.**
+```
+notebook_create(title="Meeting Prep — <Nombre Apellido>")
+```
+Guardá el id que devuelve: la URL es `https://notebooklm.google.com/notebook/<id>`
+y va al campo `notebooklm_url` del spec.
+
+**3. Cargar las fuentes.** El perfil que ya sintetizaste como texto, más cada URL:
+```
+source_add(notebook=<id>, source_type="text", title="<Nombre> — perfil", text="<síntesis>")
+source_add(notebook=<id>, source_type="url", url="<cada URL de la semilla>")
+```
+
+**4. Lanzar el deep research.**
+```
+research_start(notebook=<id>, query="<Nombre> <Empresa> <rubro> 2026", source="web", mode="deep")
+```
+Poleá con `research_status` hasta que termine, después `research_import` para
+incorporar lo que encontró.
+
+**5. Redactar desde las fuentes.** Usá `chat_ask` contra el cuaderno para las tres
+secciones de texto. Una pregunta por sección, pidiendo explícitamente markdown y
+la estructura de campos etiquetados que se describe más abajo. La ventaja sobre
+escribirlo de memoria: las respuestas salen de las fuentes cargadas.
+
+**6. Audio.** Es lo que más se extraña del pipeline original:
+```
+studio_generate(notebook=<id>, artifact_type="audio")
+```
+No esperes a que termine — poleá `studio_status` una o dos veces y seguí. El audio
+queda en el cuaderno, accesible desde el botón del dashboard.
+
+**No generes quiz ni flashcards con `studio_generate`.** Escribilos vos en el spec:
+tenés que controlar el formato exacto que espera el generador, y salen mejor
+apuntados a la reunión concreta.
+
+### Camino B — sin NotebookLM (fallback)
 
 1. `WebSearch` con `"Nombre Apellido" <empresa>` → headline, cargo y empleadores previos.
 2. `WebSearch` con `"Nombre Apellido"` + término del rubro → actividad y contenido reciente.
 3. `WebFetch` sobre el sitio de la empresa → modelo de negocio y posicionamiento.
    Si vuelve vacío y tenés Firecrawl, reintentá con `firecrawl_scrape`.
-4. `WebSearch` de mercado: tamaño, CAGR, tendencias del sector — son los números que
-   alimentan los `stats` del encabezado y la sección de oportunidad.
+4. `WebSearch` de mercado: tamaño, CAGR, tendencias del sector.
 
-Buscá siempre el nombre **entre comillas**: sin comillas los resultados se van a
-homónimos y a ruido genérico del rubro.
+Dejá `notebooklm_url` en `null` y anotá en el reporte que corriste sin NotebookLM.
+
+> Medido sobre un mismo target, `WebSearch` trajo historial laboral y registro
+> corporativo que el scraping especializado no encontró. El camino B no es un
+> castigo: da resultados sólidos.
 
 Reglas de honestidad, importantes:
 - **No inventes datos.** Si no encontraste el rol, escribí "rol a confirmar al inicio del call".
@@ -128,7 +187,7 @@ lo que más valor aporta: escribilos con densidad real, no con relleno):
   "sources": [                             // pobla la pestaña Fuentes — ver abajo
     {"group":"Identidad profesional", "title":"...", "url":"https://...", "note":"qué aportó"}
   ],
-  "notebooklm_url": null,                  // siempre null: NotebookLM no está disponible
+  "notebooklm_url": "https://notebooklm.google.com/notebook/<id>",  // null si corriste por el camino B
   "generated": "<ISO 8601 con el offset de owner.utcOffset>"
 }
 ```

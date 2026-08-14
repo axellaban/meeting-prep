@@ -10,6 +10,7 @@ De repo clonado a sistema corriendo solo: unos 15 minutos.
 | **Google Calendar** conectado en claude.ai | De ahí salen las reuniones | **Sí** |
 | Cuenta de **GitHub** | Guarda los dashboards y las instrucciones del agente | **Sí** |
 | **Vercel** (gratis) | Publica el sitio para abrirlo del celular | Opcional |
+| **NotebookLM** (cuenta gratis) | Cuaderno por reunión, deep research y audio overview | Opcional — ver paso 4 |
 | **Firecrawl** conectado | Mejora el research en sitios pesados | Opcional |
 
 > **El punto importante:** el calendario se conecta a través del conector de Claude,
@@ -64,7 +65,46 @@ si el push falló.
 > mundo pide las horas en punto y esos minutos están congestionados. `06:03` anda
 > mejor que `06:00`.
 
-## 4. Publicar el sitio (opcional)
+## 4. NotebookLM (opcional, pero es lo que sube el nivel)
+
+Con esto cada reunión genera además **su propio cuaderno de NotebookLM** con las
+fuentes cargadas, deep research de Google y el **audio overview de dos locutores**.
+Sin esto el pipeline funciona igual, con research web.
+
+**Google no ofrece API pública para el NotebookLM gratuito.** Esto anda a través de
+[`notebooklm-py`](https://github.com/teng-lin/notebooklm-py), una librería no oficial
+que usa endpoints internos y **puede dejar de funcionar sin aviso**. Sabelo antes de
+apoyarte en ella.
+
+El repo ya trae el servidor MCP declarado en `.mcp.json`. Falta la credencial, y
+son tres pasos:
+
+**1. En tu máquina** (no en el servidor), una sola vez:
+
+```bash
+pip install "notebooklm-py[browser]"
+notebooklm login          # abre el navegador, te logueás con tu cuenta de Google
+notebooklm auth check     # confirmá que quedó
+```
+
+**2. Copiá el contenido** del archivo que generó:
+
+```bash
+cat ~/.notebooklm/profiles/default/storage_state.json
+```
+
+**3. Guardalo como variable de entorno** `NOTEBOOKLM_AUTH_JSON` en la configuración
+de tu entorno de Claude Code — con el JSON completo como valor.
+
+> **No pegues ese JSON en un chat ni lo commitees.** Es una credencial durable de tu
+> cuenta de Google: quien la tenga entra a tu NotebookLM. Va en las variables de
+> entorno del entorno, y en ningún otro lado.
+
+Listo. En la próxima corrida el agente detecta las herramientas `notebook_*` y usa
+el camino con NotebookLM. Si la credencial vence o Google cambia algo, **el pipeline
+no se rompe**: vuelve solo al research web y lo avisa en el reporte.
+
+## 5. Publicar el sitio (opcional)
 
 **vercel.com/new** → importá tu repo → **Deploy**, sin cambiar nada. Vercel vuelve
 a desplegar en cada push del agente.
