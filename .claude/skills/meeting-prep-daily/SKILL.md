@@ -300,7 +300,7 @@ Si el push falla por red, reintentá hasta 4 veces con backoff de 2s, 4s, 8s, 16
 - **Resultado:** sin reuniones para preparar | 2 preps generados | error
 - **Research:** NotebookLM | web (NotebookLM no disponible)
 - **Detectados:** 1 evento con #prep
-- **Preparados:** 0 — «Axel Laban Arzubi» ya existía en meetings.json
+- **Preparados:** 0 — «Nombre Apellido» ya existía en meetings.json
 - **Notas:** cualquier decisión ambigua que hayas tomado
 ```
 
