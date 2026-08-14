@@ -320,7 +320,7 @@
     <div class="how-card">
       <div class="how-num">2</div>
       <h4>El sistema trabaja solo</h4>
-      <p>Todos los días a las <strong>7am</strong> se revisa tu calendar, se investiga a cada persona/empresa y se genera el dashboard completo.</p>
+      <p>Todos los días a la hora que configuraste (<strong id="cron-hour">temprano</strong>) se revisa tu calendar, se investiga a cada persona/empresa y se genera el dashboard completo.</p>
     </div>
     <div class="how-card">
       <div class="how-num">3</div>
@@ -362,17 +362,23 @@
   function isToday(d) { return d === today; }
   function isUpcoming(d) { return d > today; }
 
+  // Los datos salen de meetings.json, que lo genera el pipeline — pero el research
+  // trae nombres y cargos de la web, así que se escapan antes de inyectarlos.
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g,
+    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const escAttr = (v) => encodeURI(String(v ?? '')).replace(/"/g, '%22');
+
   function buildTodayCard(m) {
     return `
-      <a class="today-card" href="${m.path}">
-        <div class="today-avatar" style="background:${avatarColor(m.person)}">${initials(m.person)}</div>
+      <a class="today-card" href="${escAttr(m.path)}">
+        <div class="today-avatar" style="background:${avatarColor(m.person)}">${esc(initials(m.person))}</div>
         <div class="today-info">
-          <h2>${m.person.split(' ')[0]} <em>${m.person.split(' ').slice(1).join(' ')}</em></h2>
-          <div class="role">${m.title || ''} · ${m.company || ''}</div>
+          <h2>${esc(m.person.split(' ')[0])} <em>${esc(m.person.split(' ').slice(1).join(' '))}</em></h2>
+          <div class="role">${esc(m.title)} · ${esc(m.company)}</div>
           <div class="today-tags">
-            <span class="tag tag-blue"><i class="fa fa-clock" style="margin-right:4px"></i>${m.time || 'hoy'}</span>
-            <span class="tag tag-gold">${m.type || 'Reunión'}</span>
-            ${(m.tags||[]).map(t=>`<span class="tag tag-blue">${t}</span>`).join('')}
+            <span class="tag tag-blue"><i class="fa fa-clock" style="margin-right:4px"></i>${esc(m.time || 'hoy')}</span>
+            <span class="tag tag-gold">${esc(m.type || 'Reunión')}</span>
+            ${(m.tags||[]).map(t=>`<span class="tag tag-blue">${esc(t)}</span>`).join('')}
           </div>
         </div>
         <div class="today-arrow"><i class="fa fa-arrow-right"></i></div>
@@ -385,18 +391,18 @@
       ? `<span class="tag tag-gold" style="margin-left:auto;font-size:10px">Próxima</span>`
       : `<span class="tag" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);font-size:10px;margin-left:auto">Pasada</span>`;
     return `
-      <a class="meeting-card" href="${m.path}">
+      <a class="meeting-card" href="${escAttr(m.path)}">
         <div class="mc-top">
-          <div class="mc-avatar" style="background:${avatarColor(m.person)}">${initials(m.person)}</div>
+          <div class="mc-avatar" style="background:${avatarColor(m.person)}">${esc(initials(m.person))}</div>
           <div>
-            <div class="mc-name">${m.person}</div>
-            <div class="mc-role">${m.company || m.title || ''}</div>
+            <div class="mc-name">${esc(m.person)}</div>
+            <div class="mc-role">${esc(m.company || m.title || '')}</div>
           </div>
           ${badge}
         </div>
         <div class="mc-date"><i class="fa fa-calendar-alt"></i> ${formatDate(m.date)}</div>
         <div class="mc-tags">
-          ${(m.tags||[m.type||'Reunión']).slice(0,3).map(t=>`<span class="tag tag-blue" style="font-size:10px">${t}</span>`).join('')}
+          ${(m.tags||[m.type||'Reunión']).slice(0,3).map(t=>`<span class="tag tag-blue" style="font-size:10px">${esc(t)}</span>`).join('')}
         </div>
       </a>
     `;
@@ -716,6 +722,9 @@
 
     const tag = cfg.pipeline && cfg.pipeline.detection && cfg.pipeline.detection.tag;
     if (tag) document.querySelectorAll('.prep-tag').forEach(el => el.textContent = tag);
+
+    const hora = cfg.pipeline && cfg.pipeline.cronLocal;
+    if (hora) document.getElementById('cron-hour').textContent = hora + ' hs';
   }
 
   loadBranding();

@@ -102,7 +102,8 @@
 
   /* SIDEBAR */
   .sidebar { padding:24px 0; }
-  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; width:100%; text-align:left; background:none; font-family:inherit; }
+  .sidebar-tab:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
   .sidebar-tab:hover { background:var(--surface); color:var(--text); }
   .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
   .sidebar-tab i { width:18px; text-align:center; }
@@ -204,13 +205,14 @@
 </div>
 
 <div class="main-layout">
-  <div class="sidebar">
-    <div class="sidebar-tab active" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</div>
-    <div class="sidebar-tab" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
-    <div class="sidebar-tab" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</div>
-    <div class="sidebar-tab" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</div>
-    <div class="sidebar-tab" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</div>
-    <div class="sidebar-tab" onclick="showTab('postbrief',this)"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</div>
+  <div class="sidebar" role="tablist" aria-label="Secciones del dashboard">
+    <button type="button" class="sidebar-tab active" role="tab" aria-selected="true" aria-controls="tab-briefing" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-intel" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-research" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-sources" onclick="showTab('sources',this)"><i class="fas fa-link"></i> Fuentes</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-quiz" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-flashcards" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-postbrief" onclick="showTab('postbrief',this)"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</button>
 {{SIDEBAR_LINK}}
   </div>
 
@@ -249,6 +251,12 @@
     </div>
 
     <!-- TAB: QUIZ -->
+    <!-- TAB: FUENTES -->
+    <div id="tab-sources" class="tab-pane">
+      <div class="section-title"><i class="fas fa-link"></i> Fuentes</div>
+      <div class="markdown-body" id="sources-content"></div>
+    </div>
+
     <div id="tab-quiz" class="tab-pane">
       <div class="quiz-header">
         <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Knowledge Test</div>
@@ -296,10 +304,26 @@
 // ─── TAB SWITCHING ───────────────────────────────────────────────────────────
 function showTab(name, el) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
   document.getElementById('tab-' + name).classList.add('active');
   el.classList.add('active');
+  el.setAttribute('aria-selected', 'true');
 }
+
+// Flechas para moverse entre solapas con el teclado
+document.querySelectorAll('.sidebar-tab').forEach((tab, i, all) => {
+  tab.addEventListener('keydown', e => {
+    const step = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+    if (!step) return;
+    e.preventDefault();
+    const next = all[(i + step + all.length) % all.length];
+    next.focus();
+    next.click();
+  });
+});
 
 // ─── CONTENT DATA ─────────────────────────────────────────────────────────────
 const briefingMD = `{{BRIEFING_MD}}`;
@@ -308,6 +332,7 @@ const intelMD = `{{INTEL_MD}}`;
 
 const researchMD = `{{RESEARCH_MD}}`;
 const postBriefMD = `{{POSTBRIEF_MD}}`;
+const sourcesMD = `{{SOURCES_MD}}`;
 
 // ─── QUIZ DATA ────────────────────────────────────────────────────────────────
 const quizData = {{QUIZ_JSON}};
@@ -324,6 +349,7 @@ document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
 document.getElementById('intel-content').innerHTML = md2html(intelMD);
 document.getElementById('research-content').innerHTML = md2html(researchMD);
 document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
+document.getElementById('sources-content').innerHTML = md2html(sourcesMD);
 
 // ─── BRIEFING EN VOZ ALTA ─────────────────────────────────────────────────────
 // Usa la voz del navegador: no necesita archivo de audio ni conexión.

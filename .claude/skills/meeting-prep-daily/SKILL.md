@@ -125,11 +125,23 @@ lo que más valor aporta: escribilos con densidad real, no con relleno):
   "research_md": "...",   // fuentes, evidencia y limitaciones
   "quiz": [{"q":"...", "options":["A) ...","B) ...","C) ...","D) ..."], "answer":"B"}],  // 8
   "flashcards": [{"q":"...", "a":"..."}],  // 10
-  "sources_count": 12,
+  "sources": [                             // pobla la pestaña Fuentes — ver abajo
+    {"group":"Identidad profesional", "title":"...", "url":"https://...", "note":"qué aportó"}
+  ],
   "notebooklm_url": null,                  // siempre null: NotebookLM no está disponible
-  "generated": "<ISO 8601 con offset -03:00>"
+  "generated": "<ISO 8601 con el offset de owner.utcOffset>"
 }
 ```
+
+### El campo `sources` no es opcional
+
+Cargá **todas** las URLs que usaste, agrupadas por `group` (por ejemplo: *Identidad
+profesional*, *La empresa*, *Producción de contenido*, *Mercado*). En `note` poné
+en media línea **qué aportó esa fuente**, no de qué se trata.
+
+Es lo que hace auditable el research: cualquier afirmación del briefing tiene que
+poder rastrearse hasta una de esas fuentes. `sources_count` se calcula solo a partir
+de la lista, no hace falta escribirlo.
 
 `briefing_md` lleva seis secciones numeradas:
 

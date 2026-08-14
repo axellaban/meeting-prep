@@ -87,6 +87,41 @@ def build_stats(stats) -> str:
     return "\n".join(out)
 
 
+def build_sources_md(spec: dict) -> str:
+    """Lista de fuentes con links, para que el research sea auditable.
+
+    `sources` es una lista de {title, url, note?}, opcionalmente agrupada por
+    `group`. Sin fuentes cargadas, deja un aviso honesto en vez de una tabla vacía.
+    """
+    sources = spec.get("sources") or []
+    if not sources:
+        return ("## Sin fuentes cargadas\n\n"
+                "Este dashboard no registró las URLs del research. El detalle de la "
+                "investigación está en la pestaña **Deep Research**.\n")
+
+    grupos: dict = {}
+    for s in sources:
+        grupos.setdefault(s.get("group", "Fuentes consultadas"), []).append(s)
+
+    out = [f"# Fuentes ({len(sources)})\n"]
+    for grupo, items in grupos.items():
+        out.append(f"\n## {grupo}\n")
+        for s in items:
+            title = s.get("title") or s.get("url", "sin título")
+            url = s.get("url")
+            note = s.get("note")
+            line = f"- [{title}]({url})" if url else f"- {title}"
+            if note:
+                line += f" — {note}"
+            out.append(line)
+    out.append(
+        "\n\n---\n\n*Cada afirmación del briefing tiene que poder rastrearse hasta "
+        "alguna de estas fuentes. Lo que no sale de acá es interpretación, y como tal "
+        "está marcado en Deep Research.*\n"
+    )
+    return "\n".join(out)
+
+
 def rendered_text_len(html: str) -> int:
     """Caracteres de texto que realmente ve el lector, sin estilos ni etiquetas.
 
@@ -134,6 +169,7 @@ def render(spec: dict, cfg: dict) -> str:
         "INTEL_MD": js_template_escape(spec["intel_md"]),
         "RESEARCH_MD": js_template_escape(spec["research_md"]),
         "POSTBRIEF_MD": js_template_escape(spec.get("postbrief_md") or PLACEHOLDER_POSTBRIEF),
+        "SOURCES_MD": js_template_escape(build_sources_md(spec)),
         "QUIZ_JSON": json.dumps(spec.get("quiz", []), ensure_ascii=False, indent=2),
         "FLASHCARDS_JSON": json.dumps(spec.get("flashcards", []), ensure_ascii=False, indent=2),
     }
@@ -160,7 +196,7 @@ def upsert_registry(spec: dict) -> int:
         "type": spec.get("meeting_type", "Reunión de Negocio"),
         "tags": spec.get("registry_tags", [t["text"] for t in spec.get("tags", [])]),
         "notebooklm_url": spec.get("notebooklm_url"),
-        "sources_count": spec.get("sources_count", 0),
+        "sources_count": spec.get("sources_count") or len(spec.get("sources") or []),
         "path": f"meetings/{spec['id']}/index.html",
         "generated": spec["generated"],
     }
