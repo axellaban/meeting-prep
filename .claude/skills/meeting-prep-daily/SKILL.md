@@ -88,7 +88,7 @@ Reglas:
 - **Solo `#prep`.** No prepares eventos sin la etiqueta, aunque tengan invitados externos. Es una decisión explícita del usuario.
 - Google indexa duplicados de Cal.com; quedate con el evento que tiene `attendees` poblado.
 - Saltá los que ya existen en `meetings.json` con el mismo `id`, salvo que el usuario pida regenerarlos.
-- **Si no hay eventos con `#prep`: no generes nada, no hagas commit.** Terminá informando "sin reuniones para preparar". Es el resultado esperado la mayoría de los días, no una falla.
+- **Si no hay eventos con `#prep`: no generes ningún dashboard.** Escribí igual el heartbeat del paso 4.5, commitealo y terminá informando "sin reuniones para preparar". Es el resultado esperado la mayoría de los días, no una falla.
 
 Del evento sacás: nombre del invitado, email, empresa (del dominio del mail), hora,
 plataforma y la descripción de Cal.com (trae nombre + email + timezone del invitado).
@@ -288,6 +288,28 @@ git push -u origin main     # Vercel despliega solo
 ```
 
 Si el push falla por red, reintentá hasta 4 veces con backoff de 2s, 4s, 8s, 16s.
+
+## Paso 4.5 — Dejar constancia (siempre)
+
+**Corras o no corras algo, escribí `runs/last-run.md`** con este formato exacto:
+
+```markdown
+# Última corrida
+
+- **Cuándo:** 2026-08-14 06:03 (America/Argentina/Buenos_Aires)
+- **Resultado:** sin reuniones para preparar | 2 preps generados | error
+- **Research:** NotebookLM | web (NotebookLM no disponible)
+- **Detectados:** 1 evento con #prep
+- **Preparados:** 0 — «Axel Laban Arzubi» ya existía en meetings.json
+- **Notas:** cualquier decisión ambigua que hayas tomado
+```
+
+Es una sola línea de diff por día y hace **demostrable** que el sistema está vivo.
+Sin esto, un día de silencio es indistinguible de una Routine que dejó de dispararse.
+
+Commiteá ese archivo aunque no haya preps: es la única excepción a la regla de
+«no commitear si no hay nada». El mensaje en ese caso es
+`chore: heartbeat <fecha> — sin reuniones`.
 
 ## Paso 5 — Reportar
 
