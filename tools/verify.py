@@ -85,6 +85,26 @@ def check_registry() -> list:
         if not any(m.get("path") == rel for m in meetings):
             aviso(f"{rel} existe en disco pero no está en meetings.json")
 
+    # Sincronización entre public/meetings.json y el fallback INLINE_MEETINGS de public/index.html
+    portal = PUBLIC / "index.html"
+    if portal.exists():
+        html = portal.read_text(encoding="utf-8")
+        m = re.search(r"const INLINE_MEETINGS = (\[(?:\s*\]|.*?\n  \]));", html, flags=re.S)
+        if not m:
+            aviso("public/index.html: no se encontró el bloque INLINE_MEETINGS")
+        else:
+            try:
+                inline = json.loads(m.group(1))
+                inline_ids = [x.get("id") for x in inline]
+                reg_ids = [x.get("id") for x in meetings]
+                if inline_ids != reg_ids:
+                    aviso(
+                        f"public/index.html: INLINE_MEETINGS ({len(inline_ids)}) no coincide con "
+                        f"public/meetings.json ({len(reg_ids)}) — corré 'python3 tools/generate_dashboard.py --sync-portal'"
+                    )
+            except json.JSONDecodeError as e:
+                error(f"public/index.html: INLINE_MEETINGS no es JSON válido ({e})")
+
     return meetings
 
 
@@ -158,12 +178,17 @@ def check_assets() -> None:
 def check_personal_leaks(cfg: dict) -> None:
     """El código del sistema no debería tener datos de ninguna persona en particular."""
     owner = cfg.get("owner") or {}
-    marcas = {v.lower() for v in (owner.get("email"), owner.get("name")) if v}
+    placeholders = {"tu nombre completo", "vos@ejemplo.com"}
+    marcas = {
+        v.lower()
+        for v in (owner.get("email"), owner.get("name"))
+        if v and v.lower() not in placeholders
+    }
     if not marcas:
         return
 
     for f in [ROOT / "templates" / "dashboard.html",
-              ROOT / "tools" / "generate_dashboard.py",
+              *(ROOT / "tools").glob("*.py"),
               *(ROOT / "frameworks").glob("*.md"),
               *(ROOT / ".claude" / "skills").glob("*/SKILL.md")]:
         if not f.exists():
@@ -217,6 +242,10 @@ def main() -> None:
     check_personal_leaks(cfg)
     check_secrets()
 
+    version_file = ROOT / "VERSION"
+    version = version_file.read_text(encoding="utf-8").strip() if version_file.exists() else "—"
+
+    print(f"version          {version}")
     print(f"config.json      {'ok' if cfg else 'ausente'}")
     print(f"meetings.json    {len(meetings)} reuniones")
     print(f"dashboards       {n} archivos")

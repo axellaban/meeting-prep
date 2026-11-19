@@ -54,34 +54,34 @@ coherente con `timezone`.
 
 ## Limpiá la demo
 
-El repo viene con reuniones de ejemplo del autor original. Preguntá si las quiere
-borrar. Si dice que sí:
+Si el repo viene con reuniones de ejemplo del autor original (en `public/meetings/`),
+preguntá si las quiere borrar. Si dice que sí:
 
 - borrá los directorios de `public/meetings/`
 - dejá `public/meetings.json` como `{"meetings": []}`
-- corré cualquier generación posterior para que el portal se sincronice
+- corré `python3 tools/generate_dashboard.py --sync-portal` para dejar limpio el fallback inline de `public/index.html`
 
-Si dice que no, dejalas: sirven para ver cómo queda un dashboard terminado.
+Si el repo ya vino limpio desde el template (`meeting-prep-OS`), salteá este paso sin preguntar.
 
 ## Verificá antes de cantar victoria
 
 ```bash
-python3 -c "import json;json.load(open('config.json'))"          # config válida
-python3 tools/generate_dashboard.py <un-spec.json> --dry-run     # el generador corre
+python3 tools/verify.py
 ```
 
-Si borraron la demo no vas a tener spec a mano; alcanza con validar el JSON y
-confirmar que `templates/dashboard.html` y `tools/generate_dashboard.py` existen.
+Tiene que dar `✅ todo en orden`. Si hay algún error en `config.json` o en el registro,
+corregilo antes de terminar.
 
 ## Dejá andando la Routine
 
-Esto **no lo podés hacer vos**: los conectores se adjuntan sólo desde la interfaz.
-Dale el paso a paso exacto, con la hora ya convertida a UTC:
+Esto **no lo podés hacer vos**: el repositorio y los conectores se adjuntan sólo desde
+la interfaz. Dale el paso a paso exacto:
 
 > 1. Andá a **claude.ai → Routines → nueva rutina**
-> 2. Horario: `<la hora que eligió>` en su zona
-> 3. Conectores: **Google Calendar** (obligatorio) y **Firecrawl** (recomendado)
-> 4. Pegá este prompt:
+> 2. **Repositorio / entorno:** elegí tu repo de GitHub (fundamental: sin repo asociado la sesión arranca en un directorio vacío y no puede leer `config.json` ni hacer `git push`)
+> 3. **Horario:** `<la hora que eligió>` en tu zona
+> 4. **Conectores:** **Google Calendar** (obligatorio) y **Firecrawl** (recomendado)
+> 5. Pegá este prompt:
 
 ```
 Corré el pipeline diario de Meeting Prep OS.
@@ -99,11 +99,11 @@ Corré el pipeline diario de Meeting Prep OS.
 ```
 
 Recordale que **el cron de la interfaz se define en su hora local**, y que si quiere
-publicar el sitio tiene que importar el repo en vercel.com/new (deploy sin cambiar
-nada).
+publicar el sitio tiene que importar el repo en vercel.com/new y cargar las variables
+de `.env.example` para el login con Google (ver `SETUP.md`).
 
 ## Cerrá con el resumen
 
-Tres líneas: qué quedó configurado, qué tiene que hacer él (crear la Routine, y
-conectar Vercel si quiere el sitio público), y cómo se usa a diario — poner la
-etiqueta en el título del evento y nada más.
+Tres líneas: qué quedó configurado, qué tiene que hacer él (crear la Routine con el repo
+y los conectores adjuntos, y conectar Vercel si quiere el sitio online), y cómo se usa a
+diario — poner la etiqueta en el título del evento y nada más.

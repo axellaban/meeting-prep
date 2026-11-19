@@ -133,9 +133,12 @@
   .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
 
   /* QUIZ */
-  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; gap:12px; flex-wrap:wrap; }
+  .quiz-meta { display:flex; align-items:center; gap:10px; }
   .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
   .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .quiz-reset { background:var(--surface); border:1px solid var(--border); color:var(--text-muted); border-radius:12px; padding:10px 14px; font-size:13px; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s; }
+  .quiz-reset:hover { border-color:var(--accent); color:var(--text); }
   .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
   .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
   .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
@@ -306,7 +309,10 @@
     <div id="tab-quiz" class="tab-pane">
       <div class="quiz-header">
         <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Knowledge Test</div>
-        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+        <div class="quiz-meta">
+          <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+          <button type="button" class="quiz-reset" onclick="resetQuiz()"><i class="fas fa-rotate-right"></i> Reiniciar</button>
+        </div>
       </div>
       <div id="quiz-container"></div>
     </div>
@@ -362,7 +368,8 @@ function showTab(name, el) {
 // Flechas para moverse entre solapas con el teclado
 document.querySelectorAll('.sidebar-tab').forEach((tab, i, all) => {
   tab.addEventListener('keydown', e => {
-    const step = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+    const step = (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? 1
+               : (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ? -1 : 0;
     if (!step) return;
     e.preventDefault();
     const next = all[(i + step + all.length) % all.length];
@@ -805,6 +812,12 @@ document.getElementById('intel-content').innerHTML = md2html(intelMD);
 document.getElementById('research-content').innerHTML = md2html(researchMD);
 document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
 document.getElementById('sources-content').innerHTML = md2html(sourcesMD);
+
+// Abrir links externos de las fuentes y del research en pestaña nueva
+document.querySelectorAll('.markdown-body a[href^="http"]').forEach(a => {
+  a.setAttribute('target', '_blank');
+  a.setAttribute('rel', 'noopener noreferrer');
+});
 
 // ─── BRIEFING EN VOZ ALTA ─────────────────────────────────────────────────────
 // Usa la voz del navegador: no necesita archivo de audio ni conexión.

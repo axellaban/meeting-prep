@@ -216,26 +216,136 @@ def upsert_registry(spec: dict) -> int:
 def sync_portal_fallback(meetings: list) -> None:
     """index.html trae una copia inline que se usa cuando se abre por file://."""
     html = PORTAL.read_text(encoding="utf-8")
-    block = json.dumps(meetings, ensure_ascii=False, indent=4)
-    block = "\n".join(("  " + ln) if ln.strip() else ln for ln in block.splitlines())
+    if not meetings:
+        replacement = "const INLINE_MEETINGS = [];"
+    else:
+        block = json.dumps(meetings, ensure_ascii=False, indent=4)
+        block = "\n".join(("  " + ln) if ln.strip() else ln for ln in block.splitlines())
+        replacement = "const INLINE_MEETINGS = " + block.lstrip() + ";"
     new, n = re.subn(
-        r"const INLINE_MEETINGS = \[.*?\n  \];",
-        "const INLINE_MEETINGS = " + block.lstrip() + ";",
+        r"const INLINE_MEETINGS = \[(?:\s*\];|.*?\n  \];)",
+        replacement,
         html,
         count=1,
         flags=re.S,
     )
     if n != 1:
-        print("AVISO: no se pudo sincronizar INLINE_MEETINGS en index.html")
+        print("AVISO: no se pudo sincronizar INLINE_MEETINGS en public/index.html")
         return
     PORTAL.write_text(new, encoding="utf-8")
+
+
+def upgrade_existing_dashboards(dry_run: bool = False) -> None:
+    """Aplica mejoras de script/CSS de templates/dashboard.html a dashboards existentes."""
+    tpl = TEMPLATE.read_text(encoding="utf-8")
+    css_match = re.search(
+        r"(\.quiz-header \{.*?\n  \.quiz-reset:hover \{.*?\})",
+        tpl,
+        flags=re.S,
+    )
+    js_match = re.search(
+        r"(function renderQuiz\(\) \{.*?</script>)",
+        tpl,
+        flags=re.S,
+    )
+    if not css_match or not js_match:
+        raise SystemExit("ERROR: no se pudieron extraer bloques de templates/dashboard.html")
+
+    new_css = css_match.group(1)
+    new_js = js_match.group(1)
+
+    updated = 0
+    for f in sorted((PUBLIC / "meetings").glob("*/index.html")):
+        txt = f.read_text(encoding="utf-8")
+        orig = txt
+
+        # 1. CSS de quiz-reset
+        if ".quiz-reset" not in txt:
+            txt = re.sub(
+                r"\.quiz-header \{.*?\n  \.quiz-score span \{.*?\}",
+                new_css,
+                txt,
+                count=1,
+                flags=re.S,
+            )
+
+        # 2. Botón de reiniciar quiz en el header
+        if "resetQuiz()" not in txt and '<div class="quiz-score">' in txt:
+            txt = re.sub(
+                r'<div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">\d+</span></div>',
+                '<div class="quiz-meta">\n'
+                '          <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>\n'
+                '          <button type="button" class="quiz-reset" onclick="resetQuiz()"><i class="fas fa-rotate-right"></i> Reiniciar</button>\n'
+                '        </div>',
+                txt,
+                count=1,
+            )
+
+        # 3. Abrir links externos en pestaña nueva
+        if '.markdown-body a[href^="http"]' not in txt and "document.getElementById('sources-content').innerHTML = md2html(sourcesMD);" in txt:
+            txt = txt.replace(
+                "document.getElementById('sources-content').innerHTML = md2html(sourcesMD);",
+                "document.getElementById('sources-content').innerHTML = md2html(sourcesMD);\n\n"
+                "// Abrir links externos de las fuentes y del research en pestaña nueva\n"
+                "document.querySelectorAll('.markdown-body a[href^=\"http\"]').forEach(a => {\n"
+                "  a.setAttribute('target', '_blank');\n"
+                "  a.setAttribute('rel', 'noopener noreferrer');\n"
+                "});",
+                1,
+            )
+
+        # 4. Navegación por teclado horizontal en tabs del sidebar
+        txt = txt.replace(
+            "const step = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;",
+            "const step = (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? 1\n"
+            "               : (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ? -1 : 0;",
+        )
+
+        # 5. Bloque JS de renderQuiz / flashcards / init
+        if "function resetQuiz()" not in txt and "function renderQuiz()" in txt:
+            txt = re.sub(
+                r"function renderQuiz\(\) \{.*?</script>",
+                lambda _: new_js,
+                txt,
+                count=1,
+                flags=re.S,
+            )
+
+        # 6. Comentario duplicado
+        txt = txt.replace(
+            "    <!-- TAB: QUIZ -->\n    <!-- TAB: QUIZ -->",
+            "    <!-- TAB: QUIZ -->",
+        )
+
+        if txt != orig:
+            updated += 1
+            if not dry_run:
+                f.write_text(txt, encoding="utf-8")
+            print(f"{'🔍' if dry_run else '✅'} {f.relative_to(ROOT)}")
+
+    print(f"\n{'Se actualizarían' if dry_run else 'Actualizados'} {updated} dashboard(s).")
 
 
 def main() -> None:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     dry_run = "--dry-run" in sys.argv
+
+    if "--sync-portal" in sys.argv:
+        data = json.loads(REGISTRY.read_text(encoding="utf-8"))
+        sync_portal_fallback(data.get("meetings", []))
+        print(f"✅ public/index.html — fallback inline sincronizado ({len(data.get('meetings', []))} reuniones)")
+        return
+
+    if "--upgrade-existing" in sys.argv:
+        upgrade_existing_dashboards(dry_run=dry_run)
+        return
+
     if len(args) != 1:
-        raise SystemExit("uso: generate_dashboard.py <spec.json> [--dry-run]")
+        raise SystemExit(
+            "uso: generate_dashboard.py <spec.json> [--dry-run]\n"
+            "     generate_dashboard.py --sync-portal\n"
+            "     generate_dashboard.py --upgrade-existing [--dry-run]"
+        )
 
     cfg = load_config()
     spec = json.loads(Path(args[0]).read_text(encoding="utf-8"))

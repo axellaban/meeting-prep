@@ -39,12 +39,13 @@ Si preferís hacerlo a mano, editá `config.json` directamente — está comenta
 
 ## 3. Crear la Routine
 
-Esto **hay que hacerlo desde la interfaz**: los conectores solo se adjuntan ahí.
+Esto **hay que hacerlo desde la interfaz**: el repositorio y los conectores solo se adjuntan ahí.
 
 1. Andá a **claude.ai → Routines → nueva rutina**
-2. Elegí la hora (la misma que pusiste en `config.json`)
-3. Adjuntá los conectores: **Google Calendar** (obligatorio) y **Firecrawl** (recomendado)
-4. Pegá este prompt:
+2. **Elegí tu repositorio de GitHub como fuente/entorno de la rutina** (sin esto, la sesión despierta en una carpeta vacía y no encuentra `config.json` ni puede hacer `git push`)
+3. Elegí la hora (la misma que pusiste en `config.json`)
+4. Adjuntá los conectores: **Google Calendar** (obligatorio) y **Firecrawl** (recomendado)
+5. Pegá este prompt:
 
 ```
 Corré el pipeline diario de Meeting Prep OS.
@@ -140,7 +141,30 @@ Los frameworks incluidos son `generic` (default), `kona-4w` (discovery consultiv
 
 ---
 
+## Actualizar tu repo con mejoras del template
+
+Cuando `meeting-prep-OS` saca una nueva versión (mejoras en `templates/dashboard.html`,
+`public/index.html`, skills o scripts), podés traer los cambios del motor **sin tocar tu
+`config.json` ni tus reuniones en `public/meetings/`**:
+
+```bash
+python3 tools/sync_template.py --pull-upstream
+```
+
+Y si querés aplicar las mejoras visuales o de interactividad del nuevo template a los
+dashboards que ya tenías generados:
+
+```bash
+python3 tools/generate_dashboard.py --upgrade-existing
+```
+
+---
+
 ## Problemas frecuentes
+
+**La Routine falló diciendo que el directorio estaba vacío o sin repositorio git.**
+Faltó seleccionar tu repositorio de GitHub como fuente/entorno dentro de la Routine
+en claude.ai. Editala y asociá el repo.
 
 **El agente dice que no encuentra Google Calendar.**
 El conector no quedó adjunto a la Routine. Editala en claude.ai y agregalo — no

@@ -20,8 +20,9 @@ Necesitás plan pago de Claude — el que incluye **Routines**.
 2. **Conectá Google Calendar** en claude.ai → Connectors.
 3. **Abrí tu repo en Claude Code** y escribí `/setup`. Te pregunta nombre, calendario,
    horario y método de venta, y deja todo configurado.
-4. **Creá la Routine** en claude.ai → Routines, **adjuntando el conector de Google
-   Calendar** y pegando el prompt que te da el `/setup`.
+4. **Creá la Routine** en claude.ai → Routines: **seleccioná tu repositorio de GitHub
+   como fuente**, **adjuntá el conector de Google Calendar** y pegá el prompt que te
+   da el `/setup`.
 5. **Conectá Firecrawl** en claude.ai → Connectors, y adjuntalo también a la rutina.
    Es el motor de research; si se cae, el sistema sigue solo con búsqueda web.
 6. **Importá el repo en [vercel.com/new](https://vercel.com/new)** y cargá las tres
@@ -29,10 +30,11 @@ Necesitás plan pago de Claude — el que incluye **Routines**.
    Sin esto los dashboards existen como archivos pero no podés abrirlos del
    celular, que es cuando los vas a querer.
 
-> **Dos cosas que se confunden seguido.** Conectar un conector en tu cuenta **no** lo
-> adjunta a la rutina: son dos pasos distintos, el 2 y el 4. Y el repo tiene que ser
-> **tuyo** — si clonás este directamente no vas a poder pushear, y el agente va a fallar
-> todas las mañanas al publicar.
+> **Tres cosas que se confunden seguido.** Conectar un conector en tu cuenta **no** lo
+> adjunta a la rutina: son dos pasos distintos, el 2 y el 4. La rutina tiene que tener
+> **tu repositorio seleccionado como entorno** (si no, despierta en una carpeta vacía).
+> Y el repo tiene que ser **tuyo** — si clonás el template directamente no vas a poder
+> pushear, y el agente va a fallar todas las mañanas al publicar.
 
 Detalle completo en **[SETUP.md](SETUP.md)**.
 
@@ -89,12 +91,14 @@ Por eso conviene que el repo sea **privado**.
 ```
 meeting-prep/
 ├── config.json                         # Tu configuración — empezá por acá
+├── VERSION                             # Versión actual del motor de Meeting Prep OS
 ├── SETUP.md                            # Guía de instalación
 ├── frameworks/                         # Guiones de conversación enchufables
 │   ├── generic.md · kona-4w.md · spin.md · meddic.md
 ├── templates/dashboard.html            # Diseño de todos los dashboards
 ├── tools/
 │   ├── generate_dashboard.py           # Spec JSON → dashboard + registro
+│   ├── sync_template.py                # Sincroniza mejoras del motor con el template público
 │   └── verify.py                       # Chequea que el repo esté sano
 ├── public/                             # Lo que se publica (detrás del login)
 │   ├── index.html                      # Portal
@@ -119,6 +123,26 @@ meeting-prep/
 | El guion de conversación | `pipeline.framework` + `frameworks/` |
 | Cómo investiga y cuánta densidad exige | `.claude/skills/meeting-prep-daily/SKILL.md` |
 | El diseño | `templates/dashboard.html` |
+
+---
+
+## Actualizar desde el template (o publicar nuevas versiones)
+
+El motor del sistema (`templates/`, `tools/`, `frameworks/`, `.claude/skills/`, `app/`,
+`auth.ts`, `proxy.ts`, `public/index.html`, `public/assets/`) está separado de tus datos
+(`config.json`, `public/meetings/`, `public/meetings.json`, `runs/`).
+
+- **Si clonaste el template** y querés traer las últimas mejoras de `meeting-prep-OS`
+  sin tocar tu configuración ni tus reuniones:
+  ```bash
+  python3 tools/sync_template.py --pull-upstream
+  ```
+- **Si sos el mantenedor** y querés exportar las mejoras del motor desde tu instancia
+  personal hacia el template público `meeting-prep-OS` (con verificación anti-fugas y
+  release en GitHub):
+  ```bash
+  python3 tools/sync_template.py --release v1.1.0
+  ```
 
 ---
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -132,7 +132,7 @@
     }
     .section-header {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 16px;
+      margin-bottom: 16px; gap: 12px; flex-wrap: wrap;
     }
     .section-title {
       font-size: 13px; font-weight: 700; letter-spacing: 1px;
@@ -140,6 +140,26 @@
       display: flex; align-items: center; gap: 8px;
     }
     .section-title i { color: var(--gold); }
+    .search-box {
+      position: relative; display: flex; align-items: center;
+      min-width: 240px; max-width: 320px; flex: 1;
+    }
+    .search-box i {
+      position: absolute; left: 12px; color: var(--text-muted);
+      font-size: 12px; pointer-events: none;
+    }
+    .search-input {
+      width: 100%; background: var(--glass);
+      border: 1px solid var(--glass-border); border-radius: 10px;
+      padding: 8px 12px 8px 34px; color: var(--text);
+      font-family: inherit; font-size: 12.5px; outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus {
+      border-color: rgba(59,130,246,0.45);
+      background: rgba(255,255,255,0.07);
+    }
 
     /* TODAY CARD */
     .today-card {
@@ -335,6 +355,10 @@
 <div class="section">
   <div class="section-header">
     <div class="section-title"><i class="fa fa-history"></i> Todas las reuniones</div>
+    <div class="search-box" id="search-box" style="display:none">
+      <i class="fa fa-search"></i>
+      <input type="search" id="meeting-search" class="search-input" placeholder="Buscar persona, empresa o tag… (/)" aria-label="Buscar reunión" />
+    </div>
   </div>
   <div id="all-container"><div class="loader"><div class="spinner"></div></div></div>
 </div>
@@ -369,7 +393,12 @@
 </footer>
 
 <script>
-  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const today = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0')
+  ].join('-');
 
   // Avatar colors by initial
   const colors = [
@@ -420,7 +449,9 @@
   }
 
   function buildMeetingCard(m) {
-    const badge = isUpcoming(m.date)
+    const badge = isToday(m.date)
+      ? `<span class="tag tag-gold" style="margin-left:auto;font-size:10px">Hoy</span>`
+      : isUpcoming(m.date)
       ? `<span class="tag tag-gold" style="margin-left:auto;font-size:10px">Próxima</span>`
       : `<span class="tag" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-muted);font-size:10px;margin-left:auto">Pasada</span>`;
     return `
@@ -433,12 +464,39 @@
           </div>
           ${badge}
         </div>
-        <div class="mc-date"><i class="fa fa-calendar-alt"></i> ${formatDate(m.date)}</div>
+        <div class="mc-date"><i class="fa fa-calendar-alt"></i> ${formatDate(m.date)}${m.time ? ' · ' + esc(m.time) + ' hs' : ''}</div>
         <div class="mc-tags">
           ${(m.tags||[m.type||'Reunión']).slice(0,3).map(t=>`<span class="tag tag-blue" style="font-size:10px">${esc(t)}</span>`).join('')}
         </div>
       </a>
     `;
+  }
+
+  let allMeetingsCache = [];
+
+  function renderAllMeetings(list, query = '') {
+    const container = document.getElementById('all-container');
+    if (allMeetingsCache.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📅</div>
+          <h3>Sin reuniones todavía</h3>
+          <p>Agregá <strong><span class="prep-tag">#prep</span></strong> al título de un evento en Google Calendar y el sistema generará el dashboard automáticamente.</p>
+        </div>
+      `;
+      return;
+    }
+    if (list.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>Sin resultados para «${esc(query)}»</h3>
+          <p>Probá buscando por otro nombre, empresa, cargo o etiqueta.</p>
+        </div>
+      `;
+      return;
+    }
+    container.innerHTML = `<div class="meetings-grid">${list.map(buildMeetingCard).join('')}</div>`;
   }
 
   async function loadMeetings() {
@@ -452,9 +510,16 @@
       meetings = INLINE_MEETINGS;
     }
 
-    const todayMeetings = meetings.filter(m => isToday(m.date));
-    const upcomingMeetings = meetings.filter(m => isUpcoming(m.date));
-    const allMeetings = [...meetings].sort((a,b) => b.date.localeCompare(a.date));
+    const todayMeetings = meetings
+      .filter(m => isToday(m.date))
+      .sort((a,b) => (a.time || '').localeCompare(b.time || ''));
+    const upcomingMeetings = meetings
+      .filter(m => isUpcoming(m.date))
+      .sort((a,b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')));
+    const allMeetings = [...meetings].sort((a,b) =>
+      (b.date + (b.time || '')).localeCompare(a.date + (a.time || ''))
+    );
+    allMeetingsCache = allMeetings;
 
     // Stats
     document.getElementById('stat-total').textContent = meetings.length;
@@ -473,18 +538,38 @@
       document.getElementById('upcoming-container').innerHTML = upcomingMeetings.map(buildMeetingCard).join('');
     }
 
-    // All meetings
-    if (allMeetings.length === 0) {
-      document.getElementById('all-container').innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">📅</div>
-          <h3>Sin reuniones todavía</h3>
-          <p>Agregá <strong><span class="prep-tag">#prep</span></strong> al título de un evento en Google Calendar y el sistema generará el dashboard automáticamente.</p>
-        </div>
-      `;
-    } else {
-      document.getElementById('all-container').innerHTML = `<div class="meetings-grid">${allMeetings.map(buildMeetingCard).join('')}</div>`;
+    // Search bar
+    const searchBox = document.getElementById('search-box');
+    const searchInput = document.getElementById('meeting-search');
+    if (allMeetings.length > 0 && searchBox && searchInput) {
+      searchBox.style.display = 'flex';
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) {
+          renderAllMeetings(allMeetingsCache);
+          return;
+        }
+        const filtered = allMeetingsCache.filter(m => {
+          const haystack = [
+            m.person, m.title, m.company, m.type, m.date,
+            ...(m.tags || [])
+          ].filter(Boolean).join(' ').toLowerCase();
+          return haystack.includes(q);
+        });
+        renderAllMeetings(filtered, searchInput.value.trim());
+      });
+      document.addEventListener('keydown', (ev) => {
+        if (ev.key === '/' && document.activeElement !== searchInput && !['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) {
+          ev.preventDefault();
+          searchInput.focus();
+        } else if (ev.key === 'Escape' && document.activeElement === searchInput && searchInput.value) {
+          searchInput.value = '';
+          renderAllMeetings(allMeetingsCache);
+        }
+      });
     }
+
+    renderAllMeetings(allMeetings);
   }
 
   // Inline fallback data (updated automatically by the system)

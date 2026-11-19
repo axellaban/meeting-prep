@@ -88,10 +88,11 @@ mcp__Google_Calendar__list_events(
 Reglas:
 - **Solo `#prep`.** No prepares eventos sin la etiqueta, aunque tengan invitados externos. Es una decisión explícita del usuario.
 - Google indexa duplicados de Cal.com; quedate con el evento que tiene `attendees` poblado.
-- Saltá los que ya existen en `meetings.json` con el mismo `id`, salvo que el usuario pida regenerarlos.
+- **Eventos manuales sin `attendees`:** muchas veces el usuario agenda un recordatorio propio con sólo el nombre en el título (ej. `"Matías mindlin #prep"`). Si `attendees` viene vacío, extraé el nombre del título (limpiando la etiqueta `#prep`), y si tenés acceso al historial de Calendar, Gmail o Drive en la sesión, buscá eventos o hilos previos con esa persona para desambiguar apellido, empresa y relación antes de salir a la web.
+- Saltá los que ya existen en `public/meetings.json` con el mismo `id`, salvo que el usuario pida regenerarlos.
 - **Si no hay eventos con `#prep`: no generes ningún dashboard.** Escribí igual el heartbeat del paso 4.5, commitealo y terminá informando "sin reuniones para preparar". Es el resultado esperado la mayoría de los días, no una falla.
 
-Del evento sacás: nombre del invitado, email, empresa (del dominio del mail), hora,
+Del evento sacás: nombre del invitado, email, empresa (del dominio del mail o de contexto previo), hora,
 plataforma y la descripción de Cal.com (trae nombre + email + timezone del invitado).
 
 ## Paso 2 — Investigar
@@ -121,10 +122,11 @@ oportunidad.
 
 Cargá cada URL usada en el campo `sources` del spec: es lo que hace auditable el research.
 
-Reglas de honestidad, importantes:
+Reglas de honestidad y confidencialidad, importantes:
 - **No inventes datos.** Si no encontraste el rol, escribí "rol a confirmar al inicio del call".
 - Distinguí siempre **hecho verificado** de **interpretación estratégica**. La sección de research lleva un apartado explícito de limitaciones.
 - Si el research sale flaco (menos de 5 fuentes útiles), generá igual el dashboard pero decilo en la sección de research y bajá `sources_count`.
+- **Confidencialidad en contexto interno:** si el repo es público y usaste correos, notas o documentos internos del usuario para contextualizar la reunión, referenciá los acuerdos o temas de agenda en términos funcionales pero **no transcribas montos privados, teléfonos personales ni enlaces a documentos internos** dentro del HTML publicado.
 
 ## Paso 3 — Armar el spec
 
@@ -196,8 +198,9 @@ digital de LATAM, justo cuando lanza la edición 200 del eCommerce Day Tour.
 Reglas de densidad, medidas contra el estándar del repo
 (`public/meetings/2026-03-28-marcos-pueyrredon/`, que es la vara):
 
-- **Apuntá a 25.000+ caracteres de contenido** entre las tres secciones de texto.
-  Por debajo de ~20.000 el dashboard se siente flaco.
+- **Respetá el piso de `pipeline.research.minContentChars`** (default 15.000 caracteres
+  de texto renderizado, medidos con `python3 tools/generate_dashboard.py <spec.json> --dry-run`)
+  y **apuntá a 25.000+ caracteres** cuando haya huella pública suficiente.
 - Cada afirmación lleva un dato: fecha, cifra, nombre propio o cargo. Si una línea
   no tiene ninguno de los cuatro, sobra.
 - Negrita para el nombre de empresas, cifras y cargos — es lo que el ojo engancha.
@@ -242,7 +245,7 @@ queda algún placeholder sin resolver.
 
 Verificá antes de publicar:
 ```bash
-python3 -c "import json;json.load(open('public/meetings.json'))"   # registry válido
+python3 tools/verify.py                                            # chequeo integral del repo
 grep -c '{{' public/meetings/<id>/index.html                       # tiene que dar 0
 ```
 

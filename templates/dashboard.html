@@ -133,9 +133,12 @@
   .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
 
   /* QUIZ */
-  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; gap:12px; flex-wrap:wrap; }
+  .quiz-meta { display:flex; align-items:center; gap:10px; }
   .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
   .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .quiz-reset { background:var(--surface); border:1px solid var(--border); color:var(--text-muted); border-radius:12px; padding:10px 14px; font-size:13px; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s; }
+  .quiz-reset:hover { border-color:var(--accent); color:var(--text); }
   .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
   .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
   .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
@@ -162,7 +165,7 @@
   .flashcard-nav { display:flex; gap:16px; align-items:center; }
   .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
   .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
-  .dots { display:flex; gap:6px; }
+  .dots { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; }
   .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
   .dot.active { background:var(--accent); width:24px; border-radius:4px; }
 
@@ -272,17 +275,20 @@
       <div class="markdown-body" id="research-content"></div>
     </div>
 
-    <!-- TAB: QUIZ -->
     <!-- TAB: FUENTES -->
     <div id="tab-sources" class="tab-pane">
       <div class="section-title"><i class="fas fa-link"></i> Fuentes</div>
       <div class="markdown-body" id="sources-content"></div>
     </div>
 
+    <!-- TAB: QUIZ -->
     <div id="tab-quiz" class="tab-pane">
       <div class="quiz-header">
         <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Knowledge Test</div>
-        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+        <div class="quiz-meta">
+          <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+          <button type="button" class="quiz-reset" onclick="resetQuiz()"><i class="fas fa-rotate-right"></i> Reiniciar</button>
+        </div>
       </div>
       <div id="quiz-container"></div>
     </div>
@@ -335,10 +341,11 @@ function showTab(name, el) {
   el.setAttribute('aria-selected', 'true');
 }
 
-// Flechas para moverse entre solapas con el teclado
+// Flechas para moverse entre solapas con el teclado (vertical en desktop, horizontal en mobile)
 document.querySelectorAll('.sidebar-tab').forEach((tab, i, all) => {
   tab.addEventListener('keydown', e => {
-    const step = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+    const step = (e.key === 'ArrowDown' || e.key === 'ArrowRight') ? 1
+               : (e.key === 'ArrowUp' || e.key === 'ArrowLeft') ? -1 : 0;
     if (!step) return;
     e.preventDefault();
     const next = all[(i + step + all.length) % all.length];
@@ -372,6 +379,12 @@ document.getElementById('intel-content').innerHTML = md2html(intelMD);
 document.getElementById('research-content').innerHTML = md2html(researchMD);
 document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
 document.getElementById('sources-content').innerHTML = md2html(sourcesMD);
+
+// Abrir links externos de las fuentes y del research en pestaña nueva
+document.querySelectorAll('.markdown-body a[href^="http"]').forEach(a => {
+  a.setAttribute('target', '_blank');
+  a.setAttribute('rel', 'noopener noreferrer');
+});
 
 // ─── BRIEFING EN VOZ ALTA ─────────────────────────────────────────────────────
 // Usa la voz del navegador: no necesita archivo de audio ni conexión.
@@ -433,23 +446,30 @@ let quizScore = 0;
 const quizContainer = document.getElementById('quiz-container');
 document.getElementById('total-q').textContent = quizData.length;
 
-quizData.forEach((item, idx) => {
-  const div = document.createElement('div');
-  div.className = 'quiz-question';
-  div.innerHTML = `
-    <div class="question-num">Pregunta ${idx + 1} de ${quizData.length}</div>
-    <div class="question-text">${item.q}</div>
-    <div class="options" id="opts-${idx}">
-      ${item.options.map((opt, i) => `
-        <div class="option" onclick="selectOption(${idx},'${'ABCD'[i]}','${item.answer}',this)">
-          <div class="option-letter">${'ABCD'[i]}</div>
-          <span>${opt.substring(3)}</span>
-        </div>
-      `).join('')}
-    </div>
-  `;
-  quizContainer.appendChild(div);
-});
+function renderQuiz() {
+  quizScore = 0;
+  document.getElementById('score').textContent = '0';
+  quizContainer.innerHTML = '';
+  quizData.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-question';
+    div.innerHTML = `
+      <div class="question-num">Pregunta ${idx + 1} de ${quizData.length}</div>
+      <div class="question-text">${item.q}</div>
+      <div class="options" id="opts-${idx}">
+        ${(item.options || []).map((opt, i) => `
+          <div class="option" onclick="selectOption(${idx},'${'ABCD'[i]}','${item.answer}',this)">
+            <div class="option-letter">${'ABCD'[i]}</div>
+            <span>${String(opt).replace(/^[A-D][).:\-]\s*/i, '')}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    quizContainer.appendChild(div);
+  });
+}
+
+function resetQuiz() { renderQuiz(); }
 
 function selectOption(qIdx, selected, correct, el) {
   const opts = document.querySelectorAll(`#opts-${qIdx} .option`);
@@ -467,12 +487,20 @@ function selectOption(qIdx, selected, correct, el) {
   }
 }
 
+renderQuiz();
+
 // ─── FLASHCARD LOGIC ──────────────────────────────────────────────────────────
 let fcIdx = 0;
 const fcEl = document.getElementById('flashcard');
 document.getElementById('fc-total').textContent = flashcards.length;
 
 function renderCard() {
+  if (!flashcards.length) {
+    document.getElementById('fc-current').textContent = '0';
+    document.getElementById('fc-question').textContent = 'Sin flashcards cargadas.';
+    document.getElementById('fc-answer').textContent = '';
+    return;
+  }
   const c = flashcards[fcIdx];
   document.getElementById('fc-question').textContent = c.q;
   document.getElementById('fc-answer').textContent = c.a;
@@ -487,9 +515,17 @@ function renderCard() {
   });
 }
 
-function flipCard() { fcEl.classList.toggle('flipped'); }
-function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderCard(); }
-function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderCard(); }
+function flipCard() { if (flashcards.length) fcEl.classList.toggle('flipped'); }
+function nextCard() { if (flashcards.length) { fcIdx = (fcIdx + 1) % flashcards.length; renderCard(); } }
+function prevCard() { if (flashcards.length) { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderCard(); } }
+
+document.addEventListener('keydown', e => {
+  const activeFc = document.getElementById('tab-flashcards').classList.contains('active');
+  if (!activeFc || ['INPUT', 'TEXTAREA', 'BUTTON'].includes(document.activeElement?.tagName)) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); nextCard(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); prevCard(); }
+  else if (e.key === ' ') { e.preventDefault(); flipCard(); }
+});
 
 renderCard();
 </script>

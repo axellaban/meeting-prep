@@ -1,0 +1,74 @@
+name: Sync Engine to Template (meeting-prep-OS)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "VERSION"
+      - "SETUP.md"
+      - "README.md"
+      - ".env.example"
+      - ".gitignore"
+      - "auth.ts"
+      - "proxy.ts"
+      - "next.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "vercel.json"
+      - "app/**"
+      - "public/index.html"
+      - "public/assets/**"
+      - "templates/**"
+      - "tools/**"
+      - "frameworks/**"
+      - ".claude/skills/**"
+      - ".github/workflows/verify.yml"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Optional release tag to publish on meeting-prep-OS (e.g. v1.1.0)"
+        required: false
+        default: ""
+
+jobs:
+  sync-template:
+    if: github.repository == 'axellaban/meeting-prep'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout personal repo (meeting-prep)
+        uses: actions/checkout@v4
+        with:
+          path: meeting-prep
+
+      - name: Check TEMPLATE_SYNC_TOKEN
+        id: check_token
+        run: |
+          if [ -z "${{ secrets.TEMPLATE_SYNC_TOKEN }}" ]; then
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::TEMPLATE_SYNC_TOKEN no está configurado en Secrets. Podés sincronizar localmente con 'python3 tools/sync_template.py --push' o agregar un PAT con permisos sobre axellaban/meeting-prep-OS."
+          else
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout template repo (meeting-prep-OS)
+        if: steps.check_token.outputs.has_token == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: axellaban/meeting-prep-OS
+          token: ${{ secrets.TEMPLATE_SYNC_TOKEN }}
+          path: meeting-prep-OS
+
+      - name: Sync engine & push to template
+        if: steps.check_token.outputs.has_token == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.TEMPLATE_SYNC_TOKEN }}
+        run: |
+          cd meeting-prep
+          git config --global user.name "Axel Laban Arzubi"
+          git config --global user.email "axellaban@users.noreply.github.com"
+          if [ -n "${{ github.event.inputs.release_tag }}" ]; then
+            python3 tools/sync_template.py --target ../meeting-prep-OS --push --release "${{ github.event.inputs.release_tag }}"
+          else
+            python3 tools/sync_template.py --target ../meeting-prep-OS --push
+          fi
