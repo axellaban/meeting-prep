@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Matías Mindlin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="../../assets/marked.min.js"></script>
+<script>window.marked||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"><\/script>');</script>
+<style>
+  :root {
+    --bg: #08080c;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --gold: #f0b429;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+  /* NAVBAR */
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+  .navbar-back:hover { color:var(--text); }
+  .btn-export { background:linear-gradient(135deg,#1d4ed8,var(--accent)); border:none; color:#fff; padding:7px 15px; border-radius:8px; font-size:12.5px; font-weight:600; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .2s; }
+  .btn-export:hover { opacity:.85; }
+
+  /* ── BRIEFING EN VOZ ALTA ── */
+  .audio-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:16px; margin:0 0 4px; }
+  .audio-btn { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .2s; box-shadow:0 0 12px rgba(59,130,246,0.4); }
+  .audio-btn:hover { transform:scale(1.08); }
+  .audio-btn:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+  .audio-info { flex:1; min-width:0; }
+  .audio-title { font-size:13px; font-weight:600; }
+  .audio-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .visualizer { display:flex; align-items:flex-end; gap:2px; height:24px; }
+  .visualizer .bar { width:3px; background:var(--accent); border-radius:2px; animation:eq 1.1s ease-in-out infinite; }
+  .visualizer.paused .bar { animation-play-state:paused; opacity:.3; }
+  .visualizer .bar:nth-child(1){height:8px;animation-delay:0s}
+  .visualizer .bar:nth-child(2){height:16px;animation-delay:.1s}
+  .visualizer .bar:nth-child(3){height:12px;animation-delay:.2s}
+  .visualizer .bar:nth-child(4){height:20px;animation-delay:.3s}
+  .visualizer .bar:nth-child(5){height:10px;animation-delay:.4s}
+  .visualizer .bar:nth-child(6){height:18px;animation-delay:.15s}
+  .visualizer .bar:nth-child(7){height:14px;animation-delay:.25s}
+  @keyframes eq { 0%,100%{transform:scaleY(.45)} 50%{transform:scaleY(1)} }
+  @media (prefers-reduced-motion: reduce) { .visualizer .bar { animation:none; } }
+
+  /* ── IMPRESIÓN / PDF ── */
+  @media print {
+    @page { margin: 14mm; }
+    .navbar, .sidebar, .audio-section, .btn-export { display:none !important; }
+    body { background:#fff; color:#000; }
+    .main-layout, .content { display:block; margin:0; padding:0; max-width:none; }
+    .tab-pane { display:block !important; page-break-after:always; }
+    .tab-pane:last-child { page-break-after:auto; }
+    .markdown-body h2 { color:#000; }
+    .markdown-body h2::before { background:#000; }
+    .stat-card, .markdown-body table, .quiz-question { break-inside:avoid; }
+    a { color:#000; text-decoration:underline; }
+  }
+
+  /* HEADER */
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 100%); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding:24px 32px; max-width:1200px; margin:0 auto; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  /* LAYOUT */
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+
+  /* SIDEBAR */
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; width:100%; text-align:left; background:none; font-family:inherit; }
+  .sidebar-tab:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .notebooklm-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:14px; color:var(--gold); text-decoration:none; background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; transition:all 0.2s; }
+  .notebooklm-btn:hover { background:rgba(240,180,41,0.15); }
+
+  /* CONTENT */
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+
+  /* MARKDOWN */
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; color:var(--text); }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); display:flex; align-items:center; gap:9px; }
+  .markdown-body h2::before { content:''; display:inline-block; width:3px; height:19px; background:linear-gradient(var(--accent),var(--gold)); border-radius:2px; flex-shrink:0; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; color:var(--text); }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body code { background:var(--surface2); padding:2px 8px; border-radius:6px; font-size:13px; color:var(--accent); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+
+  /* QUIZ */
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+
+  /* FLASHCARDS */
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+
+  /* SECTION TITLE */
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+
+  /* MOBILE — el briefing se lee desde el celular antes de entrar a la reunión */
+  @media (max-width: 760px) {
+    .meeting-header { padding:24px 16px 20px; }
+    .header-inner { flex-wrap:wrap; gap:14px; }
+    .avatar { width:56px; height:56px; font-size:20px; }
+    .header-name { font-size:22px; }
+    .header-meta { margin-left:0; text-align:left; width:100%; }
+    .meeting-platform { justify-content:flex-start; }
+    .stats-wrap { padding:0 16px !important; }
+    .stats-row { grid-template-columns:1fr; gap:10px; padding:16px 0 !important; }
+    .stat-card { padding:14px 16px; }
+    .main-layout { grid-template-columns:minmax(0,1fr); padding:0 16px 40px; }
+    .sidebar { display:flex; gap:6px; overflow-x:auto; padding:8px 0; position:sticky; top:0; z-index:5; background:var(--bg); }
+    .sidebar-tab { white-space:nowrap; flex-shrink:0; margin-bottom:0; padding:10px 12px; }
+    .notebooklm-btn { white-space:nowrap; flex-shrink:0; }
+    .content { padding:12px 0 0; min-width:0; }
+    .markdown-body table { display:block; overflow-x:auto; }
+    .markdown-body th, .markdown-body td { padding:8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> Meeting Prep</div>
+  <div class="navbar-date">Jueves 19 de Noviembre, 2026</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+  <button class="btn-export" onclick="window.print()"><i class="fas fa-download"></i> Exportar PDF</button>
+</nav>
+
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">MM</div>
+    <div class="header-info">
+      <div class="header-name">Matías Mindlin</div>
+      <div class="header-title">CEO & Founder · Mindlin Developers</div>
+      <div class="header-tags">
+        <span class="tag tag-green"><i class="fas fa-handshake"></i> Cliente activo</span>
+        <span class="tag tag-blue"><i class="fas fa-building"></i> Desarrollos inmobiliarios</span>
+        <span class="tag tag-purple"><i class="fab fa-whatsapp"></i> Asistente de WhatsApp con IA</span>
+        <span class="tag tag-gold"><i class="fas fa-map-marker-alt"></i> CABA · La Plata</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> 16:45 hs</div>
+      <div class="meeting-date">Jueves 19/11/2026</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> Reunión de proyecto con cliente (1 h agendada)</div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-wrap" style="max-width:1200px;margin:0 auto;padding:0 32px;">
+  <div class="stats-row" style="padding:24px 0;">
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-file-signature"></i></div>
+      <div>
+        <div class="stat-value">69.461</div>
+        <div class="stat-label">Escrituras CABA 2025 (+26,8%)</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-building"></i></div>
+      <div>
+        <div class="stat-value">US$3.475</div>
+        <div class="stat-label">m² en Palermo (Zonaprop, oct-26)</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fab fa-whatsapp"></i></div>
+      <div>
+        <div class="stat-value">8 de 10</div>
+        <div class="stat-label">Argentinos prefieren WhatsApp con empresas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="sidebar" role="tablist" aria-label="Secciones del dashboard">
+    <button type="button" class="sidebar-tab active" role="tab" aria-selected="true" aria-controls="tab-briefing" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-intel" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-research" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-sources" onclick="showTab('sources',this)"><i class="fas fa-link"></i> Fuentes</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-quiz" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-flashcards" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-postbrief" onclick="showTab('postbrief',this)"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</button>
+    <div class="notebooklm-btn" style="cursor:default;opacity:.75">
+      <i class="fas fa-search"></i> 30 fuentes · research web
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- TAB: EXECUTIVE BRIEFING -->
+    <div id="tab-briefing" class="tab-pane active">
+      <div class="section-title"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+      <div class="audio-section">
+        <button class="audio-btn" id="playBtn" onclick="toggleAudio()" aria-label="Escuchar el briefing en voz alta">
+          <i class="fas fa-play" id="playIcon"></i>
+        </button>
+        <div class="audio-info">
+          <div class="audio-title">Escuchar el briefing</div>
+          <div class="audio-sub" id="audioSub">Lectura en voz alta — sirve mientras manejás o caminás</div>
+        </div>
+        <div class="visualizer paused" id="viz">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+      <div class="markdown-body" id="briefing-content"></div>
+    </div>
+
+    <!-- TAB: COMPETITIVE INTEL -->
+    <div id="tab-intel" class="tab-pane">
+      <div class="section-title"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+      <div class="markdown-body" id="intel-content"></div>
+    </div>
+
+    <!-- TAB: DEEP RESEARCH -->
+    <div id="tab-research" class="tab-pane">
+      <div class="section-title"><i class="fas fa-microscope"></i> Deep Research</div>
+      <div class="markdown-body" id="research-content"></div>
+    </div>
+
+    <!-- TAB: QUIZ -->
+    <!-- TAB: FUENTES -->
+    <div id="tab-sources" class="tab-pane">
+      <div class="section-title"><i class="fas fa-link"></i> Fuentes</div>
+      <div class="markdown-body" id="sources-content"></div>
+    </div>
+
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+
+    <!-- TAB: FLASHCARDS -->
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-arrow-left"></i></button>
+          <div class="dots" id="fc-dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: BRIEF POST-REUNIÓN -->
+    <div id="tab-postbrief" class="tab-pane">
+      <div class="section-title"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</div>
+      <div class="markdown-body" id="postbrief-content"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── TAB SWITCHING ───────────────────────────────────────────────────────────
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+  el.setAttribute('aria-selected', 'true');
+}
+
+// Flechas para moverse entre solapas con el teclado
+document.querySelectorAll('.sidebar-tab').forEach((tab, i, all) => {
+  tab.addEventListener('keydown', e => {
+    const step = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+    if (!step) return;
+    e.preventDefault();
+    const next = all[(i + step + all.length) % all.length];
+    next.focus();
+    next.click();
+  });
+});
+
+// ─── CONTENT DATA ─────────────────────────────────────────────────────────────
+const briefingMD = `# Briefing — Matías Mindlin (Mindlin Developers)
+
+> **En una línea:** el asistente ya contesta por WhatsApp de punta a punta. Lo que falta para atender **consultas reales** depende casi todo de **decisiones y cargas de Mati**. La reunión sirve para destrabarlas y fijar la fecha del piloto.
+
+## 1. Perfil de la persona
+
+**Nombre completo:** **Matías Ezequiel Mindlin** — "Mati" para el equipo.
+**Cargo:** **CEO & Founder** de **Mindlin Developers** (bio oficial) y **presidente** de **Mindlin Developers S.A.**, constituida el **15/11/2024** (registro societario).
+**Formación:** **Licenciado en Administración de Empresas** — FCE, **Universidad Nacional de La Plata**.
+**Trayectoria:**
+- **Pinta Libre** — creador y CEO. Suscripción de "una bebida gratis por día" en bares adheridos, nacida a fines de **2018** mientras estudiaba en la UNLP. Franquicias en **Argentina, Uruguay, Perú y Ecuador**; **+150.000 usuarios** y **20.000 suscriptores** (ene-2023). Pasó **6 meses sin ingresos** en la pandemia y llegó a rentabilidad (2022).
+- **Iterafy** — agencia digital de La Plata (2020), mencionada en su bio entre "varias empresas de tecnología y marketing" que fundó.
+- **Borok Construcciones** — "lideró la apertura de la unidad de negocios de **comercio exterior**". Borok (La Plata, desde **1993**) es la constructora de varios de sus proyectos.
+**Voz pública:**
+- **Conduce el Jutzpá Podcast**, que auspicia Mindlin Developers: entrevistas a empresarios de La Plata (Eduardo Alayian, Gustavo Dacal, entre otros). "Jutzpá" = animarse a lo que nadie se anima.
+- **Infobae / Movant Connection (28/01/2026):** entrevista sobre logística y comex en real estate. Frases para tener a mano:
+  - *"En segundo año de la secundaria le vendí un departamento a mi profesor de historia y cobré una comisión."*
+  - Eligió un proveedor de hierro **por logística y no por precio** (lote de 10 × 30 sin lugar para acopiar): *"evaluar toda la cadena de suministro en una decisión es clave"*.
+  - Los tres temas del sector para él: **macro inestable**, **vuelta del crédito** y **nuevos instrumentos financieros** — *"sería espectacular que puedas invertir desde el celular en un metro cuadrado"*; le interesa la **tokenización**.
+- Mentor en **Founder Institute** (como CEO de Pinta Libre) y presente en **Makers in BA**.
+**Perfil:** **emprendedor tech que pasó al real estate familiar**. Piensa en producto, suscripciones, métricas y franquicias: le habla el idioma de **embudos, conversión y escalabilidad**, no el de "un bot".
+**Edad estimada:** ~29–30 (tenía "21 o 22" a fines de 2018) — *interpretación, no la menciones*.
+**Relación con vos:** **cliente activo**. Primeras reuniones el **26/10** y el **30/10**, cotización el **3/11**, arranque del proyecto el **8/11**, setup de infraestructura juntos el **9/11**. Antes, ya habías entregado una herramienta interna para cargar comprobantes con IA ("Menos carga manual. Más control.").
+
+**Contexto de la reunión:** en **11 días** pasaste de la infraestructura a un asistente que responde con la ficha de **Lerma 439**, anota en el CRM, mueve etapas y pasa la conversación al equipo (prueba de punta a punta del **13/11**; QA en producción el **16/11** y el **17/11**). El cuello de botella dejó de ser el código: **ahora la pelota está del lado de Mindlin**. Hoy se define **qué decide Mati, qué carga y cuándo se prende el piloto**.
+
+## 2. Perfil de la empresa
+
+**Mindlin Developers** — desarrolladora residencial en **CABA y La Plata**. Se presenta como **"tercera generación de desarrolladores inmobiliarios"**: la familia hace canjes de terrenos **desde los años 60**.
+**Regla de la casa:** **nunca más de 3 proyectos a la vez** "para preservar la salud financiera".
+**Equipo visible:** Mati al frente; **Michelle Mindlin** y **Micaela Druck** (arquitectas, con paso por Lopatín Arquitectos y estudios del Reino Unido) en arquitectura.
+**Canales:** WhatsApp (característica de La Plata), Instagram **@mindlin.developers**, blog con **15 notas** SEO (Palermo, Villa Crespo, comprar en pozo) y auspicio del **Jutzpá Podcast** (entrevistas a emprendedores).
+
+**Proyectos publicados:**
+
+| Proyecto | Zona | Estado | Cómo se paga |
+|---|---|---|---|
+| **Lerma 439** | Villa Crespo ("Palermo Queens") | Obra desde **feb-2026**, ~24 meses | Anticipo + **24 cuotas en pesos** |
+| **Güemes 4776** | Palermo Soho | Pozo, **42 meses** de obra; 1 amb. 45 m², 2 amb. 78 m² | **Sin anticipo + 40 cuotas** en pesos |
+| **Torre Via 53** | La Plata (9 y 53) | Entrega **jun-2026**; construye Borok | **50% anticipo** + cuotas ajustables |
+| **Fideicomiso 17 y 43** | La Plata | Preventa, ~30 meses de obra | **30 cuotas** en pesos |
+| **Torre Cu4tro Vientos** | La Plata | Terminada (Borok) | — |
+
+**Financiación general (FAQ):** hasta **36 meses**, **anticipo en dólares y cuotas en pesos ajustadas por índice CAC**. Ojo: Güemes publica **40 cuotas** → hay datos que no coinciden entre fuentes, igual que **VIA 53 y Torre Cuatro Vientos** en sus documentos internos.
+**Otra línea de negocio:** **canje de terrenos** a propietarios, prometiendo **+30% a +50%** sobre el valor del lote en menos de 3 años.
+**Prensa:** no se encontró cobertura de Mindlin Developers.
+
+**El sistema que estás construyendo** (alcance de la primera versión, 5 puntos):
+1. **Conversación por WhatsApp** con la forma de hablar de Mindlin.
+2. **Contexto separado por proyecto** (fichas, precios, avance de obra).
+3. **Conexión con su CRM** (la planilla del hub).
+4. **Seguimientos** automáticos.
+5. Que **el equipo pueda intervenir** desde Chatwoot o desde el hub.
+
+**Ya funciona:** WhatsApp de punta a punta en la línea de **Lerma 439**; **4 líneas** modeladas (1 outreach frío, 2 equipo, 3 y 4 leads entrantes); **flujos tipo Kommo** con editor de pasos; conversaciones, fotos y audios dentro del hub; avisos al responsable; "Revisar" semanal; respuestas rápidas; **precios desde la lista oficial** de cada proyecto (el Excel madre) con el criterio que pidió Mati el 17/11: **"desde" con el mejor valor, la unidad puntual cuando quedan pocas, montos en u$d y ar$**.
+
+## 3. Oportunidad de mercado
+
+**Demanda:**
+- **CABA 2025: 69.461 escrituras (+26,8%)**, el mejor año desde 2007 (Colegio de Escribanos).
+- **2026 se enfrió:** septiembre **6.612** (**−5,5%** interanual), escritura promedio **US$120.106**; enero–septiembre **48.195** (−2,7%) y **hipotecas −31,4%** (7.426 vs 10.827).
+- El crédito vuelve de a poco: stock hipotecario **$9,6 billones (+23,7% real)** a oct-2026; el FGS presta a los bancos a **UVA + 7,5%**. La Cámara Inmobiliaria espera el efecto recién en el **1T-2027**.
+
+**Precio y costo:**
+- **CABA: US$2.493/m²** (oct-2026, +1,8% interanual, todavía **11% debajo del pico**); **Palermo US$3.475/m²**. La Plata ronda **US$1.467/m² (−41% vs CABA)**.
+- **Costo de construcción en dólares +21,4% en 2026** y **+147% desde oct-2023** (Zonaprop). Índice CAC **+22,2%** en lo que va del año (ago-2026). ICC INDEC GBA **+31,3%** interanual (sep-2026).
+- **26% de los avisos bajó el precio** (promedio −5,8%).
+
+**Lectura:** con costos en dólares subiendo y ventas trabadas, **las desarrolladoras se volvieron bancos**: 36 cuotas en pesos ajustadas por CAC, hasta 72 cuotas o 5 años en dólares (Forbes, ago-2026). Eso es exactamente lo que ofrece Mindlin. En ese mercado, **el que contesta primero y hace seguimiento gana el lead**.
+
+**WhatsApp e IA:**
+- **8 de cada 10** argentinos prefieren WhatsApp para hablar con empresas; **74%** ya lo usó con una (Meta, 2026).
+- Meta lanzó **Business AI** dentro de WhatsApp en **feb-2026**, con Argentina entre los primeros países. Forrester: **30% más rápido** en atención y **275% de ROI** a 3 años.
+- Competencia en proptech: **Propio** atiende a **+1.100 corredores** por WhatsApp. Desde el **1/10/2026**, Meta cobra **US$0,026 por mensaje de servicio** en Argentina.
+
+## 4. Puntos Clave de Conversación
+
+**1. Lo que solo Mati puede definir (sin esto no hay piloto)**
+El asistente responde, pero cada línea necesita un modo: **"presenta y pasa"**, **conversa** (como hoy) o **flujo**. Además faltan **para qué es la línea 4**, la **línea 2** (migrar el bot de Telegram: ¿número aparte?, ¿qué avisos?, ¿convive con Telegram?) y el **horario comercial** (hoy lunes a viernes de 9 a 20).
+*Pregunta:* **"Para Lerma 439, ¿querés que el asistente converse hasta calificar al lead o que lo presente y te lo pase apenas responde?"**
+
+**2. Datos que no coinciden: VIA 53 y Torre Cuatro Vientos**
+Los dos documentos de esos proyectos tienen **precios, entrega, forma de pago y el semipiso distintos**. Y la web dice **36 meses** de financiación en la FAQ pero **40 cuotas** en Güemes 4776. Un asistente que da precios con datos contradictorios es un riesgo comercial.
+*Pregunta:* **"¿Cuál es la fuente de verdad de cada proyecto: el Excel madre, la ficha del hub o el brochure? ¿Quién la mantiene al día?"**
+
+**3. Prender los seguimientos (hoy no sale ninguno)**
+Las **6 reglas** que vinieron de Kommo (una por proyecto, a las 24 h) están **archivadas**. Hay que revisarlas con él y pasarlas a "Activa", decidir si salen **sábados, domingos y feriados** (de fábrica, sí) y elegir **a quién le llegan los avisos** de leads sin responsable.
+*Pregunta:* **"En Kommo, ¿qué seguimiento te traía más respuestas y cuál te parecía invasivo?"**
+
+**4. Outreach frío a las bases viejas: listo técnicamente, falta lo legal**
+La línea 1 ya tiene cola, cuidados, puntaje de las bases, respuestas y resultados contra la meta. Falta: **chip propio** (para no arriesgar la línea de leads), **cargar las bases**, que Mati **revise los textos** (3 variantes de saludo y 3 de seguimiento) y que **su abogado confirme el Registro No Llame (ley 26.951) y el consentimiento de la base (ley 25.326)**.
+*Pregunta:* **"¿Cuántos contactos tienen esas bases y de qué años son? ¿Ya lo hablaste con tu abogado?"**
+
+**5. Tres decisiones tuyas que conviene cerrar con él**
+- **Claude u OpenAI** para responder (hoy OpenAI; hay que probar la elegida en "Probar" con las conversaciones difíciles).
+- **Vercel Hobby o Pro:** con Hobby, seguimientos y esperas de flujos salen **una vez por día a las 10** y **el repo queda público**. Con Pro (o un cron externo), salen a la hora justa y el repo vuelve a privado.
+- **Correo para Chatwoot** (Zoho, Workspace o Brevo): sin él, el equipo no entra a Chatwoot ni usa la app del celular.
+*Pregunta:* **"¿Cuánto vale para vos que un seguimiento salga a las 24 h exactas y no al día siguiente a las 10?"**
+
+### Lo que probablemente te va a preguntar
+
+- **"¿Cuándo lo prendo con clientes reales?"** → Cuando estén: modo de la línea 3 definido, fichas y precios revisados, 10–20 conversaciones reales de ejemplo para el tono, y **una semana de pruebas internas** con el equipo.
+- **"¿Cuánto me va a costar por mes en mensajes e IA?"** → Depende del volumen. Pedile **cuántas consultas por WhatsApp entran por semana** hoy y llevá el cálculo armado a la próxima.
+- **"¿Y lo administrativo?"** → El lector de comprobantes ya está entregado. Queda la cartera de automatizaciones priorizadas (recibos, informe al contador, cuotas CAC, PDFs a inversores, carga de propiedades): **es la conversación de la fase 2**, después del piloto.
+
+## 5. Manejo de objeciones
+
+| Si dice… | Respondé con… |
+|---|---|
+| **"No tengo tiempo de cargar todo eso"** | Lo mínimo para el piloto es **una sola línea (Lerma 439)**: su ficha, su lista de precios y 10 conversaciones de ejemplo. El resto entra por etapas. |
+| **"¿Y si el bot dice algo mal?"** | El asistente solo atiende conversaciones **pendientes**, pasa al equipo cuando hace falta y **"Revisar"** permite marcar respuestas malas todas las semanas. Además, se puede **vaciar la lista de precios** en un proyecto si prefiere que no dé precios. |
+| **"Kommo ya hacía esto"** | Kommo tenía flujos fijos. Esto **conversa con el contexto de cada proyecto**, escribe en **su** CRM y mide **qué flujo vende**, no solo cuál responde. |
+| **"Mandar mensajes en frío me puede quemar el número"** | Por eso va con **chip propio**, **tope gradual**, espaciado aleatorio entre mensajes y baja firme ("no me escriban más") que corta todo para siempre. |
+| **"Pro de Vercel es un costo más"** | La alternativa gratis es un **cron externo cada 15 minutos**. Pero con Hobby **el código queda público**: para una empresa que da precios y datos de leads, conviene que sea privado. |
+
+## 6. Próximos pasos
+
+1. **Hoy, en la call:** cerrar el **modo de la línea 3**, la **fuente de verdad** de VIA 53 y Torre Cuatro Vientos, y activar al menos **una regla de seguimiento** para probar.
+2. **Esta semana (Mati):** revisar fichas y precios en el hub, cargar **10–20 conversaciones reales** de ejemplo y las **respuestas rápidas** (cómo llegar, horarios, formas de pago, brochure).
+3. **Fecha de piloto:** fijar el inicio de **pruebas internas con el equipo** y, una semana después, **consultas reales en la línea de Lerma 439**. Agendar la revisión de "Revisar" para el primer viernes del piloto.
+`;
+
+const intelMD = `# Cheat sheet — estado del proyecto y del mercado
+
+## Tablero del proyecto (al 17/11)
+
+| Frente | Estado | Dueño |
+|---|---|---|
+| WhatsApp de punta a punta (línea 3, Lerma 439) | **Andando** (13/11) | — |
+| QA en producción (líneas, flujos, avisos, usuario Hub) | **Hecha** 16/11 y 17/11 | — |
+| Precios desde el Excel madre ("desde", u$d y ar$) | **Hecho** 17/11, falta probarlo | Mati |
+| Seguimientos (6 reglas de Kommo) | **Archivados** — no sale ninguno | Axel + Mati |
+| Modo de cada línea de leads | **Sin definir** | Mati |
+| Línea 4 (leads 2) | Falta chip y propósito | Axel + Mati |
+| Línea 1 (outreach frío) | Código listo; falta chip, bases, textos y OK legal | Axel + Mati |
+| Línea 2 (equipo / bot de Telegram) | Va al final; definir con Mati | Axel + Mati |
+| Correo para Chatwoot | **Sin elegir** | Axel |
+| Proveedor de IA (Claude / OpenAI) | Hoy OpenAI | Axel |
+| Plan de Vercel | Hobby (repo público, cron diario) | Axel |
+| Transferir el repo a la cuenta de Mindlin | Cuando vuelva su cuenta de GitHub | Axel |
+
+**Pendiente de QA con un número nuevo:** alta en el CRM, campaña desde el primer mensaje de un anuncio, un flujo real, la baja, la recepción en el teléfono y la campanita de Mati.
+
+## Lo que Mati tiene que cargar en el hub
+
+1. **Fichas** de cada proyecto (precios, disponibilidad, avance, links) y prender las **5 apagadas** si corresponde.
+2. **Tono:** revisar el borrador y sumar **10 a 20 conversaciones reales** sin datos personales.
+3. **Campañas de Meta** con el texto del primer mensaje de cada anuncio → así se sabe de qué anuncio viene cada lead.
+4. **Flujos** por proyecto desde los modelos de Kommo (textos, brochure, foto de obra).
+5. **Respuestas rápidas** del chat. El hub no trae ninguna inventada.
+6. **Una vez por semana:** "Revisar" las respuestas reales del asistente.
+
+## Benchmarks para tener a mano
+
+| Indicador | Dato | Fuente |
+|---|---|---|
+| Escrituras CABA 2025 | **69.461** (+26,8%) | Colegio de Escribanos / Ámbito |
+| Escrituras CABA ene–sep 2026 | **48.195** (−2,7%); hipotecas **−31,4%** | Colegio de Escribanos |
+| m² CABA / Palermo | **US$2.493 / US$3.475** | Zonaprop oct-2026 |
+| Costo de construcción en US$ | **+21,4%** en 2026; **+147%** desde oct-2023 | Zonaprop |
+| Índice CAC | **+22,2%** en el año (ago-2026) | CAC vía Mudafy |
+| Absorción del stock | **1,2 años** | Metadato CEDU+AEV, 1S-2026 |
+| Preferencia por WhatsApp | **8 de 10** argentinos | Meta / Cronista |
+| Costo de mensaje de servicio | **US$0,026** en Argentina (desde 1/10/2026) | snippet de prensa |
+
+## Competencia en la conversación
+
+- **Kommo:** el CRM con bots que usaban antes. Los flujos se migraron como modelos.
+- **Meta Business AI:** el agente nativo de WhatsApp (feb-2026). Es genérico: no lee su Excel de precios ni escribe en su CRM.
+- **Propio:** IA para corredores por WhatsApp (+1.100 usuarios). Pensado para inmobiliarias, no para desarrolladoras con fichas por proyecto y cuotas CAC.
+- **DeskcommCRM:** se evaluó instalarlo y se descartó (15/11); se trajeron 4 ideas: baja firme, seguimientos espaciados, "te escribieron y nadie contestó" y respuestas rápidas.
+
+## Lectura estratégica (interpretación, no hecho)
+
+- Mati es **fundador de producto**: valora métricas. El argumento más fuerte no es "contesta solo", es **"medimos qué flujo vende hasta la reserva"**.
+- La regla de **"nunca más de 3 proyectos"** hace que cada lead valga mucho: el asistente compite por **conversión**, no por volumen.
+- El riesgo del proyecto **ya no es técnico, es de adopción**: si Mindlin no carga tono, fichas y reglas, el sistema queda impecable y apagado. Hoy hay que salir con **fechas y dueños**, no con más funciones.
+- Él piensa en **cadena de suministro completa**, no en el precio del insumo. Presentá el asistente igual: es la **cadena de suministro del lead** (anuncio → WhatsApp → CRM → seguimiento → visita → reserva), y hoy tiene eslabones apagados.
+- Su interés en **instrumentos digitales y tokenización** es un tema para más adelante, no para hoy. Sirve como señal de que **compra innovación** cuando ve el caso de negocio.
+- La fase 2 natural es **lo administrativo** (ya entregaste el lector de comprobantes) y el **outreach a bases viejas**, que convierte datos dormidos en visitas.
+`;
+
+const researchMD = `# Deep Research — evidencia y limitaciones
+
+## Qué está verificado
+
+**Sobre la persona**
+- **CEO & Founder de Mindlin Developers**, licenciado en Administración (FCE-UNLP), fundador de Pinta Libre e Iterafy, y a cargo de la unidad de comercio exterior de Borok Construcciones: bio oficial en mindlindevelopers.com/compania.
+- **Presidente de Mindlin Developers S.A.**, constituida el 15/11/2024: registro societario (indicadores.ar).
+- **Pinta Libre:** creador y CEO; idea de fines de 2018; franquicias en 4 países; +150.000 usuarios y 20.000 suscriptores: iProfesional (nov-2022), iProUP (sep-2022), A24 (ene-2023).
+
+- **Conductor del Jutzpá Podcast** (canal de YouTube y posts de Instagram del podcast) y **entrevistado por Infobae / Movant** el 28/01/2026: Firecrawl.
+- **Mentor de Founder Institute** como CEO de Pinta Libre: página de mentores de FI.
+
+**Sobre la empresa** (mindlindevelopers.com y páginas de cada proyecto)
+- "Tercera generación de desarrolladores", nunca más de 3 proyectos a la vez, canjes de terrenos desde los años 60.
+- Proyectos Lerma 439, Güemes 4776, Torre Via 53, Fideicomiso 17 y 43 y Torre Cu4tro Vientos, con estado y forma de pago publicados.
+- Financiación de hasta 36 meses con anticipo en dólares y cuotas en pesos ajustadas por CAC.
+
+**Sobre el proyecto con Axel** (repositorio del asistente, documentación y pendientes al 17/11)
+- Alcance de la primera versión en 5 puntos, estado de cada frente y lista "qué falta, por persona".
+- Cronología de reuniones según el calendario: 26/10, 30/10, 3/11, 8/11, 9/11, 15/11 y 17/11.
+
+**Sobre el mercado** (Colegio de Escribanos, Ámbito, Forbes, iProfesional, El Economista, INDEC, Mudafy, Zonaprop, Cronista)
+- Escrituras, hipotecas, precio del m², costo de construcción, índice CAC, esquemas de financiación de desarrolladoras y datos de WhatsApp Business AI.
+
+## Qué es interpretación
+
+- Que la "tercera generación" sea la **familia de La Plata detrás de Borok Construcciones**: hay coincidencias de personas entre Borok, Pinta Libre y Mindlin Developers, pero **ninguna fuente dice el parentesco**. No lo uses en la conversación.
+- **Edad estimada** (~29–30): deducida de "21 o 22 años" a fines de 2018.
+- **Sin vínculo encontrado** con Marcelo Mindlin (Pampa Energía / Creaurbana) ni con Tomás Mindlin (Tapi). No lo menciones.
+- La lectura de que el riesgo del proyecto es de **adopción y no técnico** sale de la lista de pendientes, no de algo que haya dicho Mati.
+
+## Limitaciones
+
+- **LinkedIn cerrado:** no hay headline ni historial laboral desde ahí.
+- **Sin prensa** sobre Mindlin Developers; su perfil público es la web propia y la prensa de Pinta Libre.
+- **Datos contradictorios en las fuentes del cliente:** 36 meses (FAQ) vs 40 cuotas (Güemes); documentos distintos para VIA 53 y Torre Cuatro Vientos. Es un punto de la reunión, no un error del research.
+- **Estado del proyecto al 17/11:** lo que pasó el 18 y el 19 no está reflejado. Preguntá al inicio si Mati avanzó con alguna carga.
+- **Precios y condiciones comerciales** de la propuesta no se incluyen a propósito: este dashboard se publica en una URL abierta.
+- **La Plata US$1.467/m²** y el costo del mensaje de Meta salen de snippets sin fecha confirmada.
+
+## Fuentes útiles
+
+**29 fuentes externas**. Research con **Firecrawl** (search, map y scrape) + WebSearch y WebFetch más el contexto interno (calendario, Drive y el repositorio del proyecto).
+`;
+const postBriefMD = `## Todavía sin completar
+
+Esta sección se llena **después** de la reunión, con lo que realmente pasó:
+decisiones tomadas, compromisos asumidos y próximos pasos concretos.
+
+Mientras tanto, lo de acá arriba es la preparación — hipótesis, no hechos.
+`;
+const sourcesMD = `# Fuentes (30)
+
+
+## Identidad profesional
+
+- [Mindlin Developers — Compañía](https://mindlindevelopers.com/compania/) — Bio oficial: CEO & Founder, UNLP, Pinta Libre, Iterafy y Borok
+- [Indicadores.ar — Mindlin Developers S.A.](https://indicadores.ar/empresa/30718811550) — Constitución el 15/11/2024 y su rol de presidente
+- [iProfesional — Pinta Libre, la Netflix de cervezas](https://www.iprofesional.com/actualidad/372490-pinta-libre-la-netflix-de-cervezas-cuanto-cuesta-la-franquicia) — Origen de Pinta Libre y franquicias en 4 países
+- [iProUP — la franquicia del Netflix de la cerveza](https://www.iproup.com/startups/34619-emprendimientos-como-es-la-franquicia-del-netflix-de-la-cerveza) — Pandemia sin ingresos, rentabilidad y su edad al fundar
+- [A24 — la app que muestra dónde consumir cerveza y café](https://www.a24.com/pymes/la-app-que-te-muestra-donde-consumir-la-mejor-cerveza-y-cafe-n1074553) — +150.000 usuarios y 20.000 suscriptores
+- [Infobae / Movant — Invertir, construir y abastecer](https://www.infobae.com/movant/2026/01/28/invertir-construir-y-abastecer-el-triangulo-estrategico-del-real-estate-argentino/) — Entrevista: venta a los 14, proveedor de hierro por logística, crédito, tokenización (Firecrawl)
+- [Movant Connection — logística y comex dentro del real estate (YouTube)](https://www.youtube.com/watch?v=pxwdg2cGJ00) — Video de la misma entrevista, 6:43 min (Firecrawl)
+- [Jutzpá Podcast — canal de YouTube](https://www.youtube.com/@jutzpapodcast) — Él conduce las entrevistas a empresarios (Firecrawl)
+- [Founder Institute — mentores](https://fi.co/mentors/caracas) — Mentor como CEO & Founder de Pinta Libre (Firecrawl)
+- [Clutch — Iterafy](https://clutch.co/profile/iterafy) — Agencia digital de La Plata (2020)
+
+## La empresa
+
+- [Mindlin Developers — home](https://mindlindevelopers.com) — Tercera generación, regla de 3 proyectos, equipo y FAQ de financiación
+- [Lerma 439](https://mindlindevelopers.com/lerma439/) — Villa Crespo, obra desde feb-2026, anticipo + 24 cuotas
+- [Güemes 4776](https://mindlindevelopers.com/guemes-4776/) — Palermo Soho, pozo, sin anticipo + 40 cuotas
+- [Torre Via 53](https://mindlindevelopers.com/torrevia53/) — La Plata, entrega jun-2026, 50% anticipo
+- [Fideicomiso 17 y 43](https://mindlindevelopers.com/fideicomiso-17-y-43/) — La Plata, preventa, 30 cuotas
+- [Convertí tu terreno en departamentos](https://mindlindevelopers.com/converti-tu-terreno-en-departamentos) — Canjes de terreno con +30% a +50% y la historia familiar desde los 60
+- [Mindlin Developers — herramienta de comprobantes](https://mindlin-developers.vercel.app) — Herramienta interna con IA ya entregada
+- Contexto interno: repositorio del asistente, calendario y Drive — Alcance, estado al 17/11, pendientes por persona y cronología (no se enlaza)
+
+## Mercado
+
+- [Ámbito — escrituras CABA 2025](https://www.ambito.com/real-estate/escrituras-caba-2025-cerro-casi-70000-operaciones-y-quedo-los-cinco-mejores-anos-tres-decadas-n6237403) — 69.461 escrituras, +26,8%
+- [Colegio de Escribanos — septiembre 2026](https://www.colegio-escribanos.org.ar/?p=144949) — 6.612 escrituras (−5,5%), promedio US$120.106, hipotecas −31,4% en el año
+- [Forbes — escrituras en baja y crédito rezagado](https://www.forbesargentina.com/negocios/escrituras-baja-credito-hipotecario-rezagado-porque-venta-inmuebles-despega-n98685) — Efecto del crédito recién en 1T-2027
+- [iProfesional — los créditos hipotecarios crecieron 24%](https://www.iprofesional.com/realestate/468467-los-creditos-hipotecarios-crecieron-24-y-anotaron-la-mayor-suba-mensual-en-un-ano) — Stock hipotecario $9,6 billones, +23,7% real
+- [El Economista — tasas de créditos UVA](https://eleconomista.com.ar/economia/creditos-hipotecarios-uva-bancos-bajaron-fuerte-tasas-cuanto-hay-ganar-acceder-n98124) — Fondeo del FGS a UVA + 7,5%
+- [Zonaprop — Index CABA octubre 2026](https://www.zonaprop.com.ar/blog/wp-content/uploads/2026/11/INDEX_CABA_REPORTE_2026-10.pdf) — US$2.493/m², Palermo US$3.475, costo en US$ +21,4%
+- [Mudafy — índice CAC](https://mudafy.com.ar/d/indice-cac) — CAC +22,2% en el año (ago-2026)
+- [Forbes — desarrolladoras que se vuelven bancos](https://www.forbesargentina.com/negocios/con-altos-costos-ventas-estancadas-desarrolladores-convierten-bancos-lanzan-su-propia-financiacion-n95613) — 36 cuotas CAC, hasta 72 cuotas o 5 años en dólares
+- [Forbes — el pozo se encarece frente a los usados](https://www.forbesargentina.com/negocios/las-propiedades-pozo-encarecen-frente-usadas-brecha-alcanzo-su-maximo-primer-semestre-n94754) — Absorción de stock en 1,2 años
+- [Cronista — la novedad de WhatsApp para pymes](https://www.cronista.com/infotechnology/it-business/asi-funciona-la-novedad-de-whatsapp-que-usan-las-pymes-para-vender-mas-sin-sumar-personal/) — Business AI, 8 de 10 prefieren WhatsApp, ROI 275% (Forrester)
+- [Ecosistema Startup — Propio](https://ecosistemastartup.com/propio-la-ia-argentina-para-inmobiliarias-por-whatsapp/) — +1.100 corredores; costo del mensaje de servicio (snippet)
+- [Perfil — el m² en La Plata](https://www.perfil.com/noticias/economia/el-metro-cuadrado-en-la-plata-cuesta-41-menos-que-en-la-ciudad-de-buenos-aires-y-despierta-busquedas.phtml) — US$1.467/m², −41% vs CABA (snippet, fecha sin confirmar)
+
+
+---
+
+*Cada afirmación del briefing tiene que poder rastrearse hasta alguna de estas fuentes. Lo que no sale de acá es interpretación, y como tal está marcado en Deep Research.*
+`;
+
+// ─── QUIZ DATA ────────────────────────────────────────────────────────────────
+const quizData = [
+  {
+    "q": "¿Qué startup fundó Matías antes de Mindlin Developers?",
+    "options": [
+      "A) Tapi",
+      "B) Pinta Libre",
+      "C) Properati",
+      "D) Propio"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Cuál es la regla de la casa de Mindlin Developers?",
+    "options": [
+      "A) Solo vender en dólares",
+      "B) Nunca más de 3 proyectos a la vez",
+      "C) Solo construir en CABA",
+      "D) Siempre vender en pozo con 50% de anticipo"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Cuántas reglas de seguimiento heredadas de Kommo están archivadas hoy?",
+    "options": [
+      "A) 2",
+      "B) 4",
+      "C) 6",
+      "D) 10"
+    ],
+    "answer": "C"
+  },
+  {
+    "q": "¿Qué ley regula el Registro No Llame que tiene que revisar su abogado?",
+    "options": [
+      "A) 25.326",
+      "B) 26.951",
+      "C) 27.078",
+      "D) 24.240"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿En qué línea funciona hoy el asistente de punta a punta?",
+    "options": [
+      "A) Línea 1, outreach frío",
+      "B) Línea 2, equipo",
+      "C) Línea 3, Lerma 439",
+      "D) Línea 4, leads 2"
+    ],
+    "answer": "C"
+  },
+  {
+    "q": "¿Cuántas escrituras hubo en CABA en 2025?",
+    "options": [
+      "A) 48.195",
+      "B) 54.770",
+      "C) 69.461",
+      "D) 81.300"
+    ],
+    "answer": "C"
+  },
+  {
+    "q": "¿Qué pasa con los seguimientos mientras el proyecto siga en Vercel Hobby?",
+    "options": [
+      "A) No salen nunca",
+      "B) Salen una vez por día, a las 10",
+      "C) Salen cada 15 minutos",
+      "D) Salen solo los lunes"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Cómo pidió Mati que el asistente dé los precios?",
+    "options": [
+      "A) Nunca dar precios",
+      "B) Solo en pesos",
+      "C) 'Desde' con el mejor valor, la unidad puntual cuando quedan pocas, en u$d y ar$",
+      "D) Solo el precio de lista del brochure"
+    ],
+    "answer": "C"
+  }
+];
+
+// ─── FLASHCARD DATA ───────────────────────────────────────────────────────────
+const flashcards = [
+  {
+    "q": "Los 5 puntos del alcance de la primera versión",
+    "a": "WhatsApp con la forma de hablar de Mindlin, contexto por proyecto, conexión con su CRM, seguimientos y que el equipo pueda intervenir."
+  },
+  {
+    "q": "Las 4 líneas de WhatsApp",
+    "a": "1 outreach frío, 2 equipo (facturas y outreach cálido, migra el bot de Telegram), 3 leads entrantes (Lerma 439, andando), 4 leads entrantes 2."
+  },
+  {
+    "q": "Los 3 modos de atender una línea de leads",
+    "a": "Presenta y pasa, conversa (como hoy) o flujo."
+  },
+  {
+    "q": "¿Qué datos no coinciden y hay que resolver?",
+    "a": "Los documentos de VIA 53 y Torre Cuatro Vientos (precios, entrega, forma de pago, semipiso), y 36 meses en la FAQ vs 40 cuotas en Güemes 4776."
+  },
+  {
+    "q": "Tus 3 decisiones pendientes",
+    "a": "Claude u OpenAI, Vercel Hobby o Pro, y el correo para Chatwoot (Zoho, Workspace o Brevo)."
+  },
+  {
+    "q": "Lo que tiene que cargar Mati",
+    "a": "Fichas y precios, tono con 10–20 conversaciones reales, campañas de Meta, flujos por proyecto, respuestas rápidas y 'Revisar' semanal."
+  },
+  {
+    "q": "Lo que falta para el outreach frío",
+    "a": "Chip propio, cargar las bases, revisar los textos (3 saludos y 3 seguimientos) y el OK legal: Registro No Llame (26.951) y consentimiento (25.326)."
+  },
+  {
+    "q": "Dato de mercado para justificar velocidad de respuesta",
+    "a": "8 de cada 10 argentinos prefieren WhatsApp para hablar con empresas; con ventas trabadas, el que contesta y sigue primero gana el lead."
+  },
+  {
+    "q": "Costo de construcción vs precio",
+    "a": "Costo en US$ +21,4% en 2026 y +147% desde oct-2023; el m² en CABA solo +1,8% interanual. Margen apretado: cada lead convertido pesa más."
+  },
+  {
+    "q": "Objetivo de la reunión en una frase",
+    "a": "Salir con modo de la línea 3, fuente de verdad de precios, una regla de seguimiento activa y fecha de piloto."
+  }
+];
+
+// ─── RENDER MARKDOWN ──────────────────────────────────────────────────────────
+const md2html = (t) => (typeof marked !== 'undefined')
+  ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' +
+    t.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])) + '</pre>';
+document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
+document.getElementById('intel-content').innerHTML = md2html(intelMD);
+document.getElementById('research-content').innerHTML = md2html(researchMD);
+document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
+document.getElementById('sources-content').innerHTML = md2html(sourcesMD);
+
+// ─── BRIEFING EN VOZ ALTA ─────────────────────────────────────────────────────
+// Usa la voz del navegador: no necesita archivo de audio ni conexión.
+let speaking = false;
+const synth = window.speechSynthesis;
+
+function briefingPlano() {
+  // markdown -> texto hablable: fuera marcas, tablas fila por fila
+  return briefingMD
+    .replace(/^>\s?/gm, '')
+    .replace(/\|/g, ', ')
+    .replace(/^[-*]\s+/gm, '')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/[*_`]/g, '')
+    .replace(/^\s*[-:,\s]+$/gm, '')
+    .replace(/\n{2,}/g, '. ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function pararAudio() {
+  synth.cancel();
+  speaking = false;
+  document.getElementById('playIcon').className = 'fas fa-play';
+  document.getElementById('viz').classList.add('paused');
+}
+
+function toggleAudio() {
+  const sub = document.getElementById('audioSub');
+  if (!('speechSynthesis' in window)) {
+    sub.textContent = 'Este navegador no puede leer en voz alta.';
+    return;
+  }
+  if (speaking) { pararAudio(); sub.textContent = 'Pausado — tocá para retomar desde el principio'; return; }
+
+  const u = new SpeechSynthesisUtterance(briefingPlano());
+  u.lang = 'es-AR';
+  u.rate = 1.05;
+  const esVoice = synth.getVoices().find(v => v.lang && v.lang.startsWith('es'));
+  if (esVoice) u.voice = esVoice;
+  u.onend = () => { pararAudio(); sub.textContent = 'Listo — tocá para escucharlo de nuevo'; };
+  u.onerror = () => { pararAudio(); sub.textContent = 'No se pudo reproducir el audio.'; };
+
+  synth.cancel();
+  synth.speak(u);
+  speaking = true;
+  document.getElementById('playIcon').className = 'fas fa-pause';
+  document.getElementById('viz').classList.remove('paused');
+  sub.textContent = 'Reproduciendo el briefing…';
+}
+
+// Chrome carga las voces en diferido
+if ('speechSynthesis' in window) synth.onvoiceschanged = () => {};
+window.addEventListener('beforeunload', () => synth.cancel());
+
+// ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
+let quizScore = 0;
+const quizContainer = document.getElementById('quiz-container');
+document.getElementById('total-q').textContent = quizData.length;
+
+quizData.forEach((item, idx) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `
+    <div class="question-num">Pregunta ${idx + 1} de ${quizData.length}</div>
+    <div class="question-text">${item.q}</div>
+    <div class="options" id="opts-${idx}">
+      ${item.options.map((opt, i) => `
+        <div class="option" onclick="selectOption(${idx},'${'ABCD'[i]}','${item.answer}',this)">
+          <div class="option-letter">${'ABCD'[i]}</div>
+          <span>${opt.substring(3)}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  quizContainer.appendChild(div);
+});
+
+function selectOption(qIdx, selected, correct, el) {
+  const opts = document.querySelectorAll(`#opts-${qIdx} .option`);
+  opts.forEach(o => o.classList.add('answered'));
+  opts.forEach(o => { o.style.pointerEvents = 'none'; });
+  if (selected === correct) {
+    el.classList.add('correct');
+    quizScore++;
+    document.getElementById('score').textContent = quizScore;
+  } else {
+    el.classList.add('wrong');
+    opts.forEach((o, i) => {
+      if ('ABCD'[i] === correct) o.classList.add('correct');
+    });
+  }
+}
+
+// ─── FLASHCARD LOGIC ──────────────────────────────────────────────────────────
+let fcIdx = 0;
+const fcEl = document.getElementById('flashcard');
+document.getElementById('fc-total').textContent = flashcards.length;
+
+function renderCard() {
+  const c = flashcards[fcIdx];
+  document.getElementById('fc-question').textContent = c.q;
+  document.getElementById('fc-answer').textContent = c.a;
+  document.getElementById('fc-current').textContent = fcIdx + 1;
+  fcEl.classList.remove('flipped');
+  const dots = document.getElementById('fc-dots');
+  dots.innerHTML = '';
+  flashcards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === fcIdx ? ' active' : '');
+    dots.appendChild(d);
+  });
+}
+
+function flipCard() { fcEl.classList.toggle('flipped'); }
+function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderCard(); }
+function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderCard(); }
+
+renderCard();
+</script>
+</body>
+</html>

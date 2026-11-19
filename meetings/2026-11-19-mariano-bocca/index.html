@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Prep — Mariano Bocca</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="../../assets/marked.min.js"></script>
+<script>window.marked||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"><\/script>');</script>
+<style>
+  :root {
+    --bg: #08080c;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --gold: #f0b429;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --danger: #ef4444;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100vh; }
+
+  /* NAVBAR */
+  .navbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(17,17,24,0.95); border-bottom:1px solid var(--border); backdrop-filter:blur(20px); position:sticky; top:0; z-index:100; }
+  .navbar-brand { font-size:18px; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .navbar-date { font-size:13px; color:var(--text-muted); }
+  .navbar-back { color:var(--text-muted); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color 0.2s; }
+  .navbar-back:hover { color:var(--text); }
+  .btn-export { background:linear-gradient(135deg,#1d4ed8,var(--accent)); border:none; color:#fff; padding:7px 15px; border-radius:8px; font-size:12.5px; font-weight:600; font-family:inherit; cursor:pointer; display:flex; align-items:center; gap:7px; transition:opacity .2s; }
+  .btn-export:hover { opacity:.85; }
+
+  /* ── BRIEFING EN VOZ ALTA ── */
+  .audio-section { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:16px; margin:0 0 4px; }
+  .audio-btn { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:transform .2s; box-shadow:0 0 12px rgba(59,130,246,0.4); }
+  .audio-btn:hover { transform:scale(1.08); }
+  .audio-btn:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+  .audio-info { flex:1; min-width:0; }
+  .audio-title { font-size:13px; font-weight:600; }
+  .audio-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .visualizer { display:flex; align-items:flex-end; gap:2px; height:24px; }
+  .visualizer .bar { width:3px; background:var(--accent); border-radius:2px; animation:eq 1.1s ease-in-out infinite; }
+  .visualizer.paused .bar { animation-play-state:paused; opacity:.3; }
+  .visualizer .bar:nth-child(1){height:8px;animation-delay:0s}
+  .visualizer .bar:nth-child(2){height:16px;animation-delay:.1s}
+  .visualizer .bar:nth-child(3){height:12px;animation-delay:.2s}
+  .visualizer .bar:nth-child(4){height:20px;animation-delay:.3s}
+  .visualizer .bar:nth-child(5){height:10px;animation-delay:.4s}
+  .visualizer .bar:nth-child(6){height:18px;animation-delay:.15s}
+  .visualizer .bar:nth-child(7){height:14px;animation-delay:.25s}
+  @keyframes eq { 0%,100%{transform:scaleY(.45)} 50%{transform:scaleY(1)} }
+  @media (prefers-reduced-motion: reduce) { .visualizer .bar { animation:none; } }
+
+  /* ── IMPRESIÓN / PDF ── */
+  @media print {
+    @page { margin: 14mm; }
+    .navbar, .sidebar, .audio-section, .btn-export { display:none !important; }
+    body { background:#fff; color:#000; }
+    .main-layout, .content { display:block; margin:0; padding:0; max-width:none; }
+    .tab-pane { display:block !important; page-break-after:always; }
+    .tab-pane:last-child { page-break-after:auto; }
+    .markdown-body h2 { color:#000; }
+    .markdown-body h2::before { background:#000; }
+    .stat-card, .markdown-body table, .quiz-question { break-inside:avoid; }
+    a { color:#000; text-decoration:underline; }
+  }
+
+  /* HEADER */
+  .meeting-header { padding:40px 32px 32px; background:linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(139,92,246,0.05) 100%); border-bottom:1px solid var(--border); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; gap:24px; align-items:flex-start; }
+  .avatar { width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff; flex-shrink:0; }
+  .header-info { flex:1; }
+  .header-name { font-size:28px; font-weight:800; margin-bottom:4px; }
+  .header-title { font-size:15px; color:var(--text-muted); margin-bottom:12px; }
+  .header-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,0.15); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); }
+  .tag-purple { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.3); }
+  .tag-gold { background:rgba(240,180,41,0.15); color:var(--gold); border:1px solid rgba(240,180,41,0.3); }
+  .tag-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  .header-meta { margin-left:auto; text-align:right; }
+  .meeting-time { font-size:22px; font-weight:700; color:var(--accent); }
+  .meeting-date { font-size:13px; color:var(--text-muted); margin-top:4px; }
+  .meeting-platform { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+
+  /* STATS */
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding:24px 32px; max-width:1200px; margin:0 auto; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:20px 24px; display:flex; align-items:center; gap:16px; }
+  .stat-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .stat-icon.blue { background:rgba(59,130,246,0.15); color:var(--accent); }
+  .stat-icon.gold { background:rgba(240,180,41,0.15); color:var(--gold); }
+  .stat-icon.green { background:rgba(16,185,129,0.15); color:var(--success); }
+  .stat-value { font-size:22px; font-weight:800; }
+  .stat-label { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+  /* LAYOUT */
+  .main-layout { display:grid; grid-template-columns:220px 1fr; gap:0; max-width:1200px; margin:0 auto; padding:0 32px 48px; }
+
+  /* SIDEBAR */
+  .sidebar { padding:24px 0; }
+  .sidebar-tab { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; cursor:pointer; font-size:14px; color:var(--text-muted); transition:all 0.2s; margin-bottom:4px; border:1px solid transparent; width:100%; text-align:left; background:none; font-family:inherit; }
+  .sidebar-tab:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+  .sidebar-tab:hover { background:var(--surface); color:var(--text); }
+  .sidebar-tab.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.25); font-weight:600; }
+  .sidebar-tab i { width:18px; text-align:center; }
+  .notebooklm-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; font-size:14px; color:var(--gold); text-decoration:none; background:rgba(240,180,41,0.08); border:1px solid rgba(240,180,41,0.2); margin-top:16px; transition:all 0.2s; }
+  .notebooklm-btn:hover { background:rgba(240,180,41,0.15); }
+
+  /* CONTENT */
+  .content { padding:24px 0 0 32px; }
+  .tab-pane { display:none; }
+  .tab-pane.active { display:block; }
+
+  /* MARKDOWN */
+  .markdown-body h1 { font-size:24px; font-weight:800; margin-bottom:20px; color:var(--text); }
+  .markdown-body h2 { font-size:18px; font-weight:700; margin:28px 0 12px; color:var(--accent); display:flex; align-items:center; gap:9px; }
+  .markdown-body h2::before { content:''; display:inline-block; width:3px; height:19px; background:linear-gradient(var(--accent),var(--gold)); border-radius:2px; flex-shrink:0; }
+  .markdown-body h3 { font-size:15px; font-weight:600; margin:20px 0 8px; color:var(--text); }
+  .markdown-body p { line-height:1.7; color:var(--text-muted); margin-bottom:12px; font-size:14px; }
+  .markdown-body ul, .markdown-body ol { padding-left:20px; margin-bottom:12px; }
+  .markdown-body li { line-height:1.8; color:var(--text-muted); font-size:14px; }
+  .markdown-body strong { color:var(--text); font-weight:600; }
+  .markdown-body em { color:var(--accent2); }
+  .markdown-body table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+  .markdown-body th { background:var(--surface2); padding:10px 16px; text-align:left; font-weight:600; font-size:13px; color:var(--text-muted); border:1px solid var(--border); }
+  .markdown-body td { padding:10px 16px; border:1px solid var(--border); color:var(--text-muted); line-height:1.6; }
+  .markdown-body tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+  .markdown-body code { background:var(--surface2); padding:2px 8px; border-radius:6px; font-size:13px; color:var(--accent); }
+  .markdown-body blockquote { border-left:3px solid var(--accent); padding:12px 16px; background:rgba(59,130,246,0.05); margin:16px 0; border-radius:0 8px 8px 0; }
+
+  /* QUIZ */
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .quiz-score { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; }
+  .quiz-score span { color:var(--accent); font-weight:700; font-size:18px; }
+  .quiz-question { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:20px; }
+  .question-num { font-size:12px; color:var(--text-muted); font-weight:600; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; }
+  .question-text { font-size:16px; font-weight:600; margin-bottom:20px; line-height:1.5; }
+  .options { display:grid; gap:10px; }
+  .option { padding:14px 18px; border-radius:12px; border:1px solid var(--border); cursor:pointer; font-size:14px; transition:all 0.2s; display:flex; align-items:center; gap:12px; background:var(--surface2); }
+  .option:hover:not(.answered) { border-color:var(--accent); color:var(--accent); }
+  .option.correct { border-color:var(--success); background:rgba(16,185,129,0.1); color:var(--success); }
+  .option.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); }
+  .option-letter { width:28px; height:28px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+
+  /* FLASHCARDS */
+  .flashcard-area { display:flex; flex-direction:column; align-items:center; gap:24px; }
+  .flashcard-counter { font-size:13px; color:var(--text-muted); }
+  .flashcard-wrap { width:100%; max-width:640px; height:320px; perspective:1200px; cursor:pointer; }
+  .flashcard-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.4,0,0.2,1); position:relative; }
+  .flashcard-wrap.flipped .flashcard-inner { transform:rotateY(180deg); }
+  .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:36px; text-align:center; }
+  .flashcard-front { background:linear-gradient(135deg,var(--surface),var(--surface2)); border:1px solid var(--border); }
+  .flashcard-back { background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); transform:rotateY(180deg); }
+  .flashcard-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:16px; }
+  .flashcard-text { font-size:18px; font-weight:600; line-height:1.5; }
+  .flashcard-back .flashcard-text { font-size:15px; color:var(--text-muted); font-weight:400; line-height:1.7; }
+  .flashcard-hint { font-size:12px; color:var(--text-muted); margin-top:16px; opacity:0.6; }
+  .flashcard-nav { display:flex; gap:16px; align-items:center; }
+  .fc-btn { width:44px; height:44px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; }
+  .fc-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .dots { display:flex; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.2s; }
+  .dot.active { background:var(--accent); width:24px; border-radius:4px; }
+
+  /* SECTION TITLE */
+  .section-title { font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .section-title i { color:var(--accent); }
+
+  /* MOBILE — el briefing se lee desde el celular antes de entrar a la reunión */
+  @media (max-width: 760px) {
+    .meeting-header { padding:24px 16px 20px; }
+    .header-inner { flex-wrap:wrap; gap:14px; }
+    .avatar { width:56px; height:56px; font-size:20px; }
+    .header-name { font-size:22px; }
+    .header-meta { margin-left:0; text-align:left; width:100%; }
+    .meeting-platform { justify-content:flex-start; }
+    .stats-wrap { padding:0 16px !important; }
+    .stats-row { grid-template-columns:1fr; gap:10px; padding:16px 0 !important; }
+    .stat-card { padding:14px 16px; }
+    .main-layout { grid-template-columns:minmax(0,1fr); padding:0 16px 40px; }
+    .sidebar { display:flex; gap:6px; overflow-x:auto; padding:8px 0; position:sticky; top:0; z-index:5; background:var(--bg); }
+    .sidebar-tab { white-space:nowrap; flex-shrink:0; margin-bottom:0; padding:10px 12px; }
+    .notebooklm-btn { white-space:nowrap; flex-shrink:0; }
+    .content { padding:12px 0 0; min-width:0; }
+    .markdown-body table { display:block; overflow-x:auto; }
+    .markdown-body th, .markdown-body td { padding:8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><i class="fas fa-brain"></i> Meeting Prep</div>
+  <div class="navbar-date">Jueves 19 de Noviembre, 2026</div>
+  <a href="../../index.html" class="navbar-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+  <button class="btn-export" onclick="window.print()"><i class="fas fa-download"></i> Exportar PDF</button>
+</nav>
+
+<div class="meeting-header">
+  <div class="header-inner">
+    <div class="avatar">MB</div>
+    <div class="header-info">
+      <div class="header-name">Mariano Bocca</div>
+      <div class="header-title">Gerente de Marketplace · Cetrogar</div>
+      <div class="header-tags">
+        <span class="tag tag-purple"><i class="fas fa-chalkboard-teacher"></i> Mentoría · Programa de Agentes</span>
+        <span class="tag tag-blue"><i class="fas fa-store"></i> Marketplace · Electro retail</span>
+        <span class="tag tag-green"><i class="fas fa-robot"></i> Agente en producción</span>
+        <span class="tag tag-gold"><i class="fas fa-graduation-cap"></i> eCommerce Institute</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meeting-time"><i class="far fa-clock"></i> 17:45 hs</div>
+      <div class="meeting-date">Jueves 19/11/2026</div>
+      <div class="meeting-platform"><i class="fas fa-video"></i> Mentoría 1:1 de seguimiento · Agentes de IA (1 h agendada)</div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-wrap" style="max-width:1200px;margin:0 auto;padding:0 32px;">
+  <div class="stats-row" style="padding:24px 0;">
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-store"></i></div>
+      <div>
+        <div class="stat-value">118</div>
+        <div class="stat-label">Sucursales Cetrogar (mar-2026)</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon gold"><i class="fas fa-shopping-cart"></i></div>
+      <div>
+        <div class="stat-value">15%</div>
+        <div class="stat-label">De su facturación ya es online</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-chart-line"></i></div>
+      <div>
+        <div class="stat-value">23,2%</div>
+        <div class="stat-label">Online en cadenas de electro (INDEC 2T-26)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="sidebar" role="tablist" aria-label="Secciones del dashboard">
+    <button type="button" class="sidebar-tab active" role="tab" aria-selected="true" aria-controls="tab-briefing" onclick="showTab('briefing',this)"><i class="fas fa-file-alt"></i> Executive Briefing</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-intel" onclick="showTab('intel',this)"><i class="fas fa-shield-alt"></i> Competitive Intel</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-research" onclick="showTab('research',this)"><i class="fas fa-microscope"></i> Deep Research</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-sources" onclick="showTab('sources',this)"><i class="fas fa-link"></i> Fuentes</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-quiz" onclick="showTab('quiz',this)"><i class="fas fa-question-circle"></i> Knowledge Test</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-flashcards" onclick="showTab('flashcards',this)"><i class="fas fa-clone"></i> Flashcards</button>
+    <button type="button" class="sidebar-tab" role="tab" aria-selected="false" aria-controls="tab-postbrief" onclick="showTab('postbrief',this)"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</button>
+    <div class="notebooklm-btn" style="cursor:default;opacity:.75">
+      <i class="fas fa-search"></i> 22 fuentes · research web
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- TAB: EXECUTIVE BRIEFING -->
+    <div id="tab-briefing" class="tab-pane active">
+      <div class="section-title"><i class="fas fa-file-alt"></i> Executive Briefing</div>
+      <div class="audio-section">
+        <button class="audio-btn" id="playBtn" onclick="toggleAudio()" aria-label="Escuchar el briefing en voz alta">
+          <i class="fas fa-play" id="playIcon"></i>
+        </button>
+        <div class="audio-info">
+          <div class="audio-title">Escuchar el briefing</div>
+          <div class="audio-sub" id="audioSub">Lectura en voz alta — sirve mientras manejás o caminás</div>
+        </div>
+        <div class="visualizer paused" id="viz">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+      <div class="markdown-body" id="briefing-content"></div>
+    </div>
+
+    <!-- TAB: COMPETITIVE INTEL -->
+    <div id="tab-intel" class="tab-pane">
+      <div class="section-title"><i class="fas fa-shield-alt"></i> Competitive Intel</div>
+      <div class="markdown-body" id="intel-content"></div>
+    </div>
+
+    <!-- TAB: DEEP RESEARCH -->
+    <div id="tab-research" class="tab-pane">
+      <div class="section-title"><i class="fas fa-microscope"></i> Deep Research</div>
+      <div class="markdown-body" id="research-content"></div>
+    </div>
+
+    <!-- TAB: QUIZ -->
+    <!-- TAB: FUENTES -->
+    <div id="tab-sources" class="tab-pane">
+      <div class="section-title"><i class="fas fa-link"></i> Fuentes</div>
+      <div class="markdown-body" id="sources-content"></div>
+    </div>
+
+    <div id="tab-quiz" class="tab-pane">
+      <div class="quiz-header">
+        <div class="section-title" style="margin:0"><i class="fas fa-question-circle"></i> Knowledge Test</div>
+        <div class="quiz-score">Score: <span id="score">0</span> / <span id="total-q">8</span></div>
+      </div>
+      <div id="quiz-container"></div>
+    </div>
+
+    <!-- TAB: FLASHCARDS -->
+    <div id="tab-flashcards" class="tab-pane">
+      <div class="section-title"><i class="fas fa-clone"></i> Flashcards</div>
+      <div class="flashcard-area">
+        <div class="flashcard-counter"><span id="fc-current">1</span> / <span id="fc-total">10</span></div>
+        <div class="flashcard-wrap" id="flashcard" onclick="flipCard()">
+          <div class="flashcard-inner">
+            <div class="flashcard-face flashcard-front">
+              <div class="flashcard-label"><i class="fas fa-question"></i> Pregunta</div>
+              <div class="flashcard-text" id="fc-question"></div>
+              <div class="flashcard-hint">Clic para ver la respuesta</div>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <div class="flashcard-label"><i class="fas fa-lightbulb"></i> Respuesta</div>
+              <div class="flashcard-text" id="fc-answer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-nav">
+          <button class="fc-btn" onclick="prevCard()"><i class="fas fa-arrow-left"></i></button>
+          <div class="dots" id="fc-dots"></div>
+          <button class="fc-btn" onclick="nextCard()"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: BRIEF POST-REUNIÓN -->
+    <div id="tab-postbrief" class="tab-pane">
+      <div class="section-title"><i class="fas fa-file-circle-check"></i> Brief Post-Reunión</div>
+      <div class="markdown-body" id="postbrief-content"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── TAB SWITCHING ───────────────────────────────────────────────────────────
+function showTab(name, el) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-tab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+  el.setAttribute('aria-selected', 'true');
+}
+
+// Flechas para moverse entre solapas con el teclado
+document.querySelectorAll('.sidebar-tab').forEach((tab, i, all) => {
+  tab.addEventListener('keydown', e => {
+    const step = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+    if (!step) return;
+    e.preventDefault();
+    const next = all[(i + step + all.length) % all.length];
+    next.focus();
+    next.click();
+  });
+});
+
+// ─── CONTENT DATA ─────────────────────────────────────────────────────────────
+const briefingMD = `# Briefing — Mariano Bocca (Cetrogar)
+
+> **En una línea:** segunda vuelta de mentoría con un alumno que **ya puso su agente a correr**. Hoy no se enseña desde cero: se destraban las 5 dudas que mandó por mail el 18/11 y se lo deja encaminado al Demo Day.
+
+## 1. Perfil de la persona
+
+**Cargo:** **Gerente de Marketplace** en **Cetrogar** — lo dijo él mismo en la mentoría del 13/11. Agregadores de contactos (SignalHire, RocketReach) lo listan como **Gerente / Head of Marketplace y Desarrollo de Negocios**. No hay nota de prensa que lo confirme.
+**Base:** probablemente Rosario o zona AMBA — *a confirmar al inicio del call* (ZoomInfo lo ubica en Rosario en una etapa anterior).
+**Trayectoria (según agregadores, no confirmada por él):**
+- **Cetrogar** — Head of Marketplace & Business Development (actual). Un post público de sep-2024 de una seller agradece a "Sebastián Mantica y **Mariano Bocca**" de Grupo Cetrogar → está en el marketplace **al menos desde 2024**.
+- **Frávega** — Gerente de Abastecimiento y Distribución a Clientes; SlideShare y ZoomInfo lo describen como **Gerente de Logística E-commerce**, con ~10 años en logística e industria y foco final en el canal online.
+- **Bimbo do Brasil** — Ingeniería de Procesos.
+- Un post de 2023 con #marketplace #3p #fbf #fbs lo nombra junto a un equipo con integrantes en Chile: *posible* paso por un marketplace regional — **a confirmar, no lo menciones como dato**.
+**Formación:** **Universidad Tecnológica Nacional** (según el agregador) — perfil de **ingeniería de procesos y logística**: piensa en flujos, no en features. *Confirmalo al inicio del call.*
+**Perfil técnico:** se definió como **"muy principiante"** el 13/11. Una semana después ya tenía una tarea programada, un dashboard y una app con login de Google. Aprende rápido y ejecuta solo.
+**Cómo llegó:** alumno del **Programa de Agentes de IA con mentoría personalizada** de **eCommerce Institute** (12 semanas, 6 encuentros grupales + **6 mentorías 1:1 de 30 min**, cierre con **Demo Day**). La mentoría del 13/11 vino por ese canal.
+
+**Lo que construyó entre el 13/11 y el 18/11 (según su mail):**
+- Pasó a **Claude Code en el navegador** (no pudo usar la app de escritorio en el equipo de la empresa).
+- Mejoró el **dashboard comercial** con **ultracode + Opus 5.5**: gráficos y análisis andando; los colores le quedaron pendientes.
+- Programó la tarea para que corra **lunes a viernes a las 9:40**.
+- Siguió tu consejo: **versión 1 con los 3 documentos en un Drive**, sin automatizar la ingesta por API.
+- Cada corrida devuelve: **informe con 4 insights**, **conclusiones**, **borradores de mail a Sellers** con accionables, **borradores de mail a Catálogo**, y un **P&L** que todavía quiere mejorar.
+- Armó una **app con autenticación de Google** que solo deja entrar a una lista de mails habilitados (también en Drive).
+
+**Contexto de la reunión:** volvés a ver a un alumno que **pasó del prototipo a producción en 5 días**. Viene con 5 dudas concretas, todas de "segunda semana" (publicación, contexto, permisos, reutilización, costos). Si salís con esas 5 resueltas y una meta para el Demo Day, la mentoría cumplió.
+
+## 2. Perfil de la empresa
+
+**Cetrogar S.A.** — cadena de **electrodomésticos, tecnología y hogar** fundada en **1980** en **Resistencia, Chaco**. Empresa familiar liderada por **Roberto Cetrolo** (presidente); **Pablo Cetrolo** figura como director comercial.
+**Escala:**
+- **118 sucursales** a marzo de 2026 (Cronista); **119** con la apertura de Portal Salta (ene-2026). El localizador de la web hoy muestra **113 tiendas en 17 provincias + CABA** (Córdoba 18, Chaco 14, Corrientes 11, Buenos Aires 10, Santa Fe 10, Misiones 9).
+- ~**2.000 colaboradores** (InfoNegocios).
+- **8,5% de share** declarado, y creció **10 puntos por encima del mercado** en 2025 (Cronista, mar-2026).
+- Plan: **5 aperturas en 2025** (Las Heras, Mar del Plata, La Plata, Recoleta, San Justo) y **6 más en 2026** → salto de cadena regional a **marca nacional**.
+
+**Digital:**
+- El canal online es el **15% de la facturación**; en marzo estaban **migrando de plataforma** para mejorar la conversión.
+- Hoy el sitio corre sobre **VTEX FastStore** (headless). Antes usaba **Adobe Commerce** (caso de éxito: ventas +65%).
+- **Marketplace abierto con Seller Center**: el seller paga comisión + tarifa logística; retiro en sucursal o **Pickit**. Integración vía **Producteca**. Categorías que mejor funcionan: pequeños electro, informática, audio, accesorios de celular, muebles y colchones, jardín, accesorios de moto. Tráfico estimado ~**1 M de visitas/mes** (estimación de terceros).
+- Los productos de marketplace **no suman Puntos Cetrogar**.
+
+**El negocio que lo sostiene — crédito propio:**
+- **Crédito Cetrogar**: solo con DNI, **24 cuotas fijas**, por WhatsApp o en sucursal. "Siempre buscamos tener más cuotas que la competencia" (J. M. Almeida, Gerente Nacional de Marketing).
+- La otra cara: **mora de 53,7%** según BCRA (Frávega 53,5%, On City 52,2%). En cadenas de electro la mora pasó de **14,8% a 48,2% en un año**.
+- La rentabilidad cayó en 2025; el propio marketing habla de un **"problema de caja"** en la industria.
+
+**Restricción clave para la mentoría:** la empresa tiene **políticas de seguridad informática muy estrictas** (ecosistema Microsoft, herramientas no oficiales bloqueadas). Todo lo que le recomiendes tiene que poder pasar ese filtro.
+
+## 3. Oportunidad de mercado
+
+**E-commerce Argentina (CACE):**
+- **2025:** **$34,03 billones** de facturación (**+55%**), **253 M órdenes** (+3%), ticket **$134.519** (+46%), **25,1 M compradores**. Audio/imagen/TI es el **rubro 3** y Electrodomésticos el **5**.
+- **1er semestre 2026:** **$19,53 billones** (**+28% nominal**, levemente negativo en términos reales), **181,5 M órdenes** (+21%). **Electro / línea blanca es el rubro n.º 2.**
+- **62% de las empresas ya usa IA** (CACE 2025) → el agente de Mariano no es exótico: es el estándar que viene.
+- **CyberMonday 2026** (2–4/11): **$682.185 M**, ~**6,5 M órdenes**, ~800 empresas; los **marketplaces** entre lo destacado.
+
+**Electro retail:**
+- En las cadenas de electro, el online ya es el **23,2% de la facturación** (INDEC, 2T-2026) y crece **27,2%** contra **8,6%** de los locales.
+- **Consolidación brutal:** **Garbarino** quebró (4/3/2026), **CARSA/Musimundo NEA** (~70 locales) quebró (2/9/2026), **On City** cerró 11+ locales, **Pardo** bajó de 74 a 62. **Frávega** sigue con ~115.
+- **Mercado Libre** creció **40% de GMV** en Argentina (3T-2026, FX-neutral): es el benchmark de surtido infinito contra el que compite cualquier marketplace de retailer.
+
+**Por qué importa para Mariano:** con mora alta y caja ajustada, un **marketplace suma surtido sin inventario ni riesgo de crédito**. Su agente ataca justo el cuello de botella de un equipo chico: **controlar precio y cuotas de cada seller** y convertir datos en reclamos e incentivos diarios.
+
+## 4. Puntos Clave de Conversación
+
+**1. Que la app no la bloquee la red de la empresa**
+Mariano armó una app con login de Google y lista blanca de mails, pero la URL aparece como **"no segura"** y la red corporativa la bloquea. Los filtros corporativos suelen bloquear dominios **nuevos o sin categorizar** (p. ej. subdominios gratuitos) o sitios sin **HTTPS** válido.
+*Pregunta:* **"¿La URL es un artefacto de Claude, un subdominio gratuito o un dominio propio? ¿Qué te dice exactamente el bloqueo: certificado, categoría o política?"**
+*Salidas posibles:* (a) pedirle a IT que **categorice o habilite** el dominio puntual; (b) publicarlo bajo un **subdominio corporativo**; (c) para la v1, que el agente **mande el informe como PDF o mail** a la lista habilitada y la app quede para después.
+
+**2. Contexto al 90%: del "mastica todo" al pipeline por etapas**
+La tarea carga los **3 documentos completos** en cada corrida y genera 5 salidas en una sola pasada. Ya le recomendaste \`/compact\` y bajar la ventana a ~400k.
+*Pregunta:* **"¿Cuánto pesan los 3 archivos y qué parte realmente usa el agente? ¿Las 5 salidas salen de una sola conversación?"**
+*Lo que conviene llevarle:* **pre-procesar** (un paso que resume cada fuente a una tabla corta), **separar en etapas** (análisis → borradores → P&L), y pasar las reglas de negocio a una **skill** en vez de repetirlas en el prompt.
+
+**3. Seguridad de los conectores (Drive y Canva)**
+Tiene conectados **Drive y Canva** y quiere ponerle barreras al agente. Ya le dijiste que los conectores son sólidos y que trabajar en la nube reduce riesgos; quedó pendiente "hablarlo bien".
+*Pregunta:* **"¿El conector de Drive ve todo tu Drive o solo la carpeta del proyecto? ¿El agente puede borrar o compartir archivos, o solo leer y crear borradores?"**
+*Checklist mínimo:* **mínimo privilegio** (una carpeta dedicada, idealmente una cuenta dedicada), **solo lectura** donde se pueda, **nada de datos personales de clientes**, y el principio que ya aplica bien: **borradores, no envíos** — siempre hay un humano que aprieta "enviar".
+
+**4. El agente como base de consulta ("me junto con el Seller X")**
+Quiere preguntarle al agente cosas como **"me junto con el Seller X: qué destacar, qué reclamar y con qué me tengo que llevar comercialmente"**. Le respondiste: si es recurrente, **skill**; si es general, chat directo.
+*Pregunta:* **"¿Cuántas reuniones con sellers tenés por semana y qué tres datos mirás siempre antes de cada una?"**
+*Para mostrar:* es **exactamente el patrón de Meeting Prep OS** — calendario → research → briefing. Podés enseñarle este mismo dashboard como ejemplo de "agente que prepara reuniones", con el seller en lugar de la persona.
+
+**5. Cuánto gasta la tarea programada**
+No sabe cuántos tokens consume la corrida de las 9:40. Le sugeriste \`/usage\` y comparar la ventana de 5 horas antes y después.
+*Pregunta:* **"¿Ya la viste correr con el uso en cero? ¿Cuánto subió?"**
+*Siguiente paso:* con ese número, decidir si conviene correrla **diaria o solo lunes y jueves**, y qué etapas pueden usar un **modelo más liviano**.
+
+### Lo que probablemente te va a preguntar
+
+- **"¿Cómo hago el login para producción?"** → Quedaste en dar la clase de **login y funciones de producción**: tené listo el ejemplo de Google Auth con lista de mails habilitados — él ya lo armó, así que la conversación es sobre **dónde publicarlo**.
+- **"¿Qué presento en el Demo Day?"** → El agente de inteligencia comercial **ya cumple el requisito** (caso real propio). Lo que falta es **medirlo**: horas ahorradas por semana y reclamos a sellers generados.
+- **"¿Le puedo mostrar esto a mi gerencia?"** → Sí, pero con números. Ayudalo a armar **3 KPIs** antes de mostrarlo (ver Próximos pasos).
+
+## 5. Manejo de objeciones
+
+| Si dice… | Respondé con… |
+|---|---|
+| **"IT no me va a habilitar nada"** | No hace falta pelear todo: la v1 puede **entregar por mail o PDF** a la lista habilitada. La app web se negocia con IT cuando el agente ya demostró valor con números. |
+| **"No sé si los permisos que le di son riesgosos"** | Revisalo hoy juntos: **una carpeta, solo lectura, borradores en vez de envíos**. Es el mismo criterio que usan las empresas con datos sensibles. |
+| **"Se me llena el contexto y se pone lento"** | No es un problema del modelo sino del diseño: **resumir antes y separar en etapas** reduce el contexto y además baja el costo. |
+| **"No tengo tiempo de seguir mejorándolo"** | Ya corre solo de lunes a viernes. Lo que sigue es **sacar tareas**, no sumarlas: elegí **una** mejora por semana (hoy: el P&L o la publicación). |
+| **"No sé cuánto me cuesta"** | Una semana de \`/usage\` alcanza para tener el número. Sin ese dato no se decide nada de frecuencia ni de modelo. |
+
+## 6. Próximos pasos
+
+1. **Cerrar hoy la decisión de publicación:** pedido a IT con el dominio puntual **o** entrega por mail/PDF como v1. Que salga de la call con el texto del pedido a IT armado.
+2. **Rediseño anti-contexto en una semana:** fuentes pre-resumidas + 3 etapas + reglas en una skill. Que traiga la medición de \`/usage\` antes y después a la próxima mentoría.
+3. **3 KPIs para el Demo Day y para su gerencia:** horas/semana ahorradas al equipo, **reclamos a sellers** generados y resueltos, y desvíos de precio o cuotas detectados. Fecha: antes de la próxima 1:1.
+`;
+
+const intelMD = `# Cheat sheet — el tablero de Mariano
+
+## El marketplace de Cetrogar frente a la competencia
+
+| Jugador | Formato | Dato clave | Qué significa para Mariano |
+|---|---|---|---|
+| **Cetrogar** | 118 locales + online + marketplace | Online = **15%** de la facturación; **8,5%** de share | Su marketplace es la vía para sumar surtido sin stock propio |
+| **Frávega** | ~115 locales + marketplace | Mora **53,5%** (BCRA) | Competidor directo en cuotas y surtido |
+| **On City (Megatone)** | ~200 locales | Cerró **11+** locales; mora **52,2%** | La consolidación libera clientes en el interior |
+| **Garbarino** | — | **Quebró** el 4/3/2026 | Hueco de mercado que Cetrogar ya viene ocupando desde 2021 |
+| **CARSA / Musimundo NEA** | ~70 locales | **Quebró** el 2/9/2026 | Mismo territorio que Cetrogar (NEA): oportunidad directa |
+| **Mercado Libre** | Marketplace puro | GMV AR **+40%** (3T-2026) | El benchmark de precio y surtido contra el que lo comparan sus sellers |
+
+## Su stack (lo que contó)
+
+- **Plataforma:** **VTEX** (FastStore) con Seller Portal; integraciones vía **Producteca**.
+- **Fuentes del agente:** un proveedor externo de **pricing con scraping**, las **ventas de VTEX**, **analytics** (Looker) y datos de mercado (estacionalidad, nuevos sellers).
+- **Salidas que pidió:** resumen diario de acciones con sellers, informe de ventas y marketing, **informe semanal para dirección**, y propuestas de **reclamos** por precio o cuotas, **rebates** y bonificaciones de comisión.
+- **Herramientas:** Claude Code en el navegador, tarea programada **lu–vi 9:40**, Google Drive como repositorio, app con **Google Auth**.
+
+## Glosario rápido que usa él
+
+- **Seller:** marca o comercio que publica en el marketplace de Cetrogar y fija su propio precio y cuotas.
+- **Catálogo:** el área que mantiene fichas, contenido y categorización de los productos.
+- **Rebate:** devolución o bonificación al seller cuando cumple un objetivo; es su herramienta de incentivo.
+- **Cuotas descompetitivas:** cuando el seller ofrece menos cuotas sin interés que la competencia por el mismo producto — en Argentina eso mata la conversión (**8 de cada 10** compradores consideran clave pagar en cuotas, CACE 2025).
+
+## Lo que ya le dijiste (para no repetirte)
+
+- **13/11:** priorizar el **panel de inteligencia comercial** y **postergar la ingesta por API**; trabajar con descargas manuales; usar Opus con esfuerzo alto para el panel HTML.
+- **18/11, por mail:** \`/compact\` pasando el 50% de contexto y bajar la ventana a ~400k; los conectores MCP "son world class" y la nube reduce riesgos; **skill** para consultas recurrentes; \`/usage\` para medir el consumo.
+- **Compromiso tuyo pendiente:** la clase de **login y funciones de producción**.
+
+## Lectura estratégica (interpretación, no hecho)
+
+- Su recorrido (procesos → abastecimiento y logística → marketplace) explica por qué armó el agente como **un proceso diario con entradas y salidas**. Hablale en ese idioma: etapas, insumos, controles, tiempos de ciclo.
+- Mariano es el **caso de uso ideal del programa**: rol con datos, dolor repetitivo y ejecución rápida. Si llega al Demo Day con números, es **testimonio** para el próximo cohort.
+- Él mismo dijo que el tema IA en Cetrogar está **"muy incipiente"** y todavía no involucra a otras gerencias. Una cadena de **118 locales** con restricciones fuertes de IT es exactamente el tipo de empresa que más tarde necesita **acompañamiento formal**. **No es para plantearlo hoy**: hoy se gana confianza resolviendo sus 5 dudas.
+- Su ventaja: decide sobre su propia área y ya demostró que puede construir sin IT. Su riesgo: que **una alerta de seguridad** le apague todo. Por eso la duda 3 (conectores) es la más importante aunque la haya puesto tercera.
+`;
+
+const researchMD = `# Deep Research — evidencia y limitaciones
+
+## Qué está verificado
+
+**Sobre la persona**
+- **Cargo — Gerente de Marketplace en Cetrogar:** lo dijo él en la mentoría del 13/11 (notas de la reunión). Coincide con **SignalHire** ("Gerente de Marketplace y Desarrollo de Negocios", empleado actual) y con un snippet de **RocketReach** ("Head of Marketplace and Business Development at Cetrogar SA").
+- **Email corporativo** en el dominio cetrogar.com.ar (invitación de la mentoría).
+- **Programa:** alumno del Programa de Agentes de IA de **eCommerce Institute** (la invitación de la mentoría incluía a la coordinación del programa).
+
+**Sobre la empresa** (Cronista mar-2026, BAE Negocios, sitio oficial, iProfesional, base.blog, Producteca)
+- Fundación 1980 en Chaco; sede en Av. 25 de Mayo 1850, Resistencia.
+- 118 locales (mar-2026); 113 en el localizador actual; 5 aperturas en 2025 y 6 previstas en 2026.
+- Online = 15% de la facturación; share declarado 8,5%.
+- Sitio sobre **VTEX FastStore** (cabeceras HTTP); antes **Adobe Commerce**.
+- Marketplace con Seller Center, comisión + tarifa logística, retiro en sucursal o Pickit, integración Producteca.
+- Crédito propio con DNI en 24 cuotas; mora BCRA 53,7%.
+
+**Sobre el mercado** (CACE vía Mercado, El Economista, iProUP, iProfesional/INDEC, Forbes)
+- CACE 2025: $34,03 billones (+55%), 253 M órdenes, ticket $134.519, 25,1 M compradores, 62% de empresas usan IA.
+- CACE 1S-2026: $19,53 billones (+28% nominal), 181,5 M órdenes; electro es el rubro n.º 2.
+- INDEC 2T-2026: online = 23,2% de la facturación de cadenas de electro.
+- Quiebras de Garbarino (mar-2026) y CARSA (sep-2026).
+
+## Qué es interpretación
+
+- Su **trayectoria previa** (Frávega, Bimbo do Brasil, UTN): un agregador (success.ai) la lista **en el mismo perfil** que su cargo actual en Cetrogar, lo que refuerza que es la misma persona. Pero sigue siendo un agregador, no una fuente primaria.
+- El **paso por un marketplace con equipo en Chile** (post de 2023 con #fbf #fbs): sin confirmar.
+- Que la **migración de plataforma** del Cronista haya sido de Adobe Commerce a VTEX (la secuencia encaja, nadie lo dice explícitamente).
+- Que el marketplace sea **palanca de margen frente a la mora**: es lectura propia del contexto financiero, no declaración de la empresa.
+- Las **salidas posibles** para la URL bloqueada: hipótesis técnicas a confirmar viendo el error real.
+
+## Limitaciones
+
+- **LinkedIn cerrado:** no se leyó su perfil; los datos de cargo salen de agregadores y de lo que él dijo.
+- **Sin prensa, charlas ni posts** a su nombre: es un perfil ejecutivo de bajo perfil público.
+- **Formación y antigüedad en Cetrogar:** no encontradas.
+- **Facturación de Cetrogar:** no es pública; la estimación de SignalHire (US$500M–1B) no es confiable y no se usa.
+- **Datos internos de la mentoría** (proveedores, sellers y números de su operación) se resumen sin detalle a propósito: este dashboard se publica en una URL abierta.
+- **Consumo real de tokens y peso de los archivos:** no se conocen; son las primeras preguntas de la call.
+
+## Fuentes útiles
+
+**21 fuentes externas**. Research con **Firecrawl** (search, map y scrape) + WebSearch y WebFetch más el contexto interno (mail del 18/11 y notas de la mentoría del 13/11, que no se enlazan).
+`;
+const postBriefMD = `## Todavía sin completar
+
+Esta sección se llena **después** de la reunión, con lo que realmente pasó:
+decisiones tomadas, compromisos asumidos y próximos pasos concretos.
+
+Mientras tanto, lo de acá arriba es la preparación — hipótesis, no hechos.
+`;
+const sourcesMD = `# Fuentes (22)
+
+
+## Identidad profesional
+
+- [SignalHire — empleados de Grupo Cetrogar](https://www.signalhire.com/overview/cetrogar-sa) — Cargo 'Gerente de Marketplace y Desarrollo de Negocios' y directores de la empresa
+- [RocketReach (snippet de búsqueda)](https://rocketreach.co/alejandro-balino-email_242544788) — 'Head of Marketplace and Business Development at Cetrogar SA'
+- [success.ai — perfil de Mariano Bocca](https://www.success.ai/profile/mariano-bocca-948969646488) — Trayectoria: Cetrogar, Frávega (Abastecimiento y Distribución), Bimbo do Brasil; formación UTN (Firecrawl)
+- [Post público de una seller de Cetrogar (snippet)](https://es.linkedin.com/posts/elizabeth-pereyra-706466138_el-martes-tendr%C3%A9-el-honor-de-estar-en-marketplace-activity-7245495717002174465-ahAm) — Agradece a Mariano Bocca de Grupo Cetrogar: en el marketplace desde al menos 2024 (Firecrawl, solo snippet)
+- [Post #marketplace #3p #fbf #fbs (snippet)](https://es.linkedin.com/posts/nicolas-felice-32280611_unsoloequipo-fbf-fbs-activity-7058916462060556288-0L2B) — Lo nombra con un equipo de marketplace con integrantes en Chile, 2023 (sin confirmar; Firecrawl, solo snippet)
+- [SlideShare — perfil mbocca (snippet)](https://www.slideshare.net/mbocca) — Posible etapa previa como Gerente de Logística E-commerce en Frávega (no verificada)
+- [ZoomInfo (snippet)](https://www.zoominfo.com/p/Mariano-Bocca/3866158621) — Manager en Frávega, Rosario (posible homónimo, no verificado)
+- Contexto interno: mail del 18/11 y notas de la mentoría del 13/11 — Cargo dicho por él, avances del agente y sus 5 dudas (no se enlaza)
+
+## La empresa
+
+- [El Cronista — el retail de electro que más cuotas da](https://www.cronista.com/negocios/el-retail-de-electro-que-mas-cuotas-da-busca-consolidarse-como-una-marca-nacional-con-nuevas-aperturas) — 118 locales, 15% online, 8,5% de share, migración de plataforma y aperturas
+- [BAE Negocios — Cetrogar aprovecha el lugar que deja Garbarino](https://www.baenegocios.com/amp/Cetrogar-aprovecha-el-lugar-que-deja-Garbarino-para-crecer-en-el-interior-20211228-0104/) — Fundación en 1980 y liderazgo de Roberto Cetrolo
+- [Cetrogar — sucursales](https://www.cetrogar.com.ar/sucursales) — 113 tiendas en 17 provincias + CABA (conteo propio)
+- [Cetrogar — preguntas frecuentes de Crédito Cetrogar](https://www.cetrogar.com.ar/preguntas-frecuentes-creditos-cetrogar) — Razón social, sede y crédito con DNI en 24 cuotas
+- [base.blog — vender fuera de Mercado Libre](https://base.com/es-AR/blog/vender-fuera-de-mercado-libre/) — Funcionamiento del marketplace: Seller Center, comisión, Pickit y categorías
+- [Producteca — integración Cetrogar](https://www.producteca.com/integraciones/cetrogar) — Integración de stock y órdenes para sellers
+- [Adobe — caso de éxito Cetrogar](https://business.adobe.com/pe/customer-success-stories/cetrogar-case-study.html) — Plataforma anterior Adobe Commerce (solo titular)
+- [iProfesional — la morosidad en las grandes cadenas](https://www.iprofesional.com/negocios/456813-la-morosidad-esta-ahorcando-a-grandes-cadenas-como-megatone-fravega-y-cetrogar) — Mora BCRA por cadena: Cetrogar 53,7%
+
+## Mercado
+
+- [Mercado — CACE: estudio anual 2025](https://mercado.com.ar/tendencias/comercio-electronico-el-estudio-anual-de-cace-midio-34-033-238-millones-en-2025) — $34,03 billones, +55%, órdenes, ticket, rubros y uso de IA
+- [Mercado — CACE: primer semestre 2026](https://mercado.com.ar/tendencias/cace-el-comercio-electronico-facturo-19-533-815-millones-en-el-primer-semestre) — $19,53 billones, +28% nominal; electro rubro n.º 2
+- [iProfesional — fin de las grandes cadenas de electro](https://www.iprofesional.com/negocios/463801-garbarino-y-musimundo-marcan-el-fin-de-las-grandes-cadenas-de-electro) — Quiebras de Garbarino y CARSA, INDEC 23,2% online en electro
+- [iProUP — CyberMonday 2026](https://www.iproup.com/coffee-break/72983-productos-mas-vendidos-del-cybermonday-2026-y-rubros-que-lideraron) — $682.185 M, 6,5 M órdenes, marketplaces destacados
+- [Forbes Argentina — balance de Mercado Libre](https://www.forbesargentina.com/negocios/nuevo-balance-mercado-libre-crece-facturacion-pero-accion-cae-8-n101777) — GMV Argentina +40% FX-neutral en 3T-2026
+
+## Programa
+
+- [eCommerce Institute — Programa de Agentes de IA](https://ecommerce.institute/programa-agentic/) — 12 semanas, 6 mentorías 1:1, Demo Day con caso real
+
+
+---
+
+*Cada afirmación del briefing tiene que poder rastrearse hasta alguna de estas fuentes. Lo que no sale de acá es interpretación, y como tal está marcado en Deep Research.*
+`;
+
+// ─── QUIZ DATA ────────────────────────────────────────────────────────────────
+const quizData = [
+  {
+    "q": "¿Qué cargo dijo tener Mariano en la mentoría del 13/11?",
+    "options": [
+      "A) Gerente de E-commerce",
+      "B) Gerente de Marketplace",
+      "C) Director Comercial",
+      "D) Jefe de Catálogo"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Cuántas sucursales tenía Cetrogar en marzo de 2026 según el Cronista?",
+    "options": [
+      "A) 86",
+      "B) 102",
+      "C) 118",
+      "D) 200"
+    ],
+    "answer": "C"
+  },
+  {
+    "q": "¿Qué porcentaje de la facturación de Cetrogar es online?",
+    "options": [
+      "A) 5%",
+      "B) 15%",
+      "C) 23%",
+      "D) 40%"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿A qué hora y qué días corre la tarea programada de Mariano?",
+    "options": [
+      "A) Todos los días a las 8:00",
+      "B) Lunes a viernes a las 9:40",
+      "C) Lunes y jueves a las 10:00",
+      "D) Solo los lunes a las 9:00"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Sobre qué plataforma corre hoy el sitio de Cetrogar?",
+    "options": [
+      "A) Magento puro",
+      "B) Tiendanube",
+      "C) VTEX FastStore",
+      "D) Shopify"
+    ],
+    "answer": "C"
+  },
+  {
+    "q": "¿Cuál fue la facturación del e-commerce argentino en 2025 según CACE?",
+    "options": [
+      "A) $19,5 billones",
+      "B) $34,03 billones",
+      "C) $682.185 millones",
+      "D) $50 billones"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Qué principio de seguridad ya aplica bien el agente de Mariano?",
+    "options": [
+      "A) Envía los mails automáticamente",
+      "B) Deja borradores para que un humano envíe",
+      "C) Usa claves compartidas",
+      "D) Guarda todo en su escritorio"
+    ],
+    "answer": "B"
+  },
+  {
+    "q": "¿Qué competidor del NEA quebró el 2/9/2026?",
+    "options": [
+      "A) Frávega",
+      "B) Garbarino",
+      "C) CARSA / Musimundo NEA",
+      "D) Naldo"
+    ],
+    "answer": "C"
+  }
+];
+
+// ─── FLASHCARD DATA ───────────────────────────────────────────────────────────
+const flashcards = [
+  {
+    "q": "¿Qué construyó Mariano entre el 13 y el 18/11?",
+    "a": "Dashboard con Opus 5.5 + ultracode, tarea programada lu–vi 9:40 sobre 3 documentos en Drive, salidas (informe, insights, borradores a Sellers y Catálogo, P&L) y una app con Google Auth."
+  },
+  {
+    "q": "Sus 5 dudas para hoy",
+    "a": "1) URL marcada como no segura y bloqueada, 2) contexto al 90%, 3) permisos de conectores Drive y Canva, 4) usar el agente como base de consulta, 5) cuántos tokens consume."
+  },
+  {
+    "q": "Respuesta corta a la duda de contexto",
+    "a": "Pre-resumir las fuentes, separar en etapas (análisis → borradores → P&L), reglas en una skill, y /compact."
+  },
+  {
+    "q": "Respuesta corta a la duda de seguridad",
+    "a": "Mínimo privilegio: una carpeta dedicada, solo lectura donde se pueda, sin datos personales de clientes, borradores y no envíos."
+  },
+  {
+    "q": "Respuesta corta a 'me junto con el Seller X'",
+    "a": "Si es recurrente, una skill de 'preparar reunión con seller' sobre las salidas del agente. Es el mismo patrón que Meeting Prep OS."
+  },
+  {
+    "q": "¿Qué le prometiste vos el 13/11?",
+    "a": "Dar la clase de login y funciones de producción."
+  },
+  {
+    "q": "¿Cómo está armado el programa que cursa?",
+    "a": "Programa de Agentes de IA de eCommerce Institute: 12 semanas, 6 encuentros grupales, 6 mentorías 1:1 de 30 min y Demo Day con un agente aplicado a un caso real propio."
+  },
+  {
+    "q": "Dato de mercado para darle contexto a su gerencia",
+    "a": "En las cadenas de electro, el online ya es el 23,2% de la facturación (INDEC 2T-2026) y crece 27,2% contra 8,6% de los locales."
+  },
+  {
+    "q": "¿Por qué el marketplace importa más hoy en electro?",
+    "a": "Con mora cercana al 50% y caja ajustada, el marketplace suma surtido sin inventario ni riesgo de crédito."
+  },
+  {
+    "q": "3 KPIs que tiene que llevar al Demo Day",
+    "a": "Horas/semana ahorradas, reclamos a sellers generados y resueltos, desvíos de precio o cuotas detectados."
+  }
+];
+
+// ─── RENDER MARKDOWN ──────────────────────────────────────────────────────────
+const md2html = (t) => (typeof marked !== 'undefined')
+  ? marked.parse(t)
+  : '<pre style="white-space:pre-wrap;font-family:inherit">' +
+    t.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])) + '</pre>';
+document.getElementById('briefing-content').innerHTML = md2html(briefingMD);
+document.getElementById('intel-content').innerHTML = md2html(intelMD);
+document.getElementById('research-content').innerHTML = md2html(researchMD);
+document.getElementById('postbrief-content').innerHTML = md2html(postBriefMD);
+document.getElementById('sources-content').innerHTML = md2html(sourcesMD);
+
+// ─── BRIEFING EN VOZ ALTA ─────────────────────────────────────────────────────
+// Usa la voz del navegador: no necesita archivo de audio ni conexión.
+let speaking = false;
+const synth = window.speechSynthesis;
+
+function briefingPlano() {
+  // markdown -> texto hablable: fuera marcas, tablas fila por fila
+  return briefingMD
+    .replace(/^>\s?/gm, '')
+    .replace(/\|/g, ', ')
+    .replace(/^[-*]\s+/gm, '')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/[*_`]/g, '')
+    .replace(/^\s*[-:,\s]+$/gm, '')
+    .replace(/\n{2,}/g, '. ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+function pararAudio() {
+  synth.cancel();
+  speaking = false;
+  document.getElementById('playIcon').className = 'fas fa-play';
+  document.getElementById('viz').classList.add('paused');
+}
+
+function toggleAudio() {
+  const sub = document.getElementById('audioSub');
+  if (!('speechSynthesis' in window)) {
+    sub.textContent = 'Este navegador no puede leer en voz alta.';
+    return;
+  }
+  if (speaking) { pararAudio(); sub.textContent = 'Pausado — tocá para retomar desde el principio'; return; }
+
+  const u = new SpeechSynthesisUtterance(briefingPlano());
+  u.lang = 'es-AR';
+  u.rate = 1.05;
+  const esVoice = synth.getVoices().find(v => v.lang && v.lang.startsWith('es'));
+  if (esVoice) u.voice = esVoice;
+  u.onend = () => { pararAudio(); sub.textContent = 'Listo — tocá para escucharlo de nuevo'; };
+  u.onerror = () => { pararAudio(); sub.textContent = 'No se pudo reproducir el audio.'; };
+
+  synth.cancel();
+  synth.speak(u);
+  speaking = true;
+  document.getElementById('playIcon').className = 'fas fa-pause';
+  document.getElementById('viz').classList.remove('paused');
+  sub.textContent = 'Reproduciendo el briefing…';
+}
+
+// Chrome carga las voces en diferido
+if ('speechSynthesis' in window) synth.onvoiceschanged = () => {};
+window.addEventListener('beforeunload', () => synth.cancel());
+
+// ─── QUIZ LOGIC ───────────────────────────────────────────────────────────────
+let quizScore = 0;
+const quizContainer = document.getElementById('quiz-container');
+document.getElementById('total-q').textContent = quizData.length;
+
+quizData.forEach((item, idx) => {
+  const div = document.createElement('div');
+  div.className = 'quiz-question';
+  div.innerHTML = `
+    <div class="question-num">Pregunta ${idx + 1} de ${quizData.length}</div>
+    <div class="question-text">${item.q}</div>
+    <div class="options" id="opts-${idx}">
+      ${item.options.map((opt, i) => `
+        <div class="option" onclick="selectOption(${idx},'${'ABCD'[i]}','${item.answer}',this)">
+          <div class="option-letter">${'ABCD'[i]}</div>
+          <span>${opt.substring(3)}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  quizContainer.appendChild(div);
+});
+
+function selectOption(qIdx, selected, correct, el) {
+  const opts = document.querySelectorAll(`#opts-${qIdx} .option`);
+  opts.forEach(o => o.classList.add('answered'));
+  opts.forEach(o => { o.style.pointerEvents = 'none'; });
+  if (selected === correct) {
+    el.classList.add('correct');
+    quizScore++;
+    document.getElementById('score').textContent = quizScore;
+  } else {
+    el.classList.add('wrong');
+    opts.forEach((o, i) => {
+      if ('ABCD'[i] === correct) o.classList.add('correct');
+    });
+  }
+}
+
+// ─── FLASHCARD LOGIC ──────────────────────────────────────────────────────────
+let fcIdx = 0;
+const fcEl = document.getElementById('flashcard');
+document.getElementById('fc-total').textContent = flashcards.length;
+
+function renderCard() {
+  const c = flashcards[fcIdx];
+  document.getElementById('fc-question').textContent = c.q;
+  document.getElementById('fc-answer').textContent = c.a;
+  document.getElementById('fc-current').textContent = fcIdx + 1;
+  fcEl.classList.remove('flipped');
+  const dots = document.getElementById('fc-dots');
+  dots.innerHTML = '';
+  flashcards.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === fcIdx ? ' active' : '');
+    dots.appendChild(d);
+  });
+}
+
+function flipCard() { fcEl.classList.toggle('flipped'); }
+function nextCard() { fcIdx = (fcIdx + 1) % flashcards.length; renderCard(); }
+function prevCard() { fcIdx = (fcIdx - 1 + flashcards.length) % flashcards.length; renderCard(); }
+
+renderCard();
+</script>
+</body>
+</html>
