@@ -282,6 +282,13 @@
       .header-inner { flex-wrap: wrap; }
       .meeting-meta { margin-left: 0; text-align: left; }
     }
+    /* MOBILE — el briefing se lee desde el celular antes de entrar a la reunión */
+    @media (max-width: 760px) {
+      .main { grid-template-columns: minmax(0,1fr); padding: 0 16px 48px; }
+      .main > * { min-width: 0; }
+      .main table { display: block; overflow-x: auto; }
+      .main pre { white-space: pre-wrap; }
+    }
   </style>
 </head>
 <body>

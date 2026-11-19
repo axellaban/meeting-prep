@@ -66,6 +66,15 @@
   .flash-counter{color:var(--muted);font-size:14px}
   .flash-dots{display:flex;gap:6px}.flash-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2)}.flash-dot.active{background:var(--gold)}
   @media (max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:static}.stats{grid-template-columns:1fr}.meta{margin-left:0;text-align:left}.header{flex-direction:column}}
+  /* MOBILE — el briefing se lee desde el celular antes de entrar a la reunión */
+  @media (max-width: 760px) {
+    .container { padding: 16px; }
+    .layout { grid-template-columns: minmax(0,1fr); }
+    .sidebar, .content { min-width: 0; }
+    .content { padding: 20px 16px; }
+    .content table { display: block; overflow-x: auto; }
+    .content pre { white-space: pre-wrap; }
+  }
 </style>
 </head>
 <body>

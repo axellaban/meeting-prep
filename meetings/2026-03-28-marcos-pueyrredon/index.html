@@ -393,6 +393,18 @@
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    /* MOBILE — el briefing se lee desde el celular antes de entrar a la reunión */
+    @media (max-width: 760px) {
+      .layout { display: block; }
+      .sidebar { position: sticky; top: 60px; width: auto; flex-direction: row; overflow-x: auto; padding: 8px 12px; border-right: none; border-bottom: 1px solid var(--glass-border); bottom: auto; }
+      .sidebar-label, .sidebar-bottom { display: none; }
+      .nav-item { white-space: nowrap; flex-shrink: 0; }
+      .main { margin-left: 0; min-width: 0; }
+      .header, .content-area { padding: 20px 16px; }
+      .header-top { flex-wrap: wrap; gap: 12px; }
+      .stats-row { grid-template-columns: 1fr; }
+      .content-area table { display: block; overflow-x: auto; }
+    }
   </style>
 </head>
 <body>

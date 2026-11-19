@@ -114,6 +114,10 @@ def check_dashboards() -> int:
         if "marked.parse(" in html and "md2html" not in html:
             aviso(f"{nombre}: sin degradación elegante si marked no carga")
 
+        # el briefing se lee desde el celular: sin esto desborda horizontalmente
+        if not re.search(r"@media\s*\(\s*max-width:\s*7\d\dpx\s*\)", html):
+            aviso(f"{nombre}: sin bloque mobile (@media max-width ~760px) — desborda en el celular")
+
     return len(archivos)
 
 
