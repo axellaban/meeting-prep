@@ -24,8 +24,9 @@ Necesitás plan pago de Claude — el que incluye **Routines**.
    Calendar** y pegando el prompt que te da el `/setup`.
 5. **Conectá Firecrawl** en claude.ai → Connectors, y adjuntalo también a la rutina.
    Es el motor de research; si se cae, el sistema sigue solo con búsqueda web.
-6. **Importá el repo en [vercel.com/new](https://vercel.com/new)** → Deploy, sin tocar
-   nada. Sin esto los dashboards existen como archivos pero no podés abrirlos del
+6. **Importá el repo en [vercel.com/new](https://vercel.com/new)** y cargá las tres
+   variables del login con Google (`.env.example`; los pasos están en `SETUP.md`).
+   Sin esto los dashboards existen como archivos pero no podés abrirlos del
    celular, que es cuando los vas a querer.
 
 > **Dos cosas que se confunden seguido.** Conectar un conector en tu cuenta **no** lo
@@ -89,17 +90,19 @@ Por eso conviene que el repo sea **privado**.
 meeting-prep/
 ├── config.json                         # Tu configuración — empezá por acá
 ├── SETUP.md                            # Guía de instalación
-├── index.html                          # Portal
-├── meetings.json                       # Registro de reuniones
 ├── frameworks/                         # Guiones de conversación enchufables
 │   ├── generic.md · kona-4w.md · spin.md · meddic.md
 ├── templates/dashboard.html            # Diseño de todos los dashboards
 ├── tools/
 │   ├── generate_dashboard.py           # Spec JSON → dashboard + registro
 │   └── verify.py                       # Chequea que el repo esté sano
-├── assets/marked.min.js                # Renderer de markdown (vendorizado)
-├── meetings/<id>/index.html            # Un dashboard por reunión
-├── docs/arquitectura.html              # Cómo se conectan las piezas
+├── public/                             # Lo que se publica (detrás del login)
+│   ├── index.html                      # Portal
+│   ├── meetings.json                   # Registro de reuniones
+│   ├── meetings/<id>/index.html        # Un dashboard por reunión
+│   ├── assets/marked.min.js            # Renderer de markdown (vendorizado)
+│   └── docs/arquitectura.html          # Cómo se conectan las piezas
+├── auth.ts · proxy.ts · app/           # Login con Google (Auth.js) y protección del sitio
 ├── runs/                               # Bitácora de corridas con incidencias
 └── .claude/skills/
     ├── setup/                          # /setup — configuración inicial
@@ -124,7 +127,7 @@ meeting-prep/
 - **Calendario:** conector de Google Calendar de Claude — sin OAuth propio ni verificación
 - **Research:** Firecrawl con fallback automático a WebSearch + WebFetch
 - **Generación:** Python sin dependencias, sobre un template único
-- **Frontend:** HTML/CSS/JS puro, sin build step
+- **Frontend:** HTML/CSS/JS puro en `public/`, servido por Next.js con login de Google (Auth.js)
 - **Deploy:** Vercel, automático desde GitHub
 - **Automatización:** Routines de Claude — una sesión nueva cada mañana
 

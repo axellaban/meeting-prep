@@ -9,3 +9,9 @@ __pycache__/
 # Credenciales — nunca al repo
 storage_state.json
 .notebooklm/
+
+# Next.js
+.next/
+next-env.d.ts
+*.tsbuildinfo
+.env*.local

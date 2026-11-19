@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+PUBLIC = ROOT / "public"          # lo que sirve Vercel, detrás del login
 
 errores: list[str] = []
 avisos: list[str] = []
@@ -58,7 +59,7 @@ def check_config() -> dict:
 
 
 def check_registry() -> list:
-    p = ROOT / "meetings.json"
+    p = PUBLIC / "meetings.json"
     try:
         data = json.loads(p.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, FileNotFoundError) as e:
@@ -75,12 +76,12 @@ def check_registry() -> list:
         for campo in ("id", "date", "person", "path"):
             if not m.get(campo):
                 error(f"meetings.json: '{mid}' no tiene {campo}")
-        if m.get("path") and not (ROOT / m["path"]).exists():
+        if m.get("path") and not (PUBLIC / m["path"]).exists():
             error(f"meetings.json: '{mid}' apunta a {m['path']}, que no existe")
 
     # Al revés: dashboards en disco que el registro no conoce
-    for d in sorted((ROOT / "meetings").glob("*/index.html")):
-        rel = str(d.relative_to(ROOT))
+    for d in sorted((PUBLIC / "meetings").glob("*/index.html")):
+        rel = str(d.relative_to(PUBLIC))
         if not any(m.get("path") == rel for m in meetings):
             aviso(f"{rel} existe en disco pero no está en meetings.json")
 
@@ -88,7 +89,7 @@ def check_registry() -> list:
 
 
 def check_dashboards() -> int:
-    archivos = sorted((ROOT / "meetings").glob("*/index.html"))
+    archivos = sorted((PUBLIC / "meetings").glob("*/index.html"))
     if not archivos:
         aviso("no hay dashboards generados todavía")
         return 0
@@ -122,7 +123,7 @@ def check_dashboards() -> int:
 
 
 def check_assets() -> None:
-    marked = ROOT / "assets" / "marked.min.js"
+    marked = PUBLIC / "assets" / "marked.min.js"
     if not marked.exists():
         error("falta assets/marked.min.js — los dashboards quedarían en blanco sin CDN")
     elif marked.stat().st_size < 10_000:
@@ -135,9 +136,10 @@ def check_assets() -> None:
         except json.JSONDecodeError as e:
             error(f"vercel.json no es JSON válido: {e}")
             return
-        srcs = [b.get("src", "") for b in v.get("builds", [])]
-        if not any("assets" in s or s == "**" for s in srcs):
-            error("vercel.json no despliega assets/ — marked.min.js daría 404 en producción")
+        if v.get("builds"):
+            error("vercel.json tiene 'builds': desactiva Next.js y el sitio queda sin login")
+        if v.get("framework") != "nextjs":
+            aviso("vercel.json no fija framework 'nextjs' — depende de cómo esté configurado el proyecto en Vercel")
 
     mcp = ROOT / ".mcp.json"
     if mcp.exists():
@@ -147,7 +149,8 @@ def check_assets() -> None:
             error(f".mcp.json no es JSON válido: {e}")
 
     for req in ("templates/dashboard.html", "tools/generate_dashboard.py",
-                ".claude/skills/meeting-prep-daily/SKILL.md"):
+                ".claude/skills/meeting-prep-daily/SKILL.md",
+                "auth.ts", "proxy.ts", "app/api/auth/[...nextauth]/route.ts"):
         if not (ROOT / req).exists():
             error(f"falta {req}")
 
@@ -171,6 +174,12 @@ def check_personal_leaks(cfg: dict) -> None:
                 error(f"{f.relative_to(ROOT)} tiene datos personales hardcodeados ('{marca}')")
 
 
+def _ignorado(f: Path) -> bool:
+    """Dependencias y builds no son parte del repo: no se revisan."""
+    partes = f.relative_to(ROOT).parts
+    return bool({".git", "node_modules", ".next"} & set(partes))
+
+
 def check_secrets() -> None:
     """Ninguna credencial debería vivir en el repo."""
     sospechosos = [
@@ -182,14 +191,14 @@ def check_secrets() -> None:
     ]
     for nombre in sospechosos:
         for hit in ROOT.rglob(nombre):
-            if ".git/" in str(hit):
+            if _ignorado(hit):
                 continue
             error(f"credencial en el repo: {hit.relative_to(ROOT)} — sacala y rotala")
 
     # cookies de Google pegadas dentro de algún archivo versionado
     patrones = re.compile(r"__Secure-\d?PSID|SAPISID|oauth2\.googleapis\.com/token")
     for f in ROOT.rglob("*"):
-        if not f.is_file() or ".git/" in str(f) or f.suffix in {".png", ".jpg", ".ico"}:
+        if not f.is_file() or _ignorado(f) or f.suffix in {".png", ".jpg", ".ico"}:
             continue
         if f.name in {"verify.py", "SETUP.md"}:   # acá se nombran a propósito
             continue

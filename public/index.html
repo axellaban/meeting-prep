@@ -72,6 +72,26 @@
     }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
+    /* USUARIO LOGUEADO */
+    .user-box { display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid var(--glass-border); }
+    .user-box[hidden] { display: none; }
+    .user-avatar {
+      width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--blue), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+    }
+    .user-avatar[hidden] { display: none; }
+    .user-name { font-size: 13px; font-weight: 600; color: var(--text); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .btn-logout {
+      display: flex; align-items: center; gap: 6px;
+      font: inherit; font-size: 12px; font-weight: 600; color: var(--text-muted);
+      background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px;
+      padding: 6px 10px; cursor: pointer; transition: color .2s, border-color .2s;
+    }
+    .btn-logout:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .btn-logout:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
     /* HERO */
     .hero {
       padding: 48px 32px 32px;
@@ -244,6 +264,9 @@
       .hero h1 { font-size: 28px; }
       .today-card { flex-direction: column; align-items: flex-start; }
       .today-arrow { display: none; }
+      .navbar { padding: 0 16px; }
+      .status-dot, .user-name { display: none; }
+      .user-box { padding-left: 0; border-left: none; }
     }
 
     ::-webkit-scrollbar { width: 6px; }
@@ -263,6 +286,16 @@
     <div class="status-dot">
       <span class="dot-live"></span>
       Auto-generado por IA
+    </div>
+    <div class="user-box" id="user-box" hidden>
+      <img class="user-avatar" id="user-avatar" alt="" referrerpolicy="no-referrer" hidden>
+      <span class="user-avatar" id="user-initials" hidden></span>
+      <span class="user-name" id="user-name"></span>
+      <form method="post" action="/api/auth/signout">
+        <input type="hidden" name="csrfToken" id="logout-csrf">
+        <input type="hidden" name="callbackUrl" value="/login">
+        <button type="submit" class="btn-logout"><i class="fa fa-sign-out-alt"></i> Cerrar sesión</button>
+      </form>
     </div>
   </div>
 </nav>
@@ -765,8 +798,43 @@
     if (hora) document.getElementById('cron-hour').textContent = hora + ' hs';
   }
 
+  // Usuario logueado (Auth.js). Por file:// no hay sesión y el bloque queda oculto.
+  async function loadUser() {
+    let session, csrf;
+    try {
+      const [s, c] = await Promise.all([fetch('/api/auth/session'), fetch('/api/auth/csrf')]);
+      if (!s.ok || !c.ok) return;
+      session = await s.json();
+      csrf = await c.json();
+    } catch (e) { return; }
+    const u = session && session.user;
+    if (!u) return;
+
+    const nombre = u.name || u.email || '';
+    document.getElementById('user-name').textContent = nombre;
+    document.getElementById('user-box').title = u.email || nombre;
+    document.getElementById('logout-csrf').value = csrf.csrfToken;
+
+    const img = document.getElementById('user-avatar');
+    const ini = document.getElementById('user-initials');
+    const mostrarIniciales = () => {
+      img.hidden = true;
+      ini.textContent = nombre.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0].toUpperCase()).join('');
+      ini.hidden = false;
+    };
+    if (u.image) {
+      img.onerror = mostrarIniciales;
+      img.src = u.image;
+      img.hidden = false;
+    } else {
+      mostrarIniciales();
+    }
+    document.getElementById('user-box').hidden = false;
+  }
+
   loadBranding();
   loadMeetings();
+  loadUser();
 </script>
 </body>
 </html>

@@ -57,8 +57,8 @@ coherente con `timezone`.
 El repo viene con reuniones de ejemplo del autor original. Preguntá si las quiere
 borrar. Si dice que sí:
 
-- borrá los directorios de `meetings/`
-- dejá `meetings.json` como `{"meetings": []}`
+- borrá los directorios de `public/meetings/`
+- dejá `public/meetings.json` como `{"meetings": []}`
 - corré cualquier generación posterior para que el portal se sincronice
 
 Si dice que no, dejalas: sirven para ver cómo queda un dashboard terminado.

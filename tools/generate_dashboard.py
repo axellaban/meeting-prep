@@ -3,9 +3,11 @@
 Meeting Prep OS — generador de dashboards.
 
 Toma un spec JSON con el research ya hecho y produce:
-  1. meetings/<id>/index.html   (a partir de templates/dashboard.html)
-  2. la entrada correspondiente en meetings.json (upsert por id)
-  3. el bloque INLINE_MEETINGS de index.html sincronizado
+  1. public/meetings/<id>/index.html   (a partir de templates/dashboard.html)
+  2. la entrada correspondiente en public/meetings.json (upsert por id)
+  3. el bloque INLINE_MEETINGS de public/index.html sincronizado
+
+Todo lo que se publica vive en public/: Next.js lo sirve detrás del login.
 
 Uso:
     python3 tools/generate_dashboard.py spec.json
@@ -21,9 +23,10 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+PUBLIC = ROOT / "public"          # lo que sirve Vercel, detrás del login
 TEMPLATE = ROOT / "templates" / "dashboard.html"
-REGISTRY = ROOT / "meetings.json"
-PORTAL = ROOT / "index.html"
+REGISTRY = PUBLIC / "meetings.json"
+PORTAL = PUBLIC / "index.html"
 CONFIG = ROOT / "config.json"
 
 DEFAULT_BRAND = "Meeting Prep OS"
@@ -247,7 +250,7 @@ def main() -> None:
         chars = rendered_text_len(html)
         minimo = ((cfg.get("pipeline") or {}).get("research") or {}).get("minContentChars", 0)
         print("🔍 DRY RUN — no se escribió ningún archivo\n")
-        print(f"   destino     meetings/{spec['id']}/index.html")
+        print(f"   destino     public/meetings/{spec['id']}/index.html")
         print(f"   persona     {spec['person']}")
         print(f"   fecha       {spec['date']} {spec['time']}")
         print(f"   contenido   {chars:,} chars" + (f"  (mínimo {minimo:,})" if minimo else ""))
@@ -259,7 +262,7 @@ def main() -> None:
         print("\n   Quitá --dry-run para escribir de verdad.")
         return
 
-    out_dir = ROOT / "meetings" / spec["id"]
+    out_dir = PUBLIC / "meetings" / spec["id"]
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "index.html").write_text(html, encoding="utf-8")
 
@@ -267,8 +270,8 @@ def main() -> None:
     sync_portal_fallback(json.loads(REGISTRY.read_text(encoding="utf-8"))["meetings"])
 
     print(f"✅ {out_dir.relative_to(ROOT)}/index.html")
-    print(f"✅ meetings.json — {total} reuniones")
-    print(f"✅ index.html — fallback inline sincronizado")
+    print(f"✅ public/meetings.json — {total} reuniones")
+    print(f"✅ public/index.html — fallback inline sincronizado")
 
 
 if __name__ == "__main__":

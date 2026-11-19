@@ -67,11 +67,20 @@ Corré el pipeline diario de Meeting Prep OS.
 
 ## 4. Publicar el sitio (opcional)
 
-**vercel.com/new** → importá tu repo → **Deploy**, sin cambiar nada. Vercel vuelve
-a desplegar en cada push del agente.
+**vercel.com/new** → importá tu repo → **Deploy**. Vercel lo construye como Next.js
+(lo fija `vercel.json`) y vuelve a desplegar en cada push del agente.
 
-Si el repo es privado, el sitio también nace privado. Revisá la configuración de
-Vercel si querés compartirlo.
+El sitio pide **login con Google** (Auth.js). Antes del primer deploy:
+
+1. En **Google Cloud → APIs y servicios → Credenciales**, creá un cliente OAuth
+   (aplicación web) con estas URLs de redirección autorizadas:
+   `https://<tu-dominio>/api/auth/callback/google` y
+   `http://localhost:3000/api/auth/callback/google`.
+2. En **Vercel → Settings → Environment Variables**, cargá `AUTH_GOOGLE_ID`,
+   `AUTH_GOOGLE_SECRET` y `AUTH_SECRET` (este último con `npx auth secret`).
+   Los nombres están en `.env.example`.
+
+Hoy entra cualquier cuenta de Google que complete el login.
 
 ---
 
@@ -124,7 +133,7 @@ Sale con código 1 si encuentra algún error, así que sirve para un hook o para
 | El guion de conversación del briefing | `config.json` → `pipeline.framework`, y los archivos de `frameworks/` |
 | Cómo investiga y qué exige de densidad | `.claude/skills/meeting-prep-daily/SKILL.md` |
 | El diseño de todos los dashboards | `templates/dashboard.html` |
-| El portal | `index.html` |
+| El portal | `public/index.html` |
 
 Los frameworks incluidos son `generic` (default), `kona-4w` (discovery consultiva),
 `spin` y `meddic`. Para escribir uno propio, copiá `frameworks/generic.md`.

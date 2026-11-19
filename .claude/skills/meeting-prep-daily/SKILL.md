@@ -194,7 +194,7 @@ digital de LATAM, justo cuando lanza la edición 200 del eCommerce Day Tour.
 ```
 
 Reglas de densidad, medidas contra el estándar del repo
-(`meetings/2026-03-28-marcos-pueyrredon/`, que es la vara):
+(`public/meetings/2026-03-28-marcos-pueyrredon/`, que es la vara):
 
 - **Apuntá a 25.000+ caracteres de contenido** entre las tres secciones de texto.
   Por debajo de ~20.000 el dashboard se siente flaco.
@@ -235,14 +235,15 @@ un guion de venta contra un socio de años queda fuera de lugar.
 python3 tools/generate_dashboard.py <spec.json>
 ```
 
-El script escribe `meetings/<id>/index.html`, hace upsert en `meetings.json` y
-sincroniza el fallback `INLINE_MEETINGS` de `index.html`. Falla ruidosamente si
+El script escribe `public/meetings/<id>/index.html`, hace upsert en
+`public/meetings.json` y sincroniza el fallback `INLINE_MEETINGS` de `public/index.html`.
+Todo lo publicado vive en `public/`: Next.js lo sirve detrás del login con Google. Falla ruidosamente si
 queda algún placeholder sin resolver.
 
 Verificá antes de publicar:
 ```bash
-python3 -c "import json;json.load(open('meetings.json'))"   # registry válido
-grep -c '{{' meetings/<id>/index.html                       # tiene que dar 0
+python3 -c "import json;json.load(open('public/meetings.json'))"   # registry válido
+grep -c '{{' public/meetings/<id>/index.html                       # tiene que dar 0
 ```
 
 Después:
@@ -284,6 +285,6 @@ y la URL. Si algo falló, decilo derecho — no reportes éxito si el push no sa
 ## Notas de mantenimiento
 
 - El look de los dashboards vive en `templates/dashboard.html`. Tocá ahí, no en cada reunión.
-- `assets/marked.min.js` está vendorizado a propósito: el CDN se caía y dejaba las
+- `public/assets/marked.min.js` está vendorizado a propósito: el CDN se caía y dejaba las
   pestañas en blanco. No lo vuelvas a apuntar a cdnjs.
 - Las corridas con incidencias se documentan en `runs/YYYY-MM-DD-status.md`.
